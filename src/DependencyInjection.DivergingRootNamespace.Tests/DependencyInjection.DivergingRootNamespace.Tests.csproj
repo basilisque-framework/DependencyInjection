@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>Basilisque.DependencyInjection.Tests</RootNamespace>
+	</PropertyGroup>
+</Project>

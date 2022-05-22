@@ -1,0 +1,38 @@
+<Project>
+	<!-- general build properties -->
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<RootNamespace>Basilisque.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<AssemblyName>Basilisque.$(MSBuildProjectName)</AssemblyName>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+	</PropertyGroup>
+
+	<!-- global usings -->
+	<ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
+		<Using Include="System" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Threading.Tasks" />
+	</ItemGroup>
+
+
+	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
+		<PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
+		<PackageReference Include="coverlet.collector" Version="3.1.0" />
+
+		<ProjectReference Include="..\DependencyInjection.CodeAnalysis\DependencyInjection.CodeAnalysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
+		
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
+</Project>
