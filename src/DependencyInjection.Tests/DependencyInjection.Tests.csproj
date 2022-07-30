@@ -1,4 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+	  <CompilerVisibleProperty Include="LangVersion" />
+	  <ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj" />
+	  <PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="0.2.10-alpha" />
   </ItemGroup>
 </Project>

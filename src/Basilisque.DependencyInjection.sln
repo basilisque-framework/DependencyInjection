@@ -15,7 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.CodeAna
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.Tests", "DependencyInjection.Tests\DependencyInjection.Tests.csproj", "{9AF20CA8-6114-4BD7-BAEE-2657BAA12348}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.DivergingRootNamespace.Tests", "DependencyInjection.DivergingRootNamespace.Tests\DependencyInjection.DivergingRootNamespace.Tests.csproj", "{2B58E992-F363-46A8-B4AE-3219FE89A582}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.DivergingRootNamespace.Tests", "DependencyInjection.DivergingRootNamespace.Tests\DependencyInjection.DivergingRootNamespace.Tests.csproj", "{2B58E992-F363-46A8-B4AE-3219FE89A582}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.TestAssembly", "DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj", "{338835D7-5564-4FAD-A4BF-CE92677B4B63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.TestAssembly.Child1", "DependencyInjection.TestAssembly.Child1\DependencyInjection.TestAssembly.Child1.csproj", "{78FD9281-6DE0-462A-B3FE-9BCD08526839}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{2B58E992-F363-46A8-B4AE-3219FE89A582}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B58E992-F363-46A8-B4AE-3219FE89A582}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B58E992-F363-46A8-B4AE-3219FE89A582}.Release|Any CPU.Build.0 = Release|Any CPU
+		{338835D7-5564-4FAD-A4BF-CE92677B4B63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{338835D7-5564-4FAD-A4BF-CE92677B4B63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{338835D7-5564-4FAD-A4BF-CE92677B4B63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{338835D7-5564-4FAD-A4BF-CE92677B4B63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78FD9281-6DE0-462A-B3FE-9BCD08526839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78FD9281-6DE0-462A-B3FE-9BCD08526839}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78FD9281-6DE0-462A-B3FE-9BCD08526839}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78FD9281-6DE0-462A-B3FE-9BCD08526839}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

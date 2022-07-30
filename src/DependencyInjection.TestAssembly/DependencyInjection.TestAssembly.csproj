@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\DependencyInjection.TestAssembly.Child1\DependencyInjection.TestAssembly.Child1.csproj" />
+  </ItemGroup>
+</Project>
