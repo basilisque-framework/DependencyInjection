@@ -2,6 +2,6 @@
   <ItemGroup>
 	  <CompilerVisibleProperty Include="LangVersion" />
 	  <ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj" />
-	  <PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="0.2.10-alpha" />
+	  <PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="0.2.11-alpha" />
   </ItemGroup>
 </Project>

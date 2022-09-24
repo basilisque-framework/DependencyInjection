@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
@@ -14,8 +15,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
         private const string C_DEPENDENCY_REGISTRATOR_ROOTNAMESPACE_COMPILATIONNAME = C_DEPENDENCY_REGISTRATOR_CLASSNAME + "_RootNamespace";
         private const string C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME = C_DEPENDENCY_REGISTRATOR_CLASSNAME + "_AssemblyNameNamespace";
         private const string C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION = @"Registers all dependencies and services of this assembly.";
-        private const string C_DEPENDENCYREGISTRATORBUILDER_TYPE = "Basilisque.DependencyInjection.Registration.DependencyRegistratorBuilder";
-        private const string C_IDEPENDENCYREGISTRATOR_TYPE = "Basilisque.DependencyInjection.Registration.IDependencyRegistrator";
+        private const string C_DEPENDENCYREGISTRATORBUILDER_TYPE = "DependencyRegistratorBuilder";
+        private const string C_IDEPENDENCYREGISTRATOR_TYPE = "IDependencyRegistrator";
 
         private static List<string> _assemblyNamePrefixesToIgnore = new List<string>()
         {
@@ -38,10 +39,12 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
 
             var combinedValueProviderStub = rootNamespaceProvider.Combine(assemblyNameProvider);
 
-            var combinedValueProviderImpl = combinedValueProviderStub.Combine(referencedAssemblySymbolsProvider);
+            var combinedValueProviderDependencyImpl = combinedValueProviderStub.Combine(referencedAssemblySymbolsProvider);
+
+            var combinedValueProviderServicesImpl = combinedValueProviderDependencyImpl.Combine(createServicesToRegisterValueProvider(context));
 
             context.RegisterCompilationInfoOutput(combinedValueProviderStub, outputStubs);
-            context.RegisterImplementationCompilationInfoOutput(combinedValueProviderImpl, outputImplementations);
+            context.RegisterImplementationCompilationInfoOutput(combinedValueProviderServicesImpl, outputImplementations);
         }
 
         private static string? rootNamespaceSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
@@ -70,6 +73,188 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             var result = referencedDependencyRegistrators.Where(namedTypeSymbol => namedTypeSymbol != null);
 
             return result!;
+        }
+
+        private IncrementalValueProvider<ImmutableArray<List<ServiceRegistrationInfo>?>> createServicesToRegisterValueProvider(IncrementalGeneratorInitializationContext context)
+        {
+            var syntaxProvider = context.SyntaxProvider.CreateSyntaxProvider(
+                static (s, ct) => isSyntaxTargetForGeneration(s, ct),
+                static (ctx, ct) => getSemanticTargetForGeneration(ctx, ct)
+                ).Where(static m => m is not null);
+
+            return syntaxProvider.Collect();
+        }
+
+        private static bool isSyntaxTargetForGeneration(Microsoft.CodeAnalysis.SyntaxNode node, CancellationToken cancellationToken)
+        {
+            string? name = null;
+            Microsoft.CodeAnalysis.CSharp.Syntax.BaseListSyntax? baseList = null;
+            SyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax>? attributes = null;
+            if (node is Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax cds)
+            {
+                name = cds.Identifier.ValueText;
+                baseList = cds.BaseList;
+                attributes = cds.AttributeLists;
+            }
+            else if (node is Microsoft.CodeAnalysis.CSharp.Syntax.StructDeclarationSyntax sds)
+            {
+                name = sds.Identifier.ValueText;
+                baseList = sds.BaseList;
+                attributes = sds.AttributeLists;
+            }
+            else
+            {
+                return false;
+            }
+
+            return !string.IsNullOrWhiteSpace(name) && (baseList?.Types.Count > 0 || attributes?.Count > 0);
+        }
+
+        private static List<ServiceRegistrationInfo>? getSemanticTargetForGeneration(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+        {
+            var nodeSymbol = context.SemanticModel.GetDeclaredSymbol(context.Node, cancellationToken) as INamedTypeSymbol;
+
+            if (nodeSymbol == null)
+                return null;
+
+            if (nodeSymbol.IsAbstract)
+                return null;
+
+            if (string.IsNullOrWhiteSpace(nodeSymbol.Name))
+                return null;
+
+            var baseAttrInterface = context.SemanticModel.Compilation.GetTypeByMetadataName("Basilisque.DependencyInjection.Registration.Annotations.IRegisterServiceAttribute");
+            if (baseAttrInterface == null)
+                return null;
+
+            var registrationInfos = getRegistrationInfos(context, baseAttrInterface, nodeSymbol, context.Node);
+
+            var result = registrationInfos.Select(r =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                return r;
+            }).ToList();
+
+            return result;
+        }
+
+        private static IEnumerable<ServiceRegistrationInfo> getRegistrationInfos(GeneratorSyntaxContext context, INamedTypeSymbol baseAttrInterface, INamedTypeSymbol nodeSymbol, Microsoft.CodeAnalysis.SyntaxNode? rootNode)
+        {
+            var registrationAttributes = nodeSymbol.GetAttributes()
+                .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
+
+            if (!registrationAttributes.Any())
+                yield break;
+
+            foreach (var registrationAttribute in registrationAttributes)
+            {
+                if (registrationAttribute.AttributeClass == null)
+                    continue;
+
+                var childRegistrationInfos = getRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
+
+                Registration.Annotations.RegistrationScope? registrationScope;
+                List<INamedTypeSymbol>? servicesToRegister;
+                bool implementsITypeName;
+                readAttributeArguments(registrationAttribute, out registrationScope, out servicesToRegister, out implementsITypeName);
+
+                if (implementsITypeName && rootNode != null)
+                    checkImplementsITypeName(nodeSymbol, ref servicesToRegister);
+
+                bool isHandled = false;
+                foreach (var childRegistrationInfo in childRegistrationInfos)
+                {
+                    isHandled = true;
+
+                    assignValuesToRegistrationInfo(childRegistrationInfo, rootNode, nodeSymbol, registrationScope, servicesToRegister);
+
+                    yield return childRegistrationInfo;
+                }
+
+                if (!isHandled)
+                {
+                    var result = new ServiceRegistrationInfo();
+
+                    assignValuesToRegistrationInfo(result, rootNode, nodeSymbol, registrationScope, servicesToRegister);
+
+                    yield return result;
+                }
+            }
+        }
+
+        private static void checkImplementsITypeName(INamedTypeSymbol nodeSymbol, ref List<INamedTypeSymbol>? servicesToRegister)
+        {
+            string targetInterfaceName = $"I{nodeSymbol.Name}";
+            var implementedITypeNameInterfaces = nodeSymbol.AllInterfaces.Where(i => i.Name == targetInterfaceName);
+
+            if (!implementedITypeNameInterfaces.Any())
+                return;
+
+            if (servicesToRegister == null)
+                servicesToRegister = new List<INamedTypeSymbol>();
+
+            foreach (var item in implementedITypeNameInterfaces)
+            {
+                if (!servicesToRegister.Contains(item))
+                    servicesToRegister.Add(item);
+            }
+        }
+
+        private static void readAttributeArguments(AttributeData registrationAttribute, out Registration.Annotations.RegistrationScope? registrationScope, out List<INamedTypeSymbol>? servicesToRegister, out bool implementsITypeName)
+        {
+            registrationScope = null;
+            servicesToRegister = null;
+            implementsITypeName = true;
+
+            foreach (var ctorArg in registrationAttribute.ConstructorArguments)
+            {
+                if (ctorArg.Type?.ToDisplayString() == typeof(Registration.Annotations.RegistrationScope).FullName)
+                {
+                    if (System.Enum.TryParse(ctorArg.Value?.ToString(), out Registration.Annotations.RegistrationScope innerRegistrationScope))
+                        registrationScope = innerRegistrationScope;
+                }
+            }
+
+            foreach (var namedArgument in registrationAttribute.NamedArguments)
+            {
+                if (namedArgument.Value.Kind == TypedConstantKind.Enum && (namedArgument.Key == "Scope" || namedArgument.Key == "RegistrationScope"))
+                {
+                    if (System.Enum.TryParse(namedArgument.Value.Value?.ToString(), out Registration.Annotations.RegistrationScope innerRegistrationScope))
+                        registrationScope = innerRegistrationScope;
+                }
+                else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "As" || namedArgument.Key == "RegisterAs"))
+                {
+                    var innerServiceToRegister = namedArgument.Value.Value as INamedTypeSymbol;
+                    if (innerServiceToRegister != null)
+                        servicesToRegister = new List<INamedTypeSymbol>() { innerServiceToRegister };
+                }
+                else if (namedArgument.Value.Kind == TypedConstantKind.Primitive && (namedArgument.Key == "ImplementsITypeName"))
+                {
+                    bool innerImplementsITypeName;
+                    if (bool.TryParse(namedArgument.Value.Value?.ToString(), out innerImplementsITypeName))
+                        implementsITypeName = innerImplementsITypeName;
+                }
+            }
+        }
+
+        private static void assignValuesToRegistrationInfo(ServiceRegistrationInfo registrationInfo, Microsoft.CodeAnalysis.SyntaxNode? implementationNode, INamedTypeSymbol implementationNodeSymbol, Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister)
+        {
+            if (implementationNode != null)
+            {
+                registrationInfo.ImplementationSyntaxNode = implementationNode;
+                registrationInfo.ImplementationSymbol = implementationNodeSymbol;
+            }
+
+            if (registrationScope != null)
+                registrationInfo.RegistrationScope = registrationScope;
+
+            if (servicesToRegister != null)
+            {
+                foreach (var serviceToRegister in servicesToRegister)
+                {
+                    registrationInfo.RegisteredServices.Add(serviceToRegister);
+                }
+            }
         }
 
         private static bool checkPreconditions(SourceProductionContext context, (string? RootNamespace, string? AssemblyName) provider, RegistrationOptions registrationOptions)
@@ -134,14 +319,14 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             outputServiceCollectionExtensionMethods(registrationOptions, mainNamespace);
         }
 
-        private static void outputImplementations(SourceProductionContext context, ((string? RootNamespace, string? AssemblyName) Options, IEnumerable<INamedTypeSymbol> NamedDependencyRegistratorTypes) provider, RegistrationOptions registrationOptions)
+        private static void outputImplementations(SourceProductionContext context, (((string? RootNamespace, string? AssemblyName) Options, IEnumerable<INamedTypeSymbol> NamedDependencyRegistratorTypes) GeneralAndDependencies, ImmutableArray<List<ServiceRegistrationInfo>?> ServicesToRegister) provider, RegistrationOptions registrationOptions)
         {
-            if (!checkPreconditions(context, provider.Options, registrationOptions))
+            if (!checkPreconditions(context, provider.GeneralAndDependencies.Options, registrationOptions))
                 return;
 
-            (string mainCompilationName, string mainNamespace, _, _, _) = getMainCompilationTarget(provider.Options);
+            (string mainCompilationName, string mainNamespace, _, _, _) = getMainCompilationTarget(provider.GeneralAndDependencies.Options);
 
-            outputDependencyRegistratorImplementation(context.CancellationToken, registrationOptions, mainNamespace, mainCompilationName, provider.NamedDependencyRegistratorTypes);
+            outputDependencyRegistratorImplementation(context.CancellationToken, registrationOptions, mainNamespace, mainCompilationName, provider.GeneralAndDependencies.NamedDependencyRegistratorTypes, provider.ServicesToRegister);
         }
 
         private static void outputDependencyRegistratorStub(RegistrationOptions registrationOptions, bool hasRootNamespace, string? rootNamespace, string mainNamespace, string mainCompilationName, string assemblyNameNamespace)
@@ -165,18 +350,18 @@ Although there is technically no reason to not manually interact with this class
             }
 
             //output the main registrator class
-            registrationOptions.CreateCompilationInfo(mainCompilationName, mainNamespace)
+            var compInfo = registrationOptions.CreateCompilationInfo(mainCompilationName, mainNamespace)
                 .AddNewClassInfo(C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
                 {
                     cl.IsPartial = true;
-                    cl.BaseClass = "Basilisque.DependencyInjection.Registration.BaseDependencyRegistrator";
+                    cl.BaseClass = "BaseDependencyRegistrator";
                     cl.XmlDocSummary = C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION;
 
                     var performInitializationMethod = new MethodInfo(AccessModifier.Protected, "void", "PerformInitialization")
                     {
                         IsOverride = true,
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Basilisque.DependencyInjection.Registration.DependencyCollection", "collection")
+                            new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
                         }
                     };
                     performInitializationMethod.Body.Append(@"
@@ -191,21 +376,21 @@ doAfterInitialization(collection);
                     cl.Methods.Add(new MethodInfo(true, "doBeforeInitialization")
                     {
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Basilisque.DependencyInjection.Registration.DependencyCollection", "collection")
+                            new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
                         }
                     });
 
                     cl.Methods.Add(new MethodInfo(true, "initializeDependenciesGenerated")
                     {
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Basilisque.DependencyInjection.Registration.DependencyCollection", "collection")
+                            new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
                         }
                     });
 
                     cl.Methods.Add(new MethodInfo(true, "doAfterInitialization")
                     {
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Basilisque.DependencyInjection.Registration.DependencyCollection", "collection")
+                            new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
                         }
                     });
 
@@ -214,7 +399,7 @@ doAfterInitialization(collection);
                     {
                         IsOverride = true,
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Microsoft.Extensions.DependencyInjection.IServiceCollection", "services")
+                            new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
                         }
                     };
                     performServiceRegistrationMethod.Body.Append(@"
@@ -229,90 +414,98 @@ doAfterRegistration(services);
                     cl.Methods.Add(new MethodInfo(true, "doBeforeRegistration")
                     {
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Microsoft.Extensions.DependencyInjection.IServiceCollection", "services")
+                            new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
                         }
                     });
 
                     cl.Methods.Add(new MethodInfo(true, "registerServicesGenerated")
                     {
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Microsoft.Extensions.DependencyInjection.IServiceCollection", "services")
+                            new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
                         }
                     });
 
                     cl.Methods.Add(new MethodInfo(true, "doAfterRegistration")
                     {
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Microsoft.Extensions.DependencyInjection.IServiceCollection", "services")
+                            new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
                         }
                     });
-                })
-                .AddToSourceProductionContext();
+                });
+
+            compInfo.Usings.Add("Basilisque.DependencyInjection.Registration");
+            compInfo.Usings.Add("Microsoft.Extensions.DependencyInjection");
+
+            compInfo.AddToSourceProductionContext();
         }
 
         private static void outputServiceCollectionExtensionMethods(RegistrationOptions registrationOptions, string mainNamespace)
         {
             const string C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME = "IServiceCollectionExtensions";
-            const string C_ISERVICECOLLECTION_TYPE = "Microsoft.Extensions.DependencyInjection.IServiceCollection";
+            const string C_ISERVICECOLLECTION_TYPE = "IServiceCollection";
 
             var dependencyRegistratorFullQualifiedName = $"{mainNamespace}.{C_DEPENDENCY_REGISTRATOR_CLASSNAME}";
             var dependencyRegistratorBuilderNameWithGeneric = $"{C_DEPENDENCYREGISTRATORBUILDER_TYPE}<{dependencyRegistratorFullQualifiedName}>";
             var dependencyRegistratorBuilderNameWithGenericForXmlDoc = $"{C_DEPENDENCYREGISTRATORBUILDER_TYPE}{{TDependencyRegistrator}}";
 
-            registrationOptions.CreateCompilationInfo(C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME, mainNamespace)
-                .AddNewClassInfo(C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME, cl =>
+            var ci = registrationOptions.CreateCompilationInfo(C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME, mainNamespace);
+            ci.Usings.Add("Microsoft.Extensions.DependencyInjection");
+            ci.Usings.Add("Basilisque.DependencyInjection.Registration");
+            ci.AddNewClassInfo(C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME, cl =>
+            {
+                cl.IsStatic = true;
+                cl.XmlDocSummary = $"This class contains extension methods for <see cref=\"{C_ISERVICECOLLECTION_TYPE}\"/>";
+
+
+                var initializeDependenciesExtensionMethod = new MethodInfo(AccessModifier.Public, $"{dependencyRegistratorBuilderNameWithGeneric}", "InitializeDependencies")
                 {
-                    cl.IsStatic = true;
-                    cl.XmlDocSummary = $"This class contains extension methods for <see cref=\"{C_ISERVICECOLLECTION_TYPE}\"/>";
-
-
-                    var initializeDependenciesExtensionMethod = new MethodInfo(AccessModifier.Public, $"{dependencyRegistratorBuilderNameWithGeneric}", "InitializeDependencies")
-                    {
-                        XmlDocSummary = $@"This method extends <see cref=""{C_ISERVICECOLLECTION_TYPE}""/> with a mechanism to register dependencies and services for the whole application.
+                    XmlDocSummary = $@"This method extends <see cref=""{C_ISERVICECOLLECTION_TYPE}""/> with a mechanism to register dependencies and services for the whole application.
 Calling this method creates a <see cref=""{dependencyRegistratorBuilderNameWithGenericForXmlDoc}""/> and initializes the dependency chain.",
 
-                        XmlDocAdditionalLines = {
+                    XmlDocAdditionalLines = {
                             $"<param name=\"services\">The <see cref=\"{C_ISERVICECOLLECTION_TYPE}\"/> all services are registered on.</param>",
                             $"<returns>A <see cref=\"{dependencyRegistratorBuilderNameWithGenericForXmlDoc}\"/> that is used to build and execute the chain of <see cref=\"{C_IDEPENDENCYREGISTRATOR_TYPE}\"/></returns>"
-                        },
+                    },
 
-                        IsExtensionMethod = true,
+                    IsExtensionMethod = true,
 
-                        Parameters = {
+                    Parameters = {
                             new ParameterInfo(ParameterKind.Ordinary, C_ISERVICECOLLECTION_TYPE, "services")
-                        }
-                    };
-                    initializeDependenciesExtensionMethod.Body.Append($@"return Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services);");
-                    cl.Methods.Add(initializeDependenciesExtensionMethod);
+                    }
+                };
+                initializeDependenciesExtensionMethod.Body.Append($@"return Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services);");
+                cl.Methods.Add(initializeDependenciesExtensionMethod);
 
 
-                    var registerServicesExtensionMethod = new MethodInfo(AccessModifier.Public, "void", "RegisterServices")
-                    {
-                        XmlDocSummary = $@"This method extends <see cref=""{C_ISERVICECOLLECTION_TYPE}""/> with a mechanism to register dependencies and services for the whole application.
+                var registerServicesExtensionMethod = new MethodInfo(AccessModifier.Public, "void", "RegisterServices")
+                {
+                    XmlDocSummary = $@"This method extends <see cref=""{C_ISERVICECOLLECTION_TYPE}""/> with a mechanism to register dependencies and services for the whole application.
 Calling this method creates a <see cref=""{dependencyRegistratorBuilderNameWithGenericForXmlDoc}""/>, initializes the dependency chain and executes the registration of all services.
 For more control over the details of this process use <see cref=""InitializeDependencies""/> instead.",
 
-                        XmlDocAdditionalLines = {
+                    XmlDocAdditionalLines = {
                             $"<param name=\"services\">The <see cref=\"{C_ISERVICECOLLECTION_TYPE}\"/> all services are registered on.</param>"
-                        },
+                    },
 
-                        IsExtensionMethod = true,
+                    IsExtensionMethod = true,
 
-                        Parameters = {
+                    Parameters = {
                             new ParameterInfo(ParameterKind.Ordinary, C_ISERVICECOLLECTION_TYPE, "services")
-                        }
-                    };
-                    registerServicesExtensionMethod.Body.Append($@"Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services).RegisterServices();");
-                    cl.Methods.Add(registerServicesExtensionMethod);
-                })
-                .AddToSourceProductionContext();
+                    }
+                };
+                registerServicesExtensionMethod.Body.Append($@"Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services).RegisterServices();");
+                cl.Methods.Add(registerServicesExtensionMethod);
+            })
+            .AddToSourceProductionContext();
         }
 
-        private static void outputDependencyRegistratorImplementation(CancellationToken cancellationToken, RegistrationOptions registrationOptions, string mainNamespace, string mainCompilationName, IEnumerable<INamedTypeSymbol> namedDependencyRegistratorTypes)
+        private static void outputDependencyRegistratorImplementation(CancellationToken cancellationToken, RegistrationOptions registrationOptions, string mainNamespace, string mainCompilationName, IEnumerable<INamedTypeSymbol> namedDependencyRegistratorTypes, ImmutableArray<List<ServiceRegistrationInfo>?> servicesToRegister)
         {
             //output implementation of the main registrator class
             var ci = registrationOptions.CreateCompilationInfo($"{mainCompilationName}.impl", mainNamespace);
             ci.AddGeneratedCodeAttributes = false;
+            ci.Usings.Add("Basilisque.DependencyInjection.Registration");
+            ci.Usings.Add("Microsoft.Extensions.DependencyInjection");
             ci.AddNewClassInfo(C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
                 {
                     cl.IsPartial = true;
@@ -320,7 +513,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
                     var initializeDependenciesGeneratedMethod = new MethodInfo(true, "initializeDependenciesGenerated")
                     {
                         Parameters = {
-                            new ParameterInfo(ParameterKind.Ordinary, "Basilisque.DependencyInjection.Registration.DependencyCollection", "collection")
+                            new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
                         }
                     };
                     initializeDependenciesGeneratedMethod.Body.Append(@"/* initialize dependencies - generated from assembly dependencies */");
@@ -334,7 +527,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
                         }
                     };
                     registerServicesGeneratedMethod.Body.Append(@"/* register services - generated from the current project */");
-                    addServicesToBody(cancellationToken, registerServicesGeneratedMethod.Body);
+                    addServicesToBody(cancellationToken, registerServicesGeneratedMethod.Body, servicesToRegister);
                     cl.Methods.Add(registerServicesGeneratedMethod);
                 })
                 .AddToSourceProductionContext();
@@ -359,9 +552,61 @@ For more control over the details of this process use <see cref=""InitializeDepe
             }
         }
 
-        private static void addServicesToBody(CancellationToken cancellationToken, CodeLines body)
+        private static void addServicesToBody(CancellationToken cancellationToken, CodeLines body, ImmutableArray<List<ServiceRegistrationInfo>?> serviceInfosListToRegister)
         {
-            //ToDo: find and register services
+            foreach (var serviceInfosToRegister in serviceInfosListToRegister)
+            {
+                if (serviceInfosToRegister == null)
+                    continue;
+
+                foreach (var item in serviceInfosToRegister)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (!validateRegistrationInfo(item))
+                        continue;
+
+                    foreach (var registeredService in item.RegisteredServices!)
+                    {
+                        //switch (item.RegistrationScope)
+                        //{
+                        //    case Registration.Annotations.RegistrationScope.Transient:
+                        //        break;
+                        //    case Registration.Annotations.RegistrationScope.Scoped:
+                        //        break;
+                        //    case Registration.Annotations.RegistrationScope.Singleton:
+                        //        break;
+                        //    default:
+                        //        continue;
+                        //}
+
+                        if (item.ImplementationSymbol == null)
+                            body.Append($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}>();");
+                        else
+                            body.Append($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol.ToDisplayString()}>();");
+                    }
+                }
+            }
+        }
+
+        private static bool validateRegistrationInfo(ServiceRegistrationInfo? registrationInfo)
+        {
+            if (registrationInfo == null)
+                return false;
+
+            if (!registrationInfo.HasRegisteredServices)
+                return false;
+
+            if (registrationInfo.ImplementationSymbol == null)
+                return false;
+
+            if (registrationInfo.ImplementationSyntaxNode == null)
+                return false;
+
+            if (registrationInfo.RegistrationScope == null)
+                return false;
+
+            return true;
         }
     }
 

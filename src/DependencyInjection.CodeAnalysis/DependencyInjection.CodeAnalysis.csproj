@@ -16,13 +16,17 @@
 	
 	<ItemGroup>
 		<!-- Generator dependencies -->
-		<PackageReference Include="Basilisque.CodeAnalysis" Version="0.2.10-alpha" PrivateAssets="all" GeneratePathProperty="true" />
+		<PackageReference Include="Basilisque.CodeAnalysis" Version="0.2.11-alpha" PrivateAssets="all" GeneratePathProperty="true" />
 		
 		<!-- Package the generator in the analyzer directory of the nuget package -->
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
 		<!-- Package the Basilisque.CodeAnalysis dependency alongside the generator assembly -->
 		<None Include="$(PkgBasilisque_CodeAnalysis)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="RegistrationScope.cs" />
 	</ItemGroup>
 
 	<PropertyGroup>
