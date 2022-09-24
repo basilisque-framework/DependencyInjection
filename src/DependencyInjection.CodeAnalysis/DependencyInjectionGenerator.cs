@@ -21,8 +21,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
 
             var combinedValueProviderServicesImpl = combinedValueProviderDependencyImpl.Combine(DependencyInjectionGeneratorSelectors.CreateServicesToRegisterValueProvider(context));
 
-            context.RegisterCompilationInfoOutput(combinedValueProviderStub, DependencyInjectionGeneratorOutput.outputStubs);
-            context.RegisterImplementationCompilationInfoOutput(combinedValueProviderServicesImpl, DependencyInjectionGeneratorOutput.outputImplementations);
+            context.RegisterCompilationInfoOutput(combinedValueProviderStub, DependencyInjectionGeneratorOutput.OutputStubs);
+            context.RegisterImplementationCompilationInfoOutput(combinedValueProviderServicesImpl, DependencyInjectionGeneratorOutput.OutputImplementations);
         }
     }
 }

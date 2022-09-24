@@ -14,7 +14,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
         private const string C_DEPENDENCYREGISTRATORBUILDER_TYPE = "DependencyRegistratorBuilder";
         private const string C_IDEPENDENCYREGISTRATOR_TYPE = "IDependencyRegistrator";
 
-        internal static void outputStubs(SourceProductionContext context, (string? RootNamespace, string? AssemblyName) provider, RegistrationOptions registrationOptions)
+        internal static void OutputStubs(SourceProductionContext context, (string? RootNamespace, string? AssemblyName) provider, RegistrationOptions registrationOptions)
         {
             if (!checkPreconditions(context, provider, registrationOptions))
                 return;
@@ -26,7 +26,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             outputServiceCollectionExtensionMethods(registrationOptions, mainNamespace);
         }
 
-        internal static void outputImplementations(SourceProductionContext context, (((string? RootNamespace, string? AssemblyName) Options, IEnumerable<INamedTypeSymbol> NamedDependencyRegistratorTypes) GeneralAndDependencies, ImmutableArray<List<ServiceRegistrationInfo>?> ServicesToRegister) provider, RegistrationOptions registrationOptions)
+        internal static void OutputImplementations(SourceProductionContext context, (((string? RootNamespace, string? AssemblyName) Options, IEnumerable<INamedTypeSymbol> NamedDependencyRegistratorTypes) GeneralAndDependencies, ImmutableArray<List<ServiceRegistrationInfo>?> ServicesToRegister) provider, RegistrationOptions registrationOptions)
         {
             if (!checkPreconditions(context, provider.GeneralAndDependencies.Options, registrationOptions))
                 return;
@@ -57,6 +57,33 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             context.ReportDiagnostic(missingAssemblyNameDiagnostic);
 
             return false;
+        }
+
+        private static (string mainCompilationName, string mainNamespace, bool hasRootNamespace, string? rootNamespace, string assemblyNameNamespace) getMainCompilationTarget((string? RootNamespace, string? AssemblyName) provider)
+        {
+            //get the target namespace(s)
+            var rootNamespace = provider.RootNamespace;
+            var hasRootNamespace = !string.IsNullOrWhiteSpace(rootNamespace) && rootNamespace != provider.AssemblyName;
+
+            var assemblyNameNamespace = provider.AssemblyName.ToValidNamespace()!;
+
+            //check if the target project has a rootnamespace defined and if it differs from the assemblyname
+            string mainCompilationName;
+            string mainNamespace;
+            if (hasRootNamespace)
+            {
+                //prepare to output the main registrator class in the rootnamespace
+                mainCompilationName = C_DEPENDENCY_REGISTRATOR_ROOTNAMESPACE_COMPILATIONNAME;
+                mainNamespace = rootNamespace!;
+            }
+            else
+            {
+                //prepare to output the main registrator class in the assemblyname as namespace
+                mainCompilationName = C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME;
+                mainNamespace = assemblyNameNamespace;
+            }
+
+            return (mainCompilationName, mainNamespace, hasRootNamespace, rootNamespace, assemblyNameNamespace);
         }
 
         private static void outputDependencyRegistratorStub(RegistrationOptions registrationOptions, bool hasRootNamespace, string? rootNamespace, string mainNamespace, string mainCompilationName, string assemblyNameNamespace)
@@ -227,33 +254,6 @@ For more control over the details of this process use <see cref=""InitializeDepe
                 cl.Methods.Add(registerServicesExtensionMethod);
             })
             .AddToSourceProductionContext();
-        }
-
-        private static (string mainCompilationName, string mainNamespace, bool hasRootNamespace, string? rootNamespace, string assemblyNameNamespace) getMainCompilationTarget((string? RootNamespace, string? AssemblyName) provider)
-        {
-            //get the target namespace(s)
-            var rootNamespace = provider.RootNamespace;
-            var hasRootNamespace = !string.IsNullOrWhiteSpace(rootNamespace) && rootNamespace != provider.AssemblyName;
-
-            var assemblyNameNamespace = provider.AssemblyName.ToValidNamespace()!;
-
-            //check if the target project has a rootnamespace defined and if it differs from the assemblyname
-            string mainCompilationName;
-            string mainNamespace;
-            if (hasRootNamespace)
-            {
-                //prepare to output the main registrator class in the rootnamespace
-                mainCompilationName = C_DEPENDENCY_REGISTRATOR_ROOTNAMESPACE_COMPILATIONNAME;
-                mainNamespace = rootNamespace!;
-            }
-            else
-            {
-                //prepare to output the main registrator class in the assemblyname as namespace
-                mainCompilationName = C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME;
-                mainNamespace = assemblyNameNamespace;
-            }
-
-            return (mainCompilationName, mainNamespace, hasRootNamespace, rootNamespace, assemblyNameNamespace);
         }
 
         private static void outputDependencyRegistratorImplementation(CancellationToken cancellationToken, RegistrationOptions registrationOptions, string mainNamespace, string mainCompilationName, IEnumerable<INamedTypeSymbol> namedDependencyRegistratorTypes, ImmutableArray<List<ServiceRegistrationInfo>?> servicesToRegister)
