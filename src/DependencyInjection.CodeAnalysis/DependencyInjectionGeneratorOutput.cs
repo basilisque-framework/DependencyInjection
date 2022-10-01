@@ -121,6 +121,9 @@ Although there is technically no reason to not manually interact with this class
                             new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
                         }
                     };
+
+                    performInitializationMethod.InheritXmlDoc = true;
+
                     performInitializationMethod.Body.Append(@"
 doBeforeInitialization(collection);
 
@@ -159,6 +162,9 @@ doAfterInitialization(collection);
                             new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
                         }
                     };
+
+                    performServiceRegistrationMethod.InheritXmlDoc = true;
+
                     performServiceRegistrationMethod.Body.Append(@"
 doBeforeRegistration(services);
 
