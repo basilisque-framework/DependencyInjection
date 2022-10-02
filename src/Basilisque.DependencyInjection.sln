@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.DivergingRootNamespace.Tests", "DependencyInjection.DivergingRootNamespace.Tests\DependencyInjection.DivergingRootNamespace.Tests.csproj", "{2B58E992-F363-46A8-B4AE-3219FE89A582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.TestAssembly", "DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj", "{338835D7-5564-4FAD-A4BF-CE92677B4B63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.TestAssembly", "DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj", "{338835D7-5564-4FAD-A4BF-CE92677B4B63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.TestAssembly.Child1", "DependencyInjection.TestAssembly.Child1\DependencyInjection.TestAssembly.Child1.csproj", "{78FD9281-6DE0-462A-B3FE-9BCD08526839}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.TestAssembly.Child1", "DependencyInjection.TestAssembly.Child1\DependencyInjection.TestAssembly.Child1.csproj", "{78FD9281-6DE0-462A-B3FE-9BCD08526839}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.CodeAnalysis.Tests", "DependencyInjection.CodeAnalysis.Tests\DependencyInjection.CodeAnalysis.Tests.csproj", "{9A583300-F622-4FEC-AF24-170E1522C0B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{78FD9281-6DE0-462A-B3FE-9BCD08526839}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78FD9281-6DE0-462A-B3FE-9BCD08526839}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78FD9281-6DE0-462A-B3FE-9BCD08526839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A583300-F622-4FEC-AF24-170E1522C0B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A583300-F622-4FEC-AF24-170E1522C0B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A583300-F622-4FEC-AF24-170E1522C0B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A583300-F622-4FEC-AF24-170E1522C0B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

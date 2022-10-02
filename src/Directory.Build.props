@@ -8,6 +8,10 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<Basilisque_CodeAnalysis_Package_Version>0.2.12-alpha</Basilisque_CodeAnalysis_Package_Version>
+	</PropertyGroup>
+
 	<!-- global usings -->
 	<ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
 		<Using Include="System" />
