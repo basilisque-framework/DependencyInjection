@@ -329,25 +329,13 @@ For more control over the details of this process use <see cref=""InitializeDepe
                     if (!validateRegistrationInfo(item))
                         continue;
 
-                    foreach (var registeredService in item.RegisteredServices!)
+                    if (item.HasRegisteredServices)
                     {
-                        //switch (item.RegistrationScope)
-                        //{
-                        //    case Registration.Annotations.RegistrationScope.Transient:
-                        //        break;
-                        //    case Registration.Annotations.RegistrationScope.Scoped:
-                        //        break;
-                        //    case Registration.Annotations.RegistrationScope.Singleton:
-                        //        break;
-                        //    default:
-                        //        continue;
-                        //}
-
-                        if (item.ImplementationSymbol == null)
-                            body.Append($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}>();");
-                        else
-                            body.Append($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol.ToDisplayString()}>();");
+                        foreach (var registeredService in item.RegisteredServices!)
+                            body.Append($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol!.ToDisplayString()}>();");
                     }
+                    else
+                        body.Append($"services.Add{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString()}>();");
                 }
             }
         }
@@ -355,9 +343,6 @@ For more control over the details of this process use <see cref=""InitializeDepe
         private static bool validateRegistrationInfo(ServiceRegistrationInfo? registrationInfo)
         {
             if (registrationInfo == null)
-                return false;
-
-            if (!registrationInfo.HasRegisteredServices)
                 return false;
 
             if (registrationInfo.ImplementationSymbol == null)

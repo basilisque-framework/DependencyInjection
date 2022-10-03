@@ -3,16 +3,29 @@
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests
 {
     [TestClass]
-    public class Register_Attribute_1Class_Transient : BaseDependencyInjectionGeneratorTest
+    public class Register_Attribute_1Class_Transient_ITypeName : BaseDependencyInjectionGeneratorTest
     {
         protected override void AddSourcesUnderTest(SourceFileList sources)
         {
             sources.Add(@"
+        namespace Some.Namespace
+        {
+            /// <summary>
+            /// Test interface
+            /// </summary>
+            public interface IMyPublicRegisteredClass
+            {
+            }
+        }
+");
+            sources.Add(@"
+        using Some.Namespace;
+
         /// <summary>
         /// Test class that will be registered as transient by attribute
         /// </summary>
         [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
-        public class MyPublicRegisteredClass
+        public class MyPublicRegisteredClass : IMyPublicRegisteredClass
         {
         }
         ");
@@ -21,7 +34,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
         protected override string? GetRegisteredServicesSource()
         {
             return @"
-            services.AddTransient<MyPublicRegisteredClass>();";
+            services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
         }
     }
 }
