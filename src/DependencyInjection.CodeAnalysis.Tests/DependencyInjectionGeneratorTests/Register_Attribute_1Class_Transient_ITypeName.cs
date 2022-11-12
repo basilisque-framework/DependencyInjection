@@ -16,8 +16,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
             public interface IMyPublicRegisteredClass
             {
             }
-        }
-");
+        }");
             sources.Add(@"
         using Some.Namespace;
 
@@ -27,8 +26,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
         [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
         public class MyPublicRegisteredClass : IMyPublicRegisteredClass
         {
-        }
-        ");
+        }");
         }
 
         protected override string? GetRegisteredServicesSource()

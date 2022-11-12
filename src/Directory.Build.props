@@ -12,6 +12,32 @@
 		<Basilisque_CodeAnalysis_Package_Version>0.2.12-alpha</Basilisque_CodeAnalysis_Package_Version>
 	</PropertyGroup>
 
+	<!-- NuGet package properties and project info -->
+	<PropertyGroup>
+		<Authors>Alexander Stärk</Authors>
+		<VersionPrefix>0.1.0</VersionPrefix>
+		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
+		<NeutralLanguage>en-US</NeutralLanguage>
+
+		<Title>$(AssemblyName)</Title>
+		<Company>$(Authors)</Company>
+		<Product>$(AssemblyName)</Product>
+		<Copyright>Copyright © $([System.DateTime]::Now.ToString(yyyy)) $(Company)</Copyright>
+		<PackageId>$(AssemblyName)</PackageId>
+		<VersionSuffix Condition=" $(TF_BUILD)!='true' ">alpha</VersionSuffix>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<InformationalVersion>$(AssemblyVersion)</InformationalVersion>
+
+		<!--<PackageLicenseUrl></PackageLicenseUrl>-->
+		<!--<PackageRequireLicenseAcceptance></PackageRequireLicenseAcceptance>-->
+		<PackageProjectUrl>https://github.com/basilisque-framework/DependencyInjection</PackageProjectUrl>
+		<PackageTags>DependencyInjection Dependency Injection CSharp</PackageTags>
+		<PackageReleaseNotes>- </PackageReleaseNotes>
+		<!--<PackageIconUrl>http://www.url.de/nuget_icon.png</PackageIconUrl>-->
+
+		<IsPackable Condition="$(Configuration)!='Release'">false</IsPackable>
+	</PropertyGroup>
+
 	<!-- global usings -->
 	<ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
 		<Using Include="System" />
