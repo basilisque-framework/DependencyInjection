@@ -11,6 +11,11 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             var registrationAttributes = nodeSymbol.GetAttributes()
                 .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
 
+            var interfaceRegistrationAttributes = nodeSymbol.AllInterfaces.SelectMany(i => i.GetAttributes())
+                .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
+
+            registrationAttributes = registrationAttributes.Union(interfaceRegistrationAttributes);
+
             if (!registrationAttributes.Any())
                 yield break;
 
