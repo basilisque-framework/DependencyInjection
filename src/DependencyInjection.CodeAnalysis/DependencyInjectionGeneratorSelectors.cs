@@ -23,6 +23,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             "WindowsBase"
         };
 
+        private static char[] _dependencyInjectionExtensionsSeparators = new char[] { ';', ',' };
+
         internal static string? RootNamespaceSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
         {
             if (provider.GlobalOptions.TryGetValue("build_property.RootNamespace", out string? rootNamespace))
@@ -35,6 +37,19 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
                 //#endif
 
                 return rootNamespace;
+            }
+            else
+                return null;
+        }
+
+        internal static IEnumerable<string>? DependencyInjectionExtensionsSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
+        {
+            if (provider.GlobalOptions.TryGetValue("build_property.BAS_DI_Extensions", out string? dependencyInjectionExtensions)
+                && !string.IsNullOrWhiteSpace(dependencyInjectionExtensions))
+            {
+                var extensions = dependencyInjectionExtensions.Split(_dependencyInjectionExtensionsSeparators, System.StringSplitOptions.RemoveEmptyEntries);
+
+                return extensions;
             }
             else
                 return null;

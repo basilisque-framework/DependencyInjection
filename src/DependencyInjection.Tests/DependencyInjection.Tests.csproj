@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-	  <CompilerVisibleProperty Include="LangVersion" />
-	  <ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj" />
-	  <PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="$(Basilisque_CodeAnalysis_Package_Version)" />
-	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<CompilerVisibleProperty Include="LangVersion" />
+		<CompilerVisibleProperty Include="BAS_DI_Extensions" />
+		<ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj" />
+		<PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="$(Basilisque_CodeAnalysis_Package_Version)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+	</ItemGroup>
+	<PropertyGroup>
+		<BAS_DI_Extensions>$(BAS_DI_Extensions),MyTestExtension1</BAS_DI_Extensions>
+	</PropertyGroup>
 </Project>

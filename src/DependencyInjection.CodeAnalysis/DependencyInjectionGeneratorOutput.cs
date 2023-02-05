@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 
 namespace Basilisque.DependencyInjection.CodeAnalysis
@@ -14,15 +15,15 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
         private const string C_DEPENDENCYREGISTRATORBUILDER_TYPE = "DependencyRegistratorBuilder";
         private const string C_IDEPENDENCYREGISTRATOR_TYPE = "IDependencyRegistrator";
 
-        internal static void OutputStubs(SourceProductionContext context, (string? RootNamespace, string? AssemblyName) provider, RegistrationOptions registrationOptions)
+        internal static void OutputStubs(SourceProductionContext context, ((string? RootNamespace, string? AssemblyName) General, IEnumerable<string>? Extensions) provider, RegistrationOptions registrationOptions)
         {
-            if (!checkPreconditions(context, provider, registrationOptions))
+            if (!checkPreconditions(context, provider.General, registrationOptions))
                 return;
 
-            (string mainCompilationName, string mainNamespace, bool hasRootNamespace, string? rootNamespace, string assemblyNameNamespace) = getMainCompilationTarget(provider);
+            (string mainCompilationName, string mainNamespace, bool hasRootNamespace, string? rootNamespace, string assemblyNameNamespace) = getMainCompilationTarget(provider.General);
 
             //output the source
-            outputDependencyRegistratorStub(registrationOptions, hasRootNamespace, rootNamespace, mainNamespace, mainCompilationName, assemblyNameNamespace);
+            outputDependencyRegistratorStub(registrationOptions, hasRootNamespace, rootNamespace, mainNamespace, mainCompilationName, assemblyNameNamespace, provider.Extensions);
             outputServiceCollectionExtensionMethods(registrationOptions, mainNamespace);
         }
 
@@ -86,9 +87,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             return (mainCompilationName, mainNamespace, hasRootNamespace, rootNamespace, assemblyNameNamespace);
         }
 
-        private static void outputDependencyRegistratorStub(RegistrationOptions registrationOptions, bool hasRootNamespace, string? rootNamespace, string mainNamespace, string mainCompilationName, string assemblyNameNamespace)
+        private static void outputDependencyRegistratorStub(RegistrationOptions registrationOptions, bool hasRootNamespace, string? rootNamespace, string mainNamespace, string mainCompilationName, string assemblyNameNamespace, IEnumerable<string>? dependencyInjectionExtensions)
         {
-
             if (hasRootNamespace)
             {
                 //output a helper class in the assemblyname as namespace to make it easier to find in completely compiled assemblies
@@ -110,6 +110,8 @@ Although there is technically no reason to not manually interact with this class
             var compInfo = registrationOptions.CreateCompilationInfo(mainCompilationName, mainNamespace)
                 .AddNewClassInfo(DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
                 {
+                    var hasExtensions = dependencyInjectionExtensions?.Any() == true;
+
                     cl.IsPartial = true;
                     cl.BaseClass = "BaseDependencyRegistrator";
                     cl.XmlDocSummary = C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION;
@@ -128,9 +130,21 @@ Although there is technically no reason to not manually interact with this class
 doBeforeInitialization(collection);
 
 initializeDependenciesGenerated(collection);
+");
+
+                    if (hasExtensions)
+                    {
+                        performInitializationMethod.Body.Append(@"
+
+initializeDependenciesOfExtensions(collection);
+");
+                    }
+
+                    performInitializationMethod.Body.Append(@"
 
 doAfterInitialization(collection);
 ");
+
                     cl.Methods.Add(performInitializationMethod);
 
                     cl.Methods.Add(new MethodInfo(true, "doBeforeInitialization")
@@ -154,6 +168,9 @@ doAfterInitialization(collection);
                         }
                     });
 
+                    if (hasExtensions)
+                        outputExtensions(cl, "initialize", "Dependencies", "DependencyCollection", "collection", dependencyInjectionExtensions);
+
 
                     var performServiceRegistrationMethod = new MethodInfo(AccessModifier.Protected, "void", "PerformServiceRegistration")
                     {
@@ -169,6 +186,16 @@ doAfterInitialization(collection);
 doBeforeRegistration(services);
 
 registerServicesGenerated(services);
+");
+                    if (hasExtensions)
+                    {
+                        performServiceRegistrationMethod.Body.Append(@"
+
+registerServicesOfExtensions(services);
+");
+                    }
+
+                    performServiceRegistrationMethod.Body.Append(@"
 
 doAfterRegistration(services);
 ");
@@ -194,6 +221,9 @@ doAfterRegistration(services);
                             new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
                         }
                     });
+
+                    if (hasExtensions)
+                        outputExtensions(cl, "register", "Services", "IServiceCollection", "services", dependencyInjectionExtensions);
                 });
 
             compInfo.Usings.Add("Basilisque.DependencyInjection.Registration");
@@ -355,6 +385,36 @@ For more control over the details of this process use <see cref=""InitializeDepe
                 return false;
 
             return true;
+        }
+
+        private static void outputExtensions(ClassInfo cl, string prefix, string type, string paramType, string paramName, IEnumerable<string>? dependencyInjectionExtensions)
+        {
+            var extensionsMethod = new MethodInfo(false, $"{prefix}{type}OfExtensions")
+            {
+                Parameters = {
+                    new ParameterInfo(ParameterKind.Ordinary, paramType, paramName)
+                }
+            };
+
+            cl.Methods.Add(extensionsMethod);
+
+            string? extNewLine = null;
+            foreach (var extension in dependencyInjectionExtensions!)
+            {
+                extensionsMethod.Body.Append($@"{extNewLine}
+{prefix}Extension_{extension}({paramName});
+");
+
+                if (extNewLine is null)
+                    extNewLine = System.Environment.NewLine;
+
+                cl.Methods.Add(new MethodInfo(true, $"{prefix}Extension_{extension}")
+                {
+                    Parameters = {
+                        new ParameterInfo(ParameterKind.Ordinary, paramType, paramName)
+                    }
+                });
+            }
         }
     }
 }
