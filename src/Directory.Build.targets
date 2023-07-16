@@ -1,6 +1,2 @@
 <Project>
-	<!-- general build properties -->
-	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
 </Project>

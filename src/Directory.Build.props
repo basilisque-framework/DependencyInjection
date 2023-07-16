@@ -2,65 +2,44 @@
 	<!-- general build properties -->
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-		<RootNamespace>Basilisque.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<AssemblyName>Basilisque.$(MSBuildProjectName)</AssemblyName>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>disable</ImplicitUsings>
+		
+		<Basilisque_CodeAnalysis_Package_Version>1.0.0-alpha</Basilisque_CodeAnalysis_Package_Version>
 	</PropertyGroup>
 
-	<PropertyGroup>
-		<Basilisque_CodeAnalysis_Package_Version>0.2.12-alpha</Basilisque_CodeAnalysis_Package_Version>
-	</PropertyGroup>
+	<!-- import common build properties from NuGet -->
+	<ItemGroup>
+		<PackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC10" />
+	</ItemGroup>
 
-	<!-- NuGet package properties and project info -->
+	<!-- Versioning -->
 	<PropertyGroup>
-		<Authors>Alexander Stärk</Authors>
-		<VersionPrefix>0.1.0</VersionPrefix>
+		<VersionPrefix>0.2.1</VersionPrefix>
 		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
-		<NeutralLanguage>en-US</NeutralLanguage>
-
-		<Title>$(AssemblyName)</Title>
-		<Company>$(Authors)</Company>
-		<Product>$(AssemblyName)</Product>
-		<Copyright>Copyright © $([System.DateTime]::Now.ToString(yyyy)) $(Company)</Copyright>
-		<PackageId>$(AssemblyName)</PackageId>
 		<VersionSuffix Condition=" $(TF_BUILD)!='true' ">alpha</VersionSuffix>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<InformationalVersion>$(AssemblyVersion)</InformationalVersion>
-
-		<!--<PackageLicenseUrl></PackageLicenseUrl>-->
-		<!--<PackageRequireLicenseAcceptance></PackageRequireLicenseAcceptance>-->
+	</PropertyGroup>
+	
+	<!-- NuGet package properties and project info -->
+	<PropertyGroup>
+		<BAS_CB_Copyright_BeginYear>2022</BAS_CB_Copyright_BeginYear>
 		<PackageProjectUrl>https://github.com/basilisque-framework/DependencyInjection</PackageProjectUrl>
 		<PackageTags>DependencyInjection Dependency Injection CSharp</PackageTags>
 		<PackageReleaseNotes>- </PackageReleaseNotes>
 		<!--<PackageIconUrl>http://www.url.de/nuget_icon.png</PackageIconUrl>-->
-
-		<IsPackable Condition="$(Configuration)!='Release'">false</IsPackable>
 	</PropertyGroup>
-
-	<!-- global usings -->
-	<ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
-		<Using Include="System" />
-		<Using Include="System.Collections.Generic" />
-		<Using Include="System.Linq" />
-		<Using Include="System.Threading.Tasks" />
+	
+	<ItemGroup>
+		<!-- Pack the build props/targets in the build directory -->
+		<None Include="$(SolutionDir)\$(AssemblyName).props" Pack="true" PackagePath="build" Condition="Exists('$(SolutionDir)\$(AssemblyName).props')" />
+		<None Include="$(SolutionDir)\$(AssemblyName).targets" Pack="true" PackagePath="build" Condition="Exists('$(SolutionDir)\$(AssemblyName).targets')" />
 	</ItemGroup>
-
-
-	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
-		<TargetFramework>net6.0</TargetFramework>
-		<Nullable>enable</Nullable>
-
-		<IsPackable>false</IsPackable>
-	</PropertyGroup>
-
+	
 	<ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
 		<PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
 		<PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
 		<PackageReference Include="coverlet.collector" Version="3.1.0" />
-		
-		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests')) OR $(MSBuildProjectName.Contains('.TestAssembly'))">

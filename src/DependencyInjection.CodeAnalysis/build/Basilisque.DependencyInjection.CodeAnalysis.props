@@ -1,0 +1,5 @@
+<Project>
+	<ItemGroup>
+		<CompilerVisibleProperty Include="BAS_DI_Extensions" />
+	</ItemGroup>
+</Project>

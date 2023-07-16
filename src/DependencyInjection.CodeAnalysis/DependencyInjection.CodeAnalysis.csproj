@@ -1,9 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	
+﻿<!--
+   Copyright 2023 Alexander Stärk
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-
-		<IncludeBuildOutput>false</IncludeBuildOutput> <!-- Do not include the generator as a lib dependency -->
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,27 +27,12 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<!-- Generator dependencies -->
 		<PackageReference Include="Basilisque.CodeAnalysis" Version="$(Basilisque_CodeAnalysis_Package_Version)" PrivateAssets="all" GeneratePathProperty="true" />
-		
-		<!-- Package the generator in the analyzer directory of the nuget package -->
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-
-		<!-- Package the Basilisque.CodeAnalysis dependency alongside the generator assembly -->
-		<None Include="$(PkgBasilisque_CodeAnalysis)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="RegistrationScope.cs" />
+		<Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="RegistrationScope.cs" />
+
+		<None Include="build/**" Pack="true" PackagePath="build"/>
 	</ItemGroup>
-
-	<PropertyGroup>
-		<GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
-	</PropertyGroup>
-
-	<Target Name="GetDependencyTargetPaths">
-		<ItemGroup>
-			<TargetPathWithTargetPlatformMoniker Include="$(PkgBasilisque_CodeAnalysis)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-		</ItemGroup>
-	</Target>
 </Project>
