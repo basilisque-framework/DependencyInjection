@@ -23,24 +23,16 @@
 
 	<!-- import common build properties from NuGet -->
 	<ItemGroup>
-		<PackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC10" />
+		<PackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC10">
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 	</ItemGroup>
-
-	<!-- Versioning -->
-	<PropertyGroup>
-		<VersionPrefix>0.2.1</VersionPrefix>
-		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
-		<VersionSuffix Condition=" $(TF_BUILD)!='true' ">alpha</VersionSuffix>
-		<FileVersion>$(AssemblyVersion)</FileVersion>
-		<InformationalVersion>$(AssemblyVersion)</InformationalVersion>
-	</PropertyGroup>
 	
 	<!-- NuGet package properties and project info -->
 	<PropertyGroup>
 		<BAS_CB_Copyright_BeginYear>2022</BAS_CB_Copyright_BeginYear>
 		<PackageProjectUrl>https://github.com/basilisque-framework/DependencyInjection</PackageProjectUrl>
 		<PackageTags>DependencyInjection Dependency Injection CSharp</PackageTags>
-		<PackageReleaseNotes>- </PackageReleaseNotes>
 		<!--<PackageIconUrl>http://www.url.de/nuget_icon.png</PackageIconUrl>-->
 	</PropertyGroup>
 	
