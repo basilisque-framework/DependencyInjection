@@ -18,6 +18,9 @@ using Basilisque.DependencyInjection.Registration.Annotations;
 
 namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects
 {
+    /// <summary>
+    /// All implementors of this interface should be getting registered as singleton
+    /// </summary>
     [RegisterServiceSingleton()]
     public interface IImplementsInterfaceDirectlySingleton
     {

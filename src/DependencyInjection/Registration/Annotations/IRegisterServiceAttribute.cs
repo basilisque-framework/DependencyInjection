@@ -16,6 +16,10 @@
 
 namespace Basilisque.DependencyInjection.Registration.Annotations
 {
+    /// <summary>
+    /// Base interface for marker attributes for dependency registration
+    /// (All attribtues implementing this interface will be considered by the Basilisque.DependencyInjection.CodeAnalysis source generator)
+    /// </summary>
     public interface IRegisterServiceAttribute
     {
     }

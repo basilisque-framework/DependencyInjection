@@ -16,6 +16,9 @@
 
 namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects
 {
+    /// <summary>
+    /// Interface 1 for testing registration as multiple interfaces
+    /// </summary>
     public interface IMultipleRegistration
     {
     }

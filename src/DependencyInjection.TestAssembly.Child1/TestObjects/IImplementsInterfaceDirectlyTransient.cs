@@ -18,6 +18,9 @@ using Basilisque.DependencyInjection.Registration.Annotations;
 
 namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects
 {
+    /// <summary>
+    /// All implementors of this interface should be getting registered transient
+    /// </summary>
     [RegisterServiceTransient(As = typeof(IImplementsInterfaceDirectlyTransient), ImplementsITypeName = false)]
     public interface IImplementsInterfaceDirectlyTransient
     {

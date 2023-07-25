@@ -19,6 +19,9 @@ using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
 namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
 {
+    /// <summary>
+    /// Class for testing multiple registrations
+    /// </summary>
     [RegisterServiceScoped(ImplementsITypeName = false)]
     [RegisterServiceSingleton(As = typeof(IMultipleRegistration), ImplementsITypeName = false)]
     [RegisterServiceTransient]

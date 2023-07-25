@@ -18,10 +18,16 @@ using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
 namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
 {
+    /// <summary>
+    /// Interface for testing the registration when the implementing class has the same name without the leading I
+    /// </summary>
     public interface IImplementsITypeName2 : IImplementsITypeNameBase
     {
     }
 
+    /// <summary>
+    /// Class for testing the registration when the implemented interface has the same name with a leading I
+    /// </summary>
     public class ImplementsITypeName2 : IImplementsITypeName2
     {
     }

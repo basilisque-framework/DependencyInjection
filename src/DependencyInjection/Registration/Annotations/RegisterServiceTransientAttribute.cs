@@ -16,10 +16,16 @@
 
 namespace Basilisque.DependencyInjection.Registration.Annotations
 {
+    /// <summary>
+    /// Attribute for registering the target class/interface at the dependency container with <see cref="RegistrationScope.Transient"/>
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
     [RegisterService(RegistrationScope.Transient)]
     public class RegisterServiceTransientAttribute : RegisterServiceAttribute
     {
+        /// <summary>
+        /// Creates a new <see cref="RegisterServiceTransientAttribute"/>
+        /// </summary>
         public RegisterServiceTransientAttribute()
             : base(RegistrationScope.Transient)
         { }

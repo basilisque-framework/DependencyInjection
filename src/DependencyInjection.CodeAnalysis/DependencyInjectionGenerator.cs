@@ -18,9 +18,13 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.DependencyInjection.CodeAnalysis
 {
+    /// <summary>
+    /// A source generator that generates code to register classes at the dependency container
+    /// </summary>
     [Generator]
     public class DependencyInjectionGenerator : IIncrementalGenerator
     {
+        ///<inheritdoc />
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             //get providers

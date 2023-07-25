@@ -19,6 +19,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Basilisque.DependencyInjection
 {
+    /// <summary>
+    /// Provides extension to the <see cref="IServiceCollection"/> interface
+    /// </summary>
     public static class IServiceCollectionExtensions
     {
         /// <summary>

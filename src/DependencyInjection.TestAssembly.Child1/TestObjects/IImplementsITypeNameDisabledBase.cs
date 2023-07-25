@@ -18,6 +18,9 @@ using Basilisque.DependencyInjection.Registration.Annotations;
 
 namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects
 {
+    /// <summary>
+    /// Base interface for testing inheritance with 'ImplementsITypeName' disabled
+    /// </summary>
     [RegisterServiceSingleton(As = typeof(IImplementsITypeNameDisabledBase), ImplementsITypeName = false)]
     public interface IImplementsITypeNameDisabledBase
     {

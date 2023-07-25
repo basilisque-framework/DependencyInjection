@@ -16,10 +16,16 @@
 
 namespace Basilisque.DependencyInjection.Registration.Annotations
 {
+    /// <summary>
+    /// Attribute for registering the target class/interface at the dependency container with <see cref="RegistrationScope.Singleton"/>
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
     [RegisterService(RegistrationScope.Singleton)]
     public class RegisterServiceSingletonAttribute : RegisterServiceAttribute
     {
+        /// <summary>
+        /// Creates a new <see cref="RegisterServiceSingletonAttribute"/>
+        /// </summary>
         public RegisterServiceSingletonAttribute()
             : base(RegistrationScope.Singleton)
         { }

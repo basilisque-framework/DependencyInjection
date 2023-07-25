@@ -18,6 +18,9 @@ using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
 namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
 {
+    /// <summary>
+    /// The implemented interface should register this class as transient
+    /// </summary>
     public class ImplementsInterfaceDirectlyTransient : IImplementsInterfaceDirectlyTransient
     {
     }

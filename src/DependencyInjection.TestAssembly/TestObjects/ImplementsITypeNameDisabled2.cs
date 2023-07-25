@@ -18,10 +18,16 @@ using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
 namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
 {
+    /// <summary>
+    /// Interface for testing inheritance with 'ImplementsITypeName' disabled
+    /// </summary>
     public interface IImplementsITypeNameDisabled2 : IImplementsITypeNameDisabledBase
     {
     }
 
+    /// <summary>
+    /// Implementation for testing inheritance with 'ImplementsITypeName' disabled
+    /// </summary>
     public class ImplementsITypeNameDisabled2 : IImplementsITypeNameDisabled2
     {
     }

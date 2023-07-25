@@ -16,12 +16,31 @@
 
 namespace Basilisque.DependencyInjection.Registration.Annotations
 {
+    /// <summary>
+    /// Attribute for registering the target class/interface at the dependency container
+    /// </summary>
     public class RegisterServiceAttribute : Attribute, IRegisterServiceAttribute
     {
+        /// <summary>
+        /// The scope of the registration
+        /// </summary>
         public RegistrationScope Scope { get; protected set; }
+
+        /// <summary>
+        /// The type as that the attributed class/interface will be registered
+        /// </summary>
         public Type? As { get; set; } = null;
+
+        /// <summary>
+        /// Enables or disables the 'ImplementsITypeName'-check
+        /// (When enabled, the attributed class gets registered as the implemented interface with the same name with a leading I)
+        /// </summary>
         public bool ImplementsITypeName { get; set; } = true;
 
+        /// <summary>
+        /// Creates a new <see cref="RegisterServiceAttribute"/>
+        /// </summary>
+        /// <param name="scope">The scope of the registration</param>
         public RegisterServiceAttribute(RegistrationScope scope)
         {
             Scope = scope;
