@@ -20,10 +20,14 @@ using System.Text;
 
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests
 {
-    public abstract class BaseDependencyInjectionGeneratorTest
+    public abstract class BaseDependencyInjectionGeneratorTest : BaseDependencyInjectionGeneratorTest<IncrementalSourceGeneratorVerifier<DependencyInjectionGenerator>>
+    { }
+
+    public abstract class BaseDependencyInjectionGeneratorTest<TGenerator>
+        where TGenerator : IncrementalSourceGeneratorVerifier<DependencyInjectionGenerator>, new()
     {
         [TestMethod]
-        public async Task Test()
+        public virtual async Task Test()
         {
             var verifier = GetVerifier();
 
@@ -43,21 +47,12 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
                 .WithPackages(System.Collections.Immutable.ImmutableArray.Create(new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.AspNetCore.App.Ref", "6.0.0")));
 
             //create verifier
-            var verifier = new IncrementalSourceGeneratorVerifier<DependencyInjectionGenerator>
+            var verifier = new TGenerator
             {
-                ReferenceAssemblies = refAssemblies,
-                //GlobalOptions =
-                //{
-                //    { "build_property.RootNamespace", "DI.Tests.RNS" }
-                //},
-                //DiagnosticOptions =
-                //{
-                //    { "CS1591", Microsoft.CodeAnalysis.ReportDiagnostic.Suppress }
-                //},
+                ReferenceAssemblies = refAssemblies
                 //TestState =
                 //{
-                //    //AnalyzerConfigFiles = { },
-                //    Sources = { code }
+                //    //AnalyzerConfigFiles = { }
                 //}
             };
 
@@ -70,13 +65,16 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
             foreach (var diagOp in GetDiagnosticOptions())
                 verifier.DiagnosticOptions.Add(diagOp.key, diagOp.value);
 
+            foreach (var expDiag in GetExpectedDiagnostics())
+                verifier.ExpectedDiagnostics.Add(expDiag);
+
             //add the sources
             AddSourcesUnderTest(verifier.TestState.Sources);
 
             //add a reference to the dependency injection library
             verifier.TestState.AdditionalReferences.Add(Microsoft.CodeAnalysis.MetadataReference.CreateFromFile(typeof(Registration.IDependencyRegistrator).Assembly.Location));
 
-            return verifier;
+            return (IncrementalSourceGeneratorVerifier<DependencyInjectionGenerator>)verifier;
         }
 
         protected virtual string? GetRootNamespace()
@@ -89,6 +87,14 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
             //we can return diagnostic options like this:
             //yield return ("CS1591", Microsoft.CodeAnalysis.ReportDiagnostic.Suppress);
             //yield return ("CS159?", Microsoft.CodeAnalysis.ReportDiagnostic.???);
+
+            yield break;
+        }
+
+        protected virtual IEnumerable<Microsoft.CodeAnalysis.Testing.DiagnosticResult> GetExpectedDiagnostics()
+        {
+            //we can return expected diagnostics like this:
+            //yield return new Microsoft.CodeAnalysis.Testing.DiagnosticResult("CS1591", Microsoft.CodeAnalysis.DiagnosticSeverity.Error);
 
             yield break;
         }
