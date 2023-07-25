@@ -18,7 +18,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		
-		<Basilisque_CodeAnalysis_Package_Version>1.0.0-alpha</Basilisque_CodeAnalysis_Package_Version>
+		<Basilisque_CodeAnalysis_Package_Version>1.0.0-RC13</Basilisque_CodeAnalysis_Package_Version>
 	</PropertyGroup>
 
 	<!-- import common build properties from NuGet -->

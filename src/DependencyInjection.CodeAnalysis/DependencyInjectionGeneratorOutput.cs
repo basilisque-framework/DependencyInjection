@@ -139,7 +139,7 @@ Although there is technically no reason to not manually interact with this class
 
                     performInitializationMethod.InheritXmlDoc = true;
 
-                    performInitializationMethod.Body.Append(@"
+                    performInitializationMethod.Body.Add(@"
 doBeforeInitialization(collection);
 
 initializeDependenciesGenerated(collection);
@@ -147,13 +147,13 @@ initializeDependenciesGenerated(collection);
 
                     if (hasExtensions)
                     {
-                        performInitializationMethod.Body.Append(@"
+                        performInitializationMethod.Body.Add(@"
 
 initializeDependenciesOfExtensions(collection);
 ");
                     }
 
-                    performInitializationMethod.Body.Append(@"
+                    performInitializationMethod.Body.Add(@"
 
 doAfterInitialization(collection);
 ");
@@ -195,20 +195,20 @@ doAfterInitialization(collection);
 
                     performServiceRegistrationMethod.InheritXmlDoc = true;
 
-                    performServiceRegistrationMethod.Body.Append(@"
+                    performServiceRegistrationMethod.Body.Add(@"
 doBeforeRegistration(services);
 
 registerServicesGenerated(services);
 ");
                     if (hasExtensions)
                     {
-                        performServiceRegistrationMethod.Body.Append(@"
+                        performServiceRegistrationMethod.Body.Add(@"
 
 registerServicesOfExtensions(services);
 ");
                     }
 
-                    performServiceRegistrationMethod.Body.Append(@"
+                    performServiceRegistrationMethod.Body.Add(@"
 
 doAfterRegistration(services);
 ");
@@ -279,7 +279,7 @@ Calling this method creates a <see cref=""{dependencyRegistratorBuilderNameWithG
                             new ParameterInfo(ParameterKind.Ordinary, C_ISERVICECOLLECTION_TYPE, "services")
                     }
                 };
-                initializeDependenciesExtensionMethod.Body.Append($@"return Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services);");
+                initializeDependenciesExtensionMethod.Body.Add($@"return Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services);");
                 cl.Methods.Add(initializeDependenciesExtensionMethod);
 
 
@@ -299,7 +299,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
                             new ParameterInfo(ParameterKind.Ordinary, C_ISERVICECOLLECTION_TYPE, "services")
                     }
                 };
-                registerServicesExtensionMethod.Body.Append($@"Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services).RegisterServices();");
+                registerServicesExtensionMethod.Body.Add($@"Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{dependencyRegistratorFullQualifiedName}>(services).RegisterServices();");
                 cl.Methods.Add(registerServicesExtensionMethod);
             })
             .AddToSourceProductionContext();
@@ -322,7 +322,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
                             new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
                         }
                 };
-                initializeDependenciesGeneratedMethod.Body.Append(@"/* initialize dependencies - generated from assembly dependencies */");
+                initializeDependenciesGeneratedMethod.Body.Add(@"/* initialize dependencies - generated from assembly dependencies */");
                 addDependenciesToBody(cancellationToken, initializeDependenciesGeneratedMethod.Body, namedDependencyRegistratorTypes);
                 cl.Methods.Add(initializeDependenciesGeneratedMethod);
 
@@ -332,7 +332,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
                             new ParameterInfo(ParameterKind.Ordinary, "Microsoft.Extensions.DependencyInjection.IServiceCollection", "services")
                         }
                 };
-                registerServicesGeneratedMethod.Body.Append(@"/* register services - generated from the current project */");
+                registerServicesGeneratedMethod.Body.Add(@"/* register services - generated from the current project */");
                 addServicesToBody(cancellationToken, registerServicesGeneratedMethod.Body, servicesToRegister);
                 cl.Methods.Add(registerServicesGeneratedMethod);
             })
@@ -354,7 +354,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
                 else
                     registratorTypeName = $"{namedDependencyRegistratorType.ContainingNamespace}.{namedDependencyRegistratorType.Name}";
 
-                body.Append($"collection.AddDependency<{registratorTypeName}>();");
+                body.Add($"collection.AddDependency<{registratorTypeName}>();");
             }
         }
 
@@ -375,10 +375,10 @@ For more control over the details of this process use <see cref=""InitializeDepe
                     if (item.HasRegisteredServices)
                     {
                         foreach (var registeredService in item.RegisteredServices!)
-                            body.Append($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol!.ToDisplayString()}>();");
+                            body.Add($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol!.ToDisplayString()}>();");
                     }
                     else
-                        body.Append($"services.Add{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString()}>();");
+                        body.Add($"services.Add{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString()}>();");
                 }
             }
         }
@@ -414,7 +414,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
             string? extNewLine = null;
             foreach (var extension in dependencyInjectionExtensions!)
             {
-                extensionsMethod.Body.Append($@"{extNewLine}
+                extensionsMethod.Body.Add($@"{extNewLine}
 {prefix}Extension_{extension}({paramName});
 ");
 
