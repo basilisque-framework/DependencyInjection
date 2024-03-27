@@ -34,6 +34,7 @@
 		<PackageProjectUrl>https://github.com/basilisque-framework/DependencyInjection</PackageProjectUrl>
 		<PackageTags>DependencyInjection Dependency Injection CSharp</PackageTags>
 		<!--<PackageIconUrl>http://www.url.de/nuget_icon.png</PackageIconUrl>-->
+		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 	</PropertyGroup>
 	
 	<ItemGroup>

@@ -34,5 +34,8 @@
 		<Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="RegistrationScope.cs" />
 
 		<None Include="build/**" Pack="true" PackagePath="build" />
+
+		<!-- Pack README -->
+		<None Include="README.md" Pack="true" PackagePath="docs"/>
 	</ItemGroup>
 </Project>
