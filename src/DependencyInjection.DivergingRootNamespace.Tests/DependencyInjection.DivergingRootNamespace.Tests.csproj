@@ -1,5 +1,5 @@
 <!--
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,5 +16,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Basilisque.DependencyInjection.Tests</RootNamespace>
+		<IsPublishable>false</IsPublishable>
+		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 </Project>
