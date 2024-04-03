@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 */
 
 using Basilisque.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Immutable;
 using System.Threading;
 
@@ -418,8 +419,21 @@ For more control over the details of this process use <see cref=""InitializeDepe
 {prefix}Extension_{extension}({paramName});
 ");
 
+
+                /*
+                 var syntaxTree = ... // syntaxTree you want to know the newline settings for
+var options = context.AnalyzerConfigOptions.GetOptions(syntaxTree);
+if (options.TryGetValue("end_of_line", out var newline))
+{
+    // do something with newline
+} 
+                 */
+                /*
+                 var workspace = ... // get a reference to a workspace
+var newline = workspace.GetOption(new OptionKey(FormattingOptions.NewLine, LanguageNames.CSharp));
+                 */
                 if (extNewLine is null)
-                    extNewLine = System.Environment.NewLine;
+                    extNewLine = SyntaxFactory.ElasticCarriageReturnLineFeed.ToString();
 
                 cl.Methods.Add(new MethodInfo(true, $"{prefix}Extension_{extension}")
                 {

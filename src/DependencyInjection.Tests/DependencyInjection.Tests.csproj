@@ -1,5 +1,5 @@
 ﻿<!--
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 	<ItemGroup>
 		<CompilerVisibleProperty Include="LangVersion" />
 		<CompilerVisibleProperty Include="BAS_DI_Extensions" />
-		<ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj" />
-		<PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="$(Basilisque_CodeAnalysis_Package_Version)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+		<ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj">
+			<SetTargetFramework Condition="'$(TargetFramework)'=='net462'">TargetFramework=netstandard2.0</SetTargetFramework>
+		</ProjectReference>
+		<PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 	</ItemGroup>
 	<PropertyGroup>
 		<BAS_DI_Extensions>$(BAS_DI_Extensions),MyTestExtension1</BAS_DI_Extensions>

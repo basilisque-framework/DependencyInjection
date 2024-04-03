@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
 */
 
 using Basilisque.CodeAnalysis.TestSupport.MSTest.SourceGenerators.UnitTests.Verifiers;
+using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Text;
+using System.Collections.Immutable;
+using System.IO;
 using System.Text;
 
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests
@@ -43,8 +46,46 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
         protected virtual IncrementalSourceGeneratorVerifier<DependencyInjectionGenerator> GetVerifier()
         {
             //define reference assemblies
+#if NET462
+            //the tests compiled for NET462 actually test the NETSTANDARD2_0 assemblies
+            var refAssemblies = new Microsoft.CodeAnalysis.Testing.ReferenceAssemblies(
+                "netstandard2.0",
+                new Microsoft.CodeAnalysis.Testing.PackageIdentity(
+                    "NETStandard.Library",
+                    "2.0.3"),
+                @"build\netstandard2.0\ref")
+                .AddAssemblies(ImmutableArray.Create("netstandard"))
+                .WithPackages(System.Collections.Immutable.ImmutableArray.Create(new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.Extensions.DependencyInjection", "6.0.0")));
+#elif NETSTANDARD2_1
+            var refAssemblies = new Microsoft.CodeAnalysis.Testing.ReferenceAssemblies(
+                "netstandard2.1",
+                new Microsoft.CodeAnalysis.Testing.PackageIdentity(
+                    "NETStandard.Library",
+                    "2.0.3"),
+                @"build\netstandard2.1\ref")
+                .AddAssemblies(ImmutableArray.Create("netstandard"));
+#elif NET6_0
             var refAssemblies = Microsoft.CodeAnalysis.Testing.ReferenceAssemblies.Net.Net60
                 .WithPackages(System.Collections.Immutable.ImmutableArray.Create(new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.AspNetCore.App.Ref", "6.0.0")));
+#elif NET7_0
+            var refAssemblies = new ReferenceAssemblies(
+                        "net7.0",
+                        new PackageIdentity(
+                            "Microsoft.NETCore.App.Ref",
+                            "7.0.0"),
+                        Path.Combine("ref", "net7.0"))
+                .WithPackages(ImmutableArray.Create(new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.AspNetCore.App.Ref", "7.0.0")));
+#elif NET8_0
+            var refAssemblies = new ReferenceAssemblies(
+                        "net8.0",
+                        new PackageIdentity(
+                            "Microsoft.NETCore.App.Ref",
+                            "8.0.0"),
+                        Path.Combine("ref", "net8.0"))
+                .WithPackages([new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.AspNetCore.App.Ref", "8.0.0")]);
+#else
+            throw new PlatformNotSupportedException("Please define reference assemblies for your platform!");
+#endif
 
             //create verifier
             var verifier = new TGenerator
@@ -59,7 +100,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
             //set the root namespace
             var rns = GetRootNamespace();
             if (!string.IsNullOrWhiteSpace(rns))
-                verifier.GlobalOptions.Add("build_property.RootNamespace", rns);
+                verifier.GlobalOptions.Add("build_property.RootNamespace", rns!);
 
             //set the diagnostic options
             foreach (var diagOp in GetDiagnosticOptions())

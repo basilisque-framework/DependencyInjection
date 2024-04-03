@@ -1,5 +1,5 @@
 ﻿<!--
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,7 +16,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
 		<CompilerVisibleProperty Include="LangVersion" />
-		<ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj" />
-		<PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="$(Basilisque_CodeAnalysis_Package_Version)" />
+		<ProjectReference Include="..\DependencyInjection.CodeAnalysis\DependencyInjection.CodeAnalysis.csproj">
+			<SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+		</ProjectReference>
+		<ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj">
+			<SetTargetFramework Condition="'$(TargetFramework)'=='net462'">TargetFramework=netstandard2.0</SetTargetFramework>
+		</ProjectReference>
+		
+		<PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" />
 	</ItemGroup>
 </Project>
