@@ -33,4 +33,5 @@ jobs:
     uses: basilisque-framework/CommonBuild/.github/workflows/Common-Build.yml@release/v1.0
     with:
       basBuildType: 'CI'
+      publishTargetFramework: 'netstandard2.0'
     secrets: inherit
