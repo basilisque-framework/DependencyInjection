@@ -20,8 +20,8 @@
 	
 	<!-- define NuGet package versions -->
 	<ItemGroup>
-		<PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.0-RC19" />
-		<PackageVersion Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="1.0.0-RC19" />
+		<PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.0-RC21" />
+		<PackageVersion Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="1.0.0-RC21" />
 		<PackageVersion Include="coverlet.collector" Version="6.0.2" />
 		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
 		<PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
@@ -38,7 +38,7 @@
 	
 	<!-- import common NuGet packages -->
 	<ItemGroup>
-		<GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC12">
+		<GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC15">
 			<PrivateAssets>all</PrivateAssets>
 		</GlobalPackageReference>
 	</ItemGroup>
