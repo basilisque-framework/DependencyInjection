@@ -82,8 +82,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
         internal static IncrementalValueProvider<ImmutableArray<List<ServiceRegistrationInfo>?>> CreateServicesToRegisterValueProvider(IncrementalGeneratorInitializationContext context)
         {
             var syntaxProvider = context.SyntaxProvider.CreateSyntaxProvider(
-                static (s, ct) => isSyntaxTargetForGeneration(s, ct),
-                static (ctx, ct) => getSemanticTargetForGeneration(ctx, ct)
+                predicate: static (s, ct) => isSyntaxTargetForGeneration(s, ct),
+                transform: static (ctx, ct) => getSemanticTargetForGeneration(ctx, ct)
                 ).Where(static m => m is not null);
 
             return syntaxProvider.Collect();

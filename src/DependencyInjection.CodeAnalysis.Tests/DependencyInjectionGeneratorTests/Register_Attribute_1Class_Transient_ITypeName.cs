@@ -48,7 +48,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
         protected override string? GetRegisteredServicesSource()
         {
             return @"
-            services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
+        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
         }
     }
 }

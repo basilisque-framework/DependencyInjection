@@ -176,19 +176,18 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
 // </auto-generated>
 //------------------------------------------------------------------------
 
-namespace TestProject
+namespace TestProject;
+
+/// <summary>
+/// Registers all dependencies and services of this assembly.
+/// This class mainly exists for performance and simplicity reasons during code compilation.
+/// Although there is technically no reason to not manually interact with this class, you should probably prefer to use the identical class in your root namespace (<see cref=""{rootNamespace}.DependencyRegistrator""/>).
+/// </summary>
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Basilisque.DependencyInjection.CodeAnalysis"", ""{version}"")]
+[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+public sealed class DependencyRegistrator : {rootNamespace}.DependencyRegistrator
 {{
-    /// <summary>
-    /// Registers all dependencies and services of this assembly.
-    /// This class mainly exists for performance and simplicity reasons during code compilation.
-    /// Although there is technically no reason to not manually interact with this class, you should probably prefer to use the identical class in your root namespace (<see cref=""{rootNamespace}.DependencyRegistrator""/>).
-    /// </summary>
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Basilisque.DependencyInjection.CodeAnalysis"", ""{version}"")]
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public sealed class DependencyRegistrator : {rootNamespace}.DependencyRegistrator
-    {{
-    }}
 }}";
 
             return ("DependencyRegistrator_AssemblyNameNamespace.g.cs", src);
@@ -218,48 +217,47 @@ namespace TestProject
 using Basilisque.DependencyInjection.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace {rootNamespace}
+namespace {rootNamespace};
+
+/// <summary>
+/// Registers all dependencies and services of this assembly.
+/// </summary>
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Basilisque.DependencyInjection.CodeAnalysis"", ""{version}"")]
+[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+public partial class DependencyRegistrator : BaseDependencyRegistrator
 {{
-    /// <summary>
-    /// Registers all dependencies and services of this assembly.
-    /// </summary>
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Basilisque.DependencyInjection.CodeAnalysis"", ""{version}"")]
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class DependencyRegistrator : BaseDependencyRegistrator
+    /// <inheritdoc />
+    protected override void PerformInitialization(DependencyCollection collection)
     {{
-        /// <inheritdoc />
-        protected override void PerformInitialization(DependencyCollection collection)
-        {{
-            doBeforeInitialization(collection);
-            
-            initializeDependenciesGenerated(collection);
-            
-            doAfterInitialization(collection);
-        }}
+        doBeforeInitialization(collection);
         
-        partial void doBeforeInitialization(DependencyCollection collection);
+        initializeDependenciesGenerated(collection);
         
-        partial void initializeDependenciesGenerated(DependencyCollection collection);
-        
-        partial void doAfterInitialization(DependencyCollection collection);
-        
-        /// <inheritdoc />
-        protected override void PerformServiceRegistration(IServiceCollection services)
-        {{
-            doBeforeRegistration(services);
-            
-            registerServicesGenerated(services);
-            
-            doAfterRegistration(services);
-        }}
-        
-        partial void doBeforeRegistration(IServiceCollection services);
-        
-        partial void registerServicesGenerated(IServiceCollection services);
-        
-        partial void doAfterRegistration(IServiceCollection services);
+        doAfterInitialization(collection);
     }}
+    
+    partial void doBeforeInitialization(DependencyCollection collection);
+    
+    partial void initializeDependenciesGenerated(DependencyCollection collection);
+    
+    partial void doAfterInitialization(DependencyCollection collection);
+    
+    /// <inheritdoc />
+    protected override void PerformServiceRegistration(IServiceCollection services)
+    {{
+        doBeforeRegistration(services);
+        
+        registerServicesGenerated(services);
+        
+        doAfterRegistration(services);
+    }}
+    
+    partial void doBeforeRegistration(IServiceCollection services);
+    
+    partial void registerServicesGenerated(IServiceCollection services);
+    
+    partial void doAfterRegistration(IServiceCollection services);
 }}";
 
             return (filename, src);
@@ -283,37 +281,36 @@ namespace {rootNamespace}
 using Microsoft.Extensions.DependencyInjection;
 using Basilisque.DependencyInjection.Registration;
 
-namespace {rootNamespace}
+namespace {rootNamespace};
+
+/// <summary>
+/// This class contains extension methods for <see cref=""IServiceCollection""/>
+/// </summary>
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Basilisque.DependencyInjection.CodeAnalysis"", ""{version}"")]
+[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+public static class IServiceCollectionExtensions
 {{
     /// <summary>
-    /// This class contains extension methods for <see cref=""IServiceCollection""/>
+    /// This method extends <see cref=""IServiceCollection""/> with a mechanism to register dependencies and services for the whole application.
+    /// Calling this method creates a <see cref=""DependencyRegistratorBuilder{{TDependencyRegistrator}}""/> and initializes the dependency chain.
     /// </summary>
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Basilisque.DependencyInjection.CodeAnalysis"", ""{version}"")]
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public static class IServiceCollectionExtensions
+    /// <param name=""services"">The <see cref=""IServiceCollection""/> all services are registered on.</param>
+    /// <returns>A <see cref=""DependencyRegistratorBuilder{{TDependencyRegistrator}}""/> that is used to build and execute the chain of <see cref=""IDependencyRegistrator""/></returns>
+    public static DependencyRegistratorBuilder<{rootNamespace}.DependencyRegistrator> InitializeDependencies(this IServiceCollection services)
     {{
-        /// <summary>
-        /// This method extends <see cref=""IServiceCollection""/> with a mechanism to register dependencies and services for the whole application.
-        /// Calling this method creates a <see cref=""DependencyRegistratorBuilder{{TDependencyRegistrator}}""/> and initializes the dependency chain.
-        /// </summary>
-        /// <param name=""services"">The <see cref=""IServiceCollection""/> all services are registered on.</param>
-        /// <returns>A <see cref=""DependencyRegistratorBuilder{{TDependencyRegistrator}}""/> that is used to build and execute the chain of <see cref=""IDependencyRegistrator""/></returns>
-        public static DependencyRegistratorBuilder<{rootNamespace}.DependencyRegistrator> InitializeDependencies(this IServiceCollection services)
-        {{
-            return Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{rootNamespace}.DependencyRegistrator>(services);
-        }}
-        
-        /// <summary>
-        /// This method extends <see cref=""IServiceCollection""/> with a mechanism to register dependencies and services for the whole application.
-        /// Calling this method creates a <see cref=""DependencyRegistratorBuilder{{TDependencyRegistrator}}""/>, initializes the dependency chain and executes the registration of all services.
-        /// For more control over the details of this process use <see cref=""InitializeDependencies""/> instead.
-        /// </summary>
-        /// <param name=""services"">The <see cref=""IServiceCollection""/> all services are registered on.</param>
-        public static void RegisterServices(this IServiceCollection services)
-        {{
-            Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{rootNamespace}.DependencyRegistrator>(services).RegisterServices();
-        }}
+        return Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{rootNamespace}.DependencyRegistrator>(services);
+    }}
+    
+    /// <summary>
+    /// This method extends <see cref=""IServiceCollection""/> with a mechanism to register dependencies and services for the whole application.
+    /// Calling this method creates a <see cref=""DependencyRegistratorBuilder{{TDependencyRegistrator}}""/>, initializes the dependency chain and executes the registration of all services.
+    /// For more control over the details of this process use <see cref=""InitializeDependencies""/> instead.
+    /// </summary>
+    /// <param name=""services"">The <see cref=""IServiceCollection""/> all services are registered on.</param>
+    public static void RegisterServices(this IServiceCollection services)
+    {{
+        Basilisque.DependencyInjection.IServiceCollectionExtensions.InitializeDependencies<{rootNamespace}.DependencyRegistrator>(services).RegisterServices();
     }}
 }}";
 
@@ -336,19 +333,18 @@ namespace {rootNamespace}
             var src = $@"using Basilisque.DependencyInjection.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace {rootNamespace}
+namespace {rootNamespace};
+
+public partial class DependencyRegistrator
 {{
-    public partial class DependencyRegistrator
+    partial void initializeDependenciesGenerated(DependencyCollection collection)
     {{
-        partial void initializeDependenciesGenerated(DependencyCollection collection)
-        {{
-            /* initialize dependencies - generated from assembly dependencies */
-        }}
-        
-        partial void registerServicesGenerated(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
-        {{
-            /* register services - generated from the current project */{registeredServicesSource}
-        }}
+        /* initialize dependencies - generated from assembly dependencies */
+    }}
+    
+    partial void registerServicesGenerated(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+    {{
+        /* register services - generated from the current project */{registeredServicesSource}
     }}
 }}";
 
