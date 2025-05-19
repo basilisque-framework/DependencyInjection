@@ -83,6 +83,14 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionG
                             "8.0.0"),
                         Path.Combine("ref", "net8.0"))
                 .WithPackages([new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.AspNetCore.App.Ref", "8.0.0")]);
+#elif NET9_0
+            var refAssemblies = new ReferenceAssemblies(
+                        "net9.0",
+                        new PackageIdentity(
+                            "Microsoft.NETCore.App.Ref",
+                            "9.0.0"),
+                        Path.Combine("ref", "net9.0"))
+                .WithPackages([new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.AspNetCore.App.Ref", "9.0.0")]);
 #else
             throw new PlatformNotSupportedException("Please define reference assemblies for your platform!");
 #endif

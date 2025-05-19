@@ -1,5 +1,5 @@
 <!--
-   Copyright 2023-2024 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 	
 	<!-- set target frameworks except for .CodeAnalysis - .CodeAnalysis always has to be netstandard2.0 because it is loaded in Visual Studio -->
 	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.CodeAnalysis')) != true">
-		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		
 		<!-- additionaly support netstandard2.0; tested against net462 -->
 		<TargetFrameworks Condition="$(MSBuildProjectName.EndsWith('.Tests')) != true">$(TargetFrameworks);netstandard2.0</TargetFrameworks>
