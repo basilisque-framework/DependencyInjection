@@ -1,5 +1,5 @@
 ﻿<!--
-   Copyright 2023-2024 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -27,6 +27,6 @@
 			<SetTargetFramework Condition="'$(TargetFramework)'=='net462'">TargetFramework=netstandard2.0</SetTargetFramework>
 		</ProjectReference>
 		
-		<PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" />
+		<PackageReference Include="Basilisque.CodeAnalysis.TestSupport" />
 	</ItemGroup>
 </Project>
