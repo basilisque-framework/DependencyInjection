@@ -1,5 +1,5 @@
 ﻿<!--
-   Copyright 2023-2024 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,9 +14,16 @@
    limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
+	<!-- Workaround for https://github.com/NuGet/Home/issues/12544 / https://github.com/dotnet/sdk/issues/33528 -->
+	<PropertyGroup>
+		<AssemblyName>Basilisque.$(MSBuildProjectName)</AssemblyName>
+		<PackageId>$(AssemblyName)</PackageId>
+	</PropertyGroup>
+
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		<DefineConstants>$(DefineConstants);BASILISQUE_CODE_ANALYSIS</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -1,5 +1,5 @@
 ﻿<!--
-   Copyright 2023-2024 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,4 +22,17 @@
   <ItemGroup>
 	  <None Include="..\..\README.md" Pack="true" PackagePath="docs" />
   </ItemGroup>
+  
+  <!-- Create a reference between this project and the source generator in the NuGet package. But do not execute the source generator in this project. -->
+  <ItemGroup>
+    <!-- Reference the code analysis project to create a dependency between the NuGet packages -->
+    <ProjectReference Include="..\DependencyInjection.CodeAnalysis\DependencyInjection.CodeAnalysis.csproj" PrivateAssets="Compile;runtime;contentFiles" />
+  </ItemGroup>
+  <Target Name="DisableOwnSourceGenerator" BeforeTargets="CoreCompile">
+    <!-- Do not execute the DependencyInjection.CodeAnalysis source generator in this project -->
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.Filename)').Contains('Basilisque.DependencyInjection.CodeAnalysis'))"/>
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.Filename)').Contains('Basilisque.CodeAnalysis'))"/>
+    </ItemGroup>
+  </Target>
 </Project>

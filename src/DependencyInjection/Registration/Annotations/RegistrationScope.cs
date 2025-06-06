@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,7 +19,12 @@ namespace Basilisque.DependencyInjection.Registration.Annotations
     /// <summary>
     /// Specifies the lifetime of a service in an Microsoft.Extensions.DependencyInjection.IServiceCollection.
     /// </summary>
-    public enum RegistrationScope
+#if BASILISQUE_CODE_ANALYSIS
+    internal
+#else
+    public
+#endif
+        enum RegistrationScope
     {
         /// <summary>
         /// Specifies that a new instance of the service will be created every time it is requested.
