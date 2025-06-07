@@ -31,8 +31,8 @@
   <Target Name="DisableOwnSourceGenerator" BeforeTargets="CoreCompile">
     <!-- Do not execute the DependencyInjection.CodeAnalysis source generator in this project -->
     <ItemGroup>
-      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.Filename)').Contains('Basilisque.DependencyInjection.CodeAnalysis'))"/>
-      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.Filename)').Contains('Basilisque.CodeAnalysis'))"/>
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.Filename)').Contains('Basilisque.DependencyInjection.CodeAnalysis'))" />
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.Filename)').Contains('Basilisque.CodeAnalysis'))" />
     </ItemGroup>
   </Target>
 </Project>

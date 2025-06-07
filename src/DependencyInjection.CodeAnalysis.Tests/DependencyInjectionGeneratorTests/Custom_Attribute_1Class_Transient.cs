@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,36 +19,40 @@ using Microsoft.CodeAnalysis.Testing;
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
 
 [TestClass]
-public class Register_Attribute_1Class_Transient_ITypeName : BaseDependencyInjectionGeneratorTest
+public class Custom_Attribute_1Class_Transient : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
         sources.Add(@"
-        namespace Some.Namespace
+        /// <summary>
+        /// Custom attribute that registers a service as scoped
+        /// </summary>
+        public class MyCustomScopedAttribute : System.Attribute, Basilisque.DependencyInjection.Registration.Annotations.IRegisterServiceAttribute
         {
             /// <summary>
-            /// Test interface
+            /// Creates a new instance of the attribute
             /// </summary>
-            public interface IMyPublicRegisteredClass
+            public MyCustomScopedAttribute(Basilisque.DependencyInjection.Registration.Annotations.RegistrationScope scope)
             {
             }
-        }");
-        sources.Add(@"
-        using Some.Namespace;
+        }
+        ");
 
+        sources.Add(@"
         /// <summary>
         /// Test class that will be registered as transient by attribute
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
-        public class MyPublicRegisteredClass : IMyPublicRegisteredClass
+        [MyCustomScopedAttribute(Basilisque.DependencyInjection.Registration.Annotations.RegistrationScope.Scoped)]
+        public class MyPublicRegisteredClass
         {
-        }");
+        }
+        ");
     }
 
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
+        services.AddScoped<MyPublicRegisteredClass>();";
     }
 }
 

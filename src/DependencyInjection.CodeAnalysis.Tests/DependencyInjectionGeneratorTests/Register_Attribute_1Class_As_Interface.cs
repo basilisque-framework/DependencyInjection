@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using Microsoft.CodeAnalysis.Testing;
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
 
 [TestClass]
-public class Register_Attribute_1Class_Transient_ITypeName : BaseDependencyInjectionGeneratorTest
+public class Register_Attribute_1Class_As_Interface : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
@@ -29,18 +29,19 @@ public class Register_Attribute_1Class_Transient_ITypeName : BaseDependencyInjec
             /// <summary>
             /// Test interface
             /// </summary>
-            public interface IMyPublicRegisteredClass
+            public interface ISomeInterface
             {
             }
         }");
+
         sources.Add(@"
         using Some.Namespace;
 
         /// <summary>
         /// Test class that will be registered as transient by attribute
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
-        public class MyPublicRegisteredClass : IMyPublicRegisteredClass
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient(As = typeof(ISomeInterface), ImplementsITypeName = true)]
+        public class MyPublicRegisteredClass : ISomeInterface
         {
         }");
     }
@@ -48,7 +49,7 @@ public class Register_Attribute_1Class_Transient_ITypeName : BaseDependencyInjec
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
+        services.AddTransient<Some.Namespace.ISomeInterface, MyPublicRegisteredClass>();";
     }
 }
 
