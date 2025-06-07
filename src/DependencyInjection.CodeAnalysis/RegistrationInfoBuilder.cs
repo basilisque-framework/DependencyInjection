@@ -20,6 +20,9 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
     {
         internal static IEnumerable<ServiceRegistrationInfo> GetRegistrationInfos(GeneratorSyntaxContext context, INamedTypeSymbol baseAttrInterface, INamedTypeSymbol nodeSymbol, Microsoft.CodeAnalysis.SyntaxNode? rootNode)
         {
+            if (rootNode is not null && context.SemanticModel.Compilation.HasImplicitConversion(nodeSymbol, baseAttrInterface))
+                yield break;
+
             var registrationAttributes = nodeSymbol.GetAttributes()
                 .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
 
