@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,36 +14,47 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.Registration.Annotations
+namespace Basilisque.DependencyInjection.Registration.Annotations;
+
+/// <summary>
+/// Attribute for registering the target class/interface at the dependency container
+/// </summary>
+public class RegisterServiceAttribute : Attribute, IRegisterServiceAttribute
 {
     /// <summary>
-    /// Attribute for registering the target class/interface at the dependency container
+    /// The scope of the registration
     /// </summary>
-    public class RegisterServiceAttribute : Attribute, IRegisterServiceAttribute
+    public RegistrationScope Scope { get; protected set; }
+
+    /// <summary>
+    /// The type as that the attributed class/interface will be registered
+    /// </summary>
+    public Type? As { get; set; } = null;
+
+    /// <summary>
+    /// Enables or disables the 'ImplementsITypeName'-check
+    /// (When enabled, the attributed class gets registered as the implemented interface with the same name with a leading I)
+    /// </summary>
+    public bool ImplementsITypeName { get; set; } = true;
+
+    /// <summary>
+    /// The type of the factory class that will be used to create instances of the service.
+    /// </summary>
+    /// <remarks>For keyed services this has have a method <see cref="Func{IServiceProvider, Object, TServiceInstance}"/>. For non-keyed services this has to have a method <see cref="Func{IServiceProvider, TServiceInstance}"/></remarks>
+    public Type? Factory { get; set; } = null;
+
+    /// <summary>
+    /// Optional name of the factory method that will be used to create instances of the service.
+    /// </summary>
+    /// <remarks>You can specify the method name in case it cannot be automatically resolved.</remarks>
+    public string? FactoryMethodName { get; set; } = null;
+
+    /// <summary>
+    /// Creates a new <see cref="RegisterServiceAttribute"/>
+    /// </summary>
+    /// <param name="scope">The scope of the registration</param>
+    public RegisterServiceAttribute(RegistrationScope scope)
     {
-        /// <summary>
-        /// The scope of the registration
-        /// </summary>
-        public RegistrationScope Scope { get; protected set; }
-
-        /// <summary>
-        /// The type as that the attributed class/interface will be registered
-        /// </summary>
-        public Type? As { get; set; } = null;
-
-        /// <summary>
-        /// Enables or disables the 'ImplementsITypeName'-check
-        /// (When enabled, the attributed class gets registered as the implemented interface with the same name with a leading I)
-        /// </summary>
-        public bool ImplementsITypeName { get; set; } = true;
-
-        /// <summary>
-        /// Creates a new <see cref="RegisterServiceAttribute"/>
-        /// </summary>
-        /// <param name="scope">The scope of the registration</param>
-        public RegisterServiceAttribute(RegistrationScope scope)
-        {
-            Scope = scope;
-        }
+        Scope = scope;
     }
 }

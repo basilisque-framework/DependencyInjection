@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,27 +14,29 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.CodeAnalysis
+namespace Basilisque.DependencyInjection.CodeAnalysis;
+
+internal class ServiceRegistrationInfo
 {
-    internal class ServiceRegistrationInfo
+    private IList<INamedTypeSymbol>? _registeredServices = null;
+
+    public Registration.Annotations.RegistrationScope? RegistrationScope { get; set; } = null;
+    public Microsoft.CodeAnalysis.SyntaxNode? ImplementationSyntaxNode { get; set; } = null;
+    public INamedTypeSymbol? ImplementationSymbol { get; set; } = null;
+    public IList<INamedTypeSymbol> RegisteredServices
     {
-        private IList<INamedTypeSymbol>? _registeredServices = null;
-
-        public Registration.Annotations.RegistrationScope? RegistrationScope { get; set; } = null;
-        public Microsoft.CodeAnalysis.SyntaxNode? ImplementationSyntaxNode { get; set; } = null;
-        public INamedTypeSymbol? ImplementationSymbol { get; set; } = null;
-        public IList<INamedTypeSymbol> RegisteredServices
+        get
         {
-            get
-            {
-                if (_registeredServices == null)
-                    _registeredServices = new List<INamedTypeSymbol>();
+            if (_registeredServices == null)
+                _registeredServices = new List<INamedTypeSymbol>();
 
-                return _registeredServices;
-            }
+            return _registeredServices;
         }
-        public bool HasRegisteredServices { get { return _registeredServices?.Count > 0; } }
-        public ServiceRegistrationInfo()
-        { }
     }
+    public bool HasRegisteredServices { get { return _registeredServices?.Count > 0; } }
+    public INamedTypeSymbol? FactoryType { get; set; } = null;
+    public string? FactoryMethodName { get; set; } = null;
+
+    public ServiceRegistrationInfo()
+    { }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,135 +14,161 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.CodeAnalysis
+namespace Basilisque.DependencyInjection.CodeAnalysis;
+
+internal static class RegistrationInfoBuilder
 {
-    internal static class RegistrationInfoBuilder
+    internal static IEnumerable<ServiceRegistrationInfo> GetRegistrationInfos(GeneratorSyntaxContext context, INamedTypeSymbol baseAttrInterface, INamedTypeSymbol nodeSymbol, Microsoft.CodeAnalysis.SyntaxNode? rootNode)
     {
-        internal static IEnumerable<ServiceRegistrationInfo> GetRegistrationInfos(GeneratorSyntaxContext context, INamedTypeSymbol baseAttrInterface, INamedTypeSymbol nodeSymbol, Microsoft.CodeAnalysis.SyntaxNode? rootNode)
+        var isRootNode = rootNode is not null;
+
+        if (isRootNode && context.SemanticModel.Compilation.HasImplicitConversion(nodeSymbol, baseAttrInterface))
+            yield break;
+
+        var registrationAttributes = nodeSymbol.GetAttributes()
+            .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
+
+        var interfaceRegistrationAttributes = nodeSymbol.AllInterfaces.SelectMany(i => i.GetAttributes())
+            .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
+
+        registrationAttributes = registrationAttributes.Union(interfaceRegistrationAttributes);
+
+        if (!registrationAttributes.Any())
+            yield break;
+
+        foreach (var registrationAttribute in registrationAttributes)
         {
-            if (rootNode is not null && context.SemanticModel.Compilation.HasImplicitConversion(nodeSymbol, baseAttrInterface))
-                yield break;
+            if (registrationAttribute.AttributeClass == null)
+                continue;
 
-            var registrationAttributes = nodeSymbol.GetAttributes()
-                .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
+            var childRegistrationInfos = GetRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
 
-            var interfaceRegistrationAttributes = nodeSymbol.AllInterfaces.SelectMany(i => i.GetAttributes())
-                .Where(a => context.SemanticModel.Compilation.HasImplicitConversion(a.AttributeClass, baseAttrInterface));
+            var args = readAttributeArguments(registrationAttribute);
 
-            registrationAttributes = registrationAttributes.Union(interfaceRegistrationAttributes);
+            var servicesToRegister = args.servicesToRegister;
 
-            if (!registrationAttributes.Any())
-                yield break;
+            if (isRootNode && args.implementsITypeName)
+                checkImplementsITypeName(nodeSymbol, ref servicesToRegister);
 
-            foreach (var registrationAttribute in registrationAttributes)
+            bool isHandled = false;
+            foreach (var childRegistrationInfo in childRegistrationInfos)
             {
-                if (registrationAttribute.AttributeClass == null)
+                isHandled = true;
+
+                assignValuesToRegistrationInfo(childRegistrationInfo, rootNode, nodeSymbol, args.registrationScope, servicesToRegister, args.factoryType, args.factoryMethodName);
+
+                yield return childRegistrationInfo;
+            }
+
+            if (!isHandled)
+            {
+                var result = new ServiceRegistrationInfo();
+
+                assignValuesToRegistrationInfo(result, rootNode, nodeSymbol, args.registrationScope, servicesToRegister, args.factoryType, args.factoryMethodName);
+
+                yield return result;
+            }
+        }
+    }
+
+    private static void checkImplementsITypeName(INamedTypeSymbol nodeSymbol, ref List<INamedTypeSymbol>? servicesToRegister)
+    {
+        string targetInterfaceName = $"I{nodeSymbol.Name}";
+        var implementedITypeNameInterfaces = nodeSymbol.AllInterfaces.Where(i => i.Name == targetInterfaceName);
+
+        if (!implementedITypeNameInterfaces.Any())
+            return;
+
+        if (servicesToRegister == null)
+            servicesToRegister = new List<INamedTypeSymbol>();
+
+        foreach (var item in implementedITypeNameInterfaces)
+        {
+            if (!servicesToRegister.Contains(item))
+                servicesToRegister.Add(item);
+        }
+    }
+
+    private static (Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, bool implementsITypeName, INamedTypeSymbol? factoryType, string? factoryMethodName) readAttributeArguments(AttributeData registrationAttribute)
+    {
+        Registration.Annotations.RegistrationScope? registrationScope = null;
+        List<INamedTypeSymbol>? servicesToRegister = null;
+        bool implementsITypeName = true;
+        INamedTypeSymbol? factoryType = null;
+        string? factoryMethodName = null;
+
+        foreach (var ctorArg in registrationAttribute.ConstructorArguments)
+        {
+            if (ctorArg.Type?.ToDisplayString() == typeof(Registration.Annotations.RegistrationScope).FullName)
+            {
+                if (System.Enum.TryParse(ctorArg.Value?.ToString(), out Registration.Annotations.RegistrationScope innerRegistrationScope))
+                    registrationScope = innerRegistrationScope;
+            }
+        }
+
+        foreach (var namedArgument in registrationAttribute.NamedArguments)
+        {
+            if (namedArgument.Value.Kind == TypedConstantKind.Enum && (namedArgument.Key == "Scope" || namedArgument.Key == "RegistrationScope"))
+            {
+                if (System.Enum.TryParse(namedArgument.Value.Value?.ToString(), out Registration.Annotations.RegistrationScope innerRegistrationScope))
+                    registrationScope = innerRegistrationScope;
+            }
+            else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "As" || namedArgument.Key == "RegisterAs"))
+            {
+                var innerServiceToRegister = namedArgument.Value.Value as INamedTypeSymbol;
+                if (innerServiceToRegister != null)
+                    servicesToRegister = new List<INamedTypeSymbol>() { innerServiceToRegister };
+            }
+            else if (namedArgument.Value.Kind == TypedConstantKind.Primitive && (namedArgument.Key == "ImplementsITypeName"))
+            {
+                bool innerImplementsITypeName;
+                if (bool.TryParse(namedArgument.Value.Value?.ToString(), out innerImplementsITypeName))
+                    implementsITypeName = innerImplementsITypeName;
+            }
+            else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "Factory"))
+            {
+                if (namedArgument.Value.Value is null)
                     continue;
 
-                var childRegistrationInfos = GetRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
+                factoryType = (INamedTypeSymbol)namedArgument.Value.Value;
+            }
+            else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "FactoryMethodName"))
+            {
+                var tmpFactoryMethodName = namedArgument.Value.Value as string;
 
-                Registration.Annotations.RegistrationScope? registrationScope;
-                List<INamedTypeSymbol>? servicesToRegister;
-                bool implementsITypeName;
-                readAttributeArguments(registrationAttribute, out registrationScope, out servicesToRegister, out implementsITypeName);
+                if (string.IsNullOrWhiteSpace(tmpFactoryMethodName))
+                    continue;
 
-                if (implementsITypeName && rootNode != null)
-                    checkImplementsITypeName(nodeSymbol, ref servicesToRegister);
-
-                bool isHandled = false;
-                foreach (var childRegistrationInfo in childRegistrationInfos)
-                {
-                    isHandled = true;
-
-                    assignValuesToRegistrationInfo(childRegistrationInfo, rootNode, nodeSymbol, registrationScope, servicesToRegister);
-
-                    yield return childRegistrationInfo;
-                }
-
-                if (!isHandled)
-                {
-                    var result = new ServiceRegistrationInfo();
-
-                    assignValuesToRegistrationInfo(result, rootNode, nodeSymbol, registrationScope, servicesToRegister);
-
-                    yield return result;
-                }
+                factoryMethodName = tmpFactoryMethodName;
             }
         }
 
-        private static void checkImplementsITypeName(INamedTypeSymbol nodeSymbol, ref List<INamedTypeSymbol>? servicesToRegister)
+        return (registrationScope, servicesToRegister, implementsITypeName, factoryType, factoryMethodName);
+    }
+
+    private static void assignValuesToRegistrationInfo(ServiceRegistrationInfo registrationInfo, Microsoft.CodeAnalysis.SyntaxNode? implementationNode, INamedTypeSymbol implementationNodeSymbol, Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, INamedTypeSymbol? factoryType, string? factoryMethodName)
+    {
+        if (implementationNode != null)
         {
-            string targetInterfaceName = $"I{nodeSymbol.Name}";
-            var implementedITypeNameInterfaces = nodeSymbol.AllInterfaces.Where(i => i.Name == targetInterfaceName);
-
-            if (!implementedITypeNameInterfaces.Any())
-                return;
-
-            if (servicesToRegister == null)
-                servicesToRegister = new List<INamedTypeSymbol>();
-
-            foreach (var item in implementedITypeNameInterfaces)
-            {
-                if (!servicesToRegister.Contains(item))
-                    servicesToRegister.Add(item);
-            }
+            registrationInfo.ImplementationSyntaxNode = implementationNode;
+            registrationInfo.ImplementationSymbol = implementationNodeSymbol;
         }
 
-        private static void readAttributeArguments(AttributeData registrationAttribute, out Registration.Annotations.RegistrationScope? registrationScope, out List<INamedTypeSymbol>? servicesToRegister, out bool implementsITypeName)
+        if (registrationScope != null)
+            registrationInfo.RegistrationScope = registrationScope;
+
+        if (servicesToRegister != null)
         {
-            registrationScope = null;
-            servicesToRegister = null;
-            implementsITypeName = true;
-
-            foreach (var ctorArg in registrationAttribute.ConstructorArguments)
+            foreach (var serviceToRegister in servicesToRegister)
             {
-                if (ctorArg.Type?.ToDisplayString() == typeof(Registration.Annotations.RegistrationScope).FullName)
-                {
-                    if (System.Enum.TryParse(ctorArg.Value?.ToString(), out Registration.Annotations.RegistrationScope innerRegistrationScope))
-                        registrationScope = innerRegistrationScope;
-                }
-            }
-
-            foreach (var namedArgument in registrationAttribute.NamedArguments)
-            {
-                if (namedArgument.Value.Kind == TypedConstantKind.Enum && (namedArgument.Key == "Scope" || namedArgument.Key == "RegistrationScope"))
-                {
-                    if (System.Enum.TryParse(namedArgument.Value.Value?.ToString(), out Registration.Annotations.RegistrationScope innerRegistrationScope))
-                        registrationScope = innerRegistrationScope;
-                }
-                else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "As" || namedArgument.Key == "RegisterAs"))
-                {
-                    var innerServiceToRegister = namedArgument.Value.Value as INamedTypeSymbol;
-                    if (innerServiceToRegister != null)
-                        servicesToRegister = new List<INamedTypeSymbol>() { innerServiceToRegister };
-                }
-                else if (namedArgument.Value.Kind == TypedConstantKind.Primitive && (namedArgument.Key == "ImplementsITypeName"))
-                {
-                    bool innerImplementsITypeName;
-                    if (bool.TryParse(namedArgument.Value.Value?.ToString(), out innerImplementsITypeName))
-                        implementsITypeName = innerImplementsITypeName;
-                }
+                registrationInfo.RegisteredServices.Add(serviceToRegister);
             }
         }
 
-        private static void assignValuesToRegistrationInfo(ServiceRegistrationInfo registrationInfo, Microsoft.CodeAnalysis.SyntaxNode? implementationNode, INamedTypeSymbol implementationNodeSymbol, Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister)
-        {
-            if (implementationNode != null)
-            {
-                registrationInfo.ImplementationSyntaxNode = implementationNode;
-                registrationInfo.ImplementationSymbol = implementationNodeSymbol;
-            }
+        if (factoryType is not null)
+            registrationInfo.FactoryType = factoryType;
 
-            if (registrationScope != null)
-                registrationInfo.RegistrationScope = registrationScope;
-
-            if (servicesToRegister != null)
-            {
-                foreach (var serviceToRegister in servicesToRegister)
-                {
-                    registrationInfo.RegisteredServices.Add(serviceToRegister);
-                }
-            }
-        }
+        if (factoryMethodName is not null)
+            registrationInfo.FactoryMethodName = factoryMethodName;
     }
 }
