@@ -413,19 +413,18 @@ For more control over the details of this process use <see cref=""InitializeDepe
 
         var factoryTypeName = item.FactoryType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
-        var factoryMethodName = item.FactoryMethodName;
+        var factoryMethodName = getValidFactoryMethod(item.FactoryType, isKeyedRegistration, item.FactoryMethodName);
         if (factoryMethodName is null)
         {
-            factoryMethodName = getValidFactoryMethod(item.FactoryType, isKeyedRegistration);
-
-            if (factoryMethodName is null)
-            {
-                // No valid factory method found, so we report a diagnostic.
-                var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
-                var factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNotFound, location, factoryTypeName);
-                context.ReportDiagnostic(factoryMethodDiagnostic);
-                return false;
-            }
+            // No valid factory method found, so we report a diagnostic.
+            var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
+            Diagnostic factoryMethodDiagnostic;
+            if (item.FactoryMethodName is null)
+                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNotFound, location, factoryTypeName);
+            else
+                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNameIsInvalid, location, item.FactoryMethodName, factoryTypeName);
+            context.ReportDiagnostic(factoryMethodDiagnostic);
+            return false;
         }
 
         factoryInformation = $"{factoryTypeName}.{factoryMethodName}";
@@ -492,9 +491,11 @@ var newline = workspace.GetOption(new OptionKey(FormattingOptions.NewLine, Langu
         }
     }
 
-    private static string? getValidFactoryMethod(INamedTypeSymbol factoryType, bool isKeyed)
+    private static string? getValidFactoryMethod(INamedTypeSymbol factoryType, bool isKeyed, string? expectedMethodName)
     {
-        var methodCandidates = factoryType.GetMembers().OfType<IMethodSymbol>().Where(member =>
+        var getMembers = expectedMethodName is null ? factoryType.GetMembers() : factoryType.GetMembers(expectedMethodName);
+
+        var methodCandidates = getMembers.OfType<IMethodSymbol>().Where(member =>
         {
             // has to be static
             if (!member.IsStatic)

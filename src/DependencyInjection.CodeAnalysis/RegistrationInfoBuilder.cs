@@ -132,7 +132,7 @@ internal static class RegistrationInfoBuilder
 
                 factoryType = (INamedTypeSymbol)namedArgument.Value.Value;
             }
-            else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "FactoryMethodName"))
+            else if (namedArgument.Value.Kind == TypedConstantKind.Primitive && (namedArgument.Key == "FactoryMethodName"))
             {
                 var tmpFactoryMethodName = namedArgument.Value.Value as string;
 
