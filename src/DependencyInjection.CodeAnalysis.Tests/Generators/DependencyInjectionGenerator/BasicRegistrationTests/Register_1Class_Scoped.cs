@@ -16,10 +16,10 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicRegistrationTests;
 
 [TestClass]
-public class Register_Attribute_1Class_Scoped : BaseDependencyInjectionGeneratorTest
+public class Register_1Class_Scoped : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {

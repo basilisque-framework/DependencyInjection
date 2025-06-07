@@ -16,36 +16,33 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.CustomRegistrationAttributeTests;
 
 [TestClass]
-public class Register_Attribute_1Class_With_Factory : BaseDependencyInjectionGeneratorTest
+public class Register_1Class_Transient : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
         sources.Add(@"
         /// <summary>
-        /// Test factory that will be used to the create instances of the service.
+        /// Custom attribute that registers a service as scoped
         /// </summary>
-        public class MyFactory
+        public class MyCustomScopedAttribute : System.Attribute, Basilisque.DependencyInjection.Registration.Annotations.IRegisterServiceAttribute
         {
             /// <summary>
-            /// Creates an instance of the service
+            /// Creates a new instance of the attribute
             /// </summary>
-            /// <param name=""serviceProvider"">The service provider</param>
-            /// <returns>An instance of the service</returns>
-            public static MyPublicRegisteredClass Create(System.IServiceProvider serviceProvider)
+            public MyCustomScopedAttribute(Basilisque.DependencyInjection.Registration.Annotations.RegistrationScope scope)
             {
-                return new MyPublicRegisteredClass();
             }
         }
         ");
 
         sources.Add(@"
         /// <summary>
-        /// Test class that will be registered with the factory method.
+        /// Test class that will be registered as transient by attribute
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceSingleton(Factory = typeof(MyFactory))]
+        [MyCustomScopedAttribute(Basilisque.DependencyInjection.Registration.Annotations.RegistrationScope.Scoped)]
         public class MyPublicRegisteredClass
         {
         }
@@ -55,7 +52,7 @@ public class Register_Attribute_1Class_With_Factory : BaseDependencyInjectionGen
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>(global::MyFactory.Create);";
+        services.AddScoped<MyPublicRegisteredClass>();";
     }
 }
 

@@ -16,10 +16,10 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicRegistrationTests;
 
 [TestClass]
-public class Register_Attribute_2Classes_Transient : BaseDependencyInjectionGeneratorTest
+public class Register_3Classes_Mixed : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
@@ -34,10 +34,20 @@ public class Register_Attribute_2Classes_Transient : BaseDependencyInjectionGene
         ");
         sources.Add(@"
         /// <summary>
-        /// Test 2nd class that will be registered as transient by attribute
+        /// Test 2nd class that will be registered as scoped by attribute
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped]
         public class MyPublicRegisteredClass2
+        {
+        }
+        ");
+        sources.Add(@"
+        namespace My.Test.NameSpace;
+        /// <summary>
+        /// Test 3rd class that will be registered as singleton by attribute
+        /// </summary>
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceSingleton]
+        public class MyPublicRegisteredClass3
         {
         }
         ");
@@ -47,7 +57,8 @@ public class Register_Attribute_2Classes_Transient : BaseDependencyInjectionGene
     {
         return @"
         services.AddTransient<MyPublicRegisteredClass>();
-        services.AddTransient<MyPublicRegisteredClass2>();";
+        services.AddScoped<MyPublicRegisteredClass2>();
+        services.AddSingleton<My.Test.NameSpace.MyPublicRegisteredClass3>();";
     }
 }
 

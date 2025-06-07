@@ -16,10 +16,10 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicRegistrationTests;
 
 [TestClass]
-public class Register_Attribute_1Class_Singleton : BaseDependencyInjectionGeneratorTest
+public class Register_1Class_DuplicateScopeDefinition_NotPossible : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
@@ -27,17 +27,22 @@ public class Register_Attribute_1Class_Singleton : BaseDependencyInjectionGenera
         /// <summary>
         /// Test class that will be registered as transient by attribute
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceSingleton]
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient(Scope = Basilisque.DependencyInjection.Registration.Annotations.RegistrationScope.Singleton)]
         public class MyPublicRegisteredClass
         {
-        }
-        ");
+        }");
+    }
+
+    protected override IEnumerable<DiagnosticResult> GetExpectedDiagnostics()
+    {
+        //error CS0617: 'Scope' is not a valid named attribute argument. Named attribute arguments must be fields which are not readonly, static, or const, or read-write properties which are public and not static.
+        yield return new Microsoft.CodeAnalysis.Testing.DiagnosticResult("CS0617", Microsoft.CodeAnalysis.DiagnosticSeverity.Error).WithSpan(5, 91, 5, 96);
     }
 
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>();";
+        services.AddTransient<MyPublicRegisteredClass>();";
     }
 }
 

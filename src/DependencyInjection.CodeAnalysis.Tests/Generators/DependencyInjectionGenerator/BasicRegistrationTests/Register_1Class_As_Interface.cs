@@ -16,10 +16,10 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicRegistrationTests;
 
 [TestClass]
-public class Register_Attribute_1Class_ITypeName_And_Additional_Interface : BaseDependencyInjectionGeneratorTest
+public class Register_1Class_As_Interface : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
@@ -29,18 +29,7 @@ public class Register_Attribute_1Class_ITypeName_And_Additional_Interface : Base
             /// <summary>
             /// Test interface
             /// </summary>
-            public interface IMyPublicRegisteredClass
-            {
-            }
-        }");
-
-        sources.Add(@"
-        namespace Some.Namespace
-        {
-            /// <summary>
-            /// Test interface 2
-            /// </summary>
-            public interface IOtherInterface
+            public interface ISomeInterface
             {
             }
         }");
@@ -51,8 +40,8 @@ public class Register_Attribute_1Class_ITypeName_And_Additional_Interface : Base
         /// <summary>
         /// Test class that will be registered as transient by attribute
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient(As = typeof(IOtherInterface))]
-        public class MyPublicRegisteredClass : IMyPublicRegisteredClass, IOtherInterface
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient(As = typeof(ISomeInterface), ImplementsITypeName = true)]
+        public class MyPublicRegisteredClass : ISomeInterface
         {
         }");
     }
@@ -60,8 +49,7 @@ public class Register_Attribute_1Class_ITypeName_And_Additional_Interface : Base
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IOtherInterface, MyPublicRegisteredClass>();
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
+        services.AddTransient<Some.Namespace.ISomeInterface, MyPublicRegisteredClass>();";
     }
 }
 

@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2023 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,28 +16,21 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicTests;
 
 [TestClass]
-public class Register_Attribute_1Class_Transient : BaseDependencyInjectionGeneratorTest
+public class NothingToRegister : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
         sources.Add(@"
         /// <summary>
-        /// Test class that will be registered as transient by attribute
+        /// Test class that won't be registered to the dependency container
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
-        public class MyPublicRegisteredClass
+        public class MyPublicNotRegisteredClass
         {
         }
         ");
-    }
-
-    protected override string? GetRegisteredServicesSource()
-    {
-        return @"
-        services.AddTransient<MyPublicRegisteredClass>();";
     }
 }
 

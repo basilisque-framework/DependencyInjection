@@ -16,61 +16,38 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicRegistrationTests;
 
 [TestClass]
-public class Register_Attribute_2Classes_Transient_ITypeName : BaseDependencyInjectionGeneratorTest
+public class Register_2Classes_Transient : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
         sources.Add(@"
-        namespace Some.Namespace
-        {
-            /// <summary>
-            /// Test interface
-            /// </summary>
-            public interface IMyPublicRegisteredClass
-            {
-            }
-        }");
-        sources.Add(@"
-        using Some.Namespace;
-
         /// <summary>
         /// Test class that will be registered as transient by attribute
         /// </summary>
         [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
-        public class MyPublicRegisteredClass : IMyPublicRegisteredClass
+        public class MyPublicRegisteredClass
         {
-        }");
-
+        }
+        ");
         sources.Add(@"
-        namespace Some.Namespace
-        {
-            /// <summary>
-            /// Test interface 2
-            /// </summary>
-            public interface IMyPublicRegisteredClass2
-            {
-            }
-        }");
-        sources.Add(@"
-        using Some.Namespace;
-
         /// <summary>
         /// Test 2nd class that will be registered as transient by attribute
         /// </summary>
         [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceTransient]
-        public class MyPublicRegisteredClass2 : IMyPublicRegisteredClass2
+        public class MyPublicRegisteredClass2
         {
-        }");
+        }
+        ");
     }
 
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass2, MyPublicRegisteredClass2>();";
+        services.AddTransient<MyPublicRegisteredClass>();
+        services.AddTransient<MyPublicRegisteredClass2>();";
     }
 }
 

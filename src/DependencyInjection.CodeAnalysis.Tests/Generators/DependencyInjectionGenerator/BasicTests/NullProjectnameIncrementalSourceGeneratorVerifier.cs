@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2023-2015 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 using Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifiers;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicTests;
+
+public class NullProjectnameIncrementalSourceGeneratorVerifier : IncrementalSourceGeneratorVerifier<CodeAnalysis.DependencyInjectionGenerator>
 {
-    public class EmptyProjectnameIncrementalSourceGeneratorVerifier : IncrementalSourceGeneratorVerifier<DependencyInjectionGenerator>
-    {
-        protected override string DefaultTestProjectName => "";
-    }
+    protected override string DefaultTestProjectName => null!;
 }

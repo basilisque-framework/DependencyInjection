@@ -16,33 +16,18 @@
 
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.DependencyInjectionGeneratorTests;
+namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.BasicRegistrationTests;
 
 [TestClass]
-public class Custom_Attribute_1Class_Transient : BaseDependencyInjectionGeneratorTest
+public class Register_1Class_Singleton : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
         sources.Add(@"
         /// <summary>
-        /// Custom attribute that registers a service as scoped
-        /// </summary>
-        public class MyCustomScopedAttribute : System.Attribute, Basilisque.DependencyInjection.Registration.Annotations.IRegisterServiceAttribute
-        {
-            /// <summary>
-            /// Creates a new instance of the attribute
-            /// </summary>
-            public MyCustomScopedAttribute(Basilisque.DependencyInjection.Registration.Annotations.RegistrationScope scope)
-            {
-            }
-        }
-        ");
-
-        sources.Add(@"
-        /// <summary>
         /// Test class that will be registered as transient by attribute
         /// </summary>
-        [MyCustomScopedAttribute(Basilisque.DependencyInjection.Registration.Annotations.RegistrationScope.Scoped)]
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceSingleton]
         public class MyPublicRegisteredClass
         {
         }
@@ -52,7 +37,7 @@ public class Custom_Attribute_1Class_Transient : BaseDependencyInjectionGenerato
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddScoped<MyPublicRegisteredClass>();";
+        services.AddSingleton<MyPublicRegisteredClass>();";
     }
 }
 
