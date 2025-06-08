@@ -40,8 +40,8 @@ public class Register_1Class_With_Key_sbyte : BaseDependencyInjectionGeneratorTe
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>((sbyte)-42);
-        services.AddKeyedScoped<MyPublicRegisteredClass>((sbyte)43);";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>((sbyte)-42);
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>((sbyte)43);";
     }
 }
 

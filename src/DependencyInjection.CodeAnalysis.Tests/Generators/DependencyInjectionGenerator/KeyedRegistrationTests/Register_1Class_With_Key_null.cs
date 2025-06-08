@@ -40,8 +40,8 @@ public class Register_1Class_With_Key_null : BaseDependencyInjectionGeneratorTes
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(null);
-        services.AddKeyedScoped<MyPublicRegisteredClass>((object)null);";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(null);
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>((object)null);";
     }
 }
 

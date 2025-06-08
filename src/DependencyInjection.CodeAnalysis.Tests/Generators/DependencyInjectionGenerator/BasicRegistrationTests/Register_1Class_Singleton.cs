@@ -37,7 +37,7 @@ public class Register_1Class_Singleton : BaseDependencyInjectionGeneratorTest
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>();";
+        services.AddSingleton<global::MyPublicRegisteredClass>();";
     }
 }
 

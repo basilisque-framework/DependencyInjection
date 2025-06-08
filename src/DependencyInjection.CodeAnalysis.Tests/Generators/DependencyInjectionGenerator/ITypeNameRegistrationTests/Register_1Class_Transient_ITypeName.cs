@@ -48,7 +48,7 @@ public class Register_1Class_Transient_ITypeName : BaseDependencyInjectionGenera
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
+        services.AddTransient<global::Some.Namespace.IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();";
     }
 }
 

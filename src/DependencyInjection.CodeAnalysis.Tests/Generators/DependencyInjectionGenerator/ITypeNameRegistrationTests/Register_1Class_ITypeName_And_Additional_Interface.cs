@@ -60,8 +60,8 @@ public class Register_1Class_ITypeName_And_Additional_Interface : BaseDependency
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IOtherInterface, MyPublicRegisteredClass>();
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
+        services.AddTransient<global::Some.Namespace.IOtherInterface, global::MyPublicRegisteredClass>();
+        services.AddTransient<global::Some.Namespace.IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();";
     }
 }
 

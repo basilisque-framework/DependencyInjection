@@ -42,7 +42,7 @@ public class Register_1Class_DuplicateScopeDefinition_NotPossible : BaseDependen
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<MyPublicRegisteredClass>();";
+        services.AddTransient<global::MyPublicRegisteredClass>();";
     }
 }
 

@@ -76,8 +76,8 @@ public class Nested_Attributes_AsCommonInterface_1Class : BaseDependencyInjectio
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddSingleton<Some.Namespace.IMyCommonInterface, MyPublicRegisteredClass>();
-        services.AddSingleton<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();";
+        services.AddSingleton<global::Some.Namespace.IMyCommonInterface, global::MyPublicRegisteredClass>();
+        services.AddSingleton<global::Some.Namespace.IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();";
     }
 }
 

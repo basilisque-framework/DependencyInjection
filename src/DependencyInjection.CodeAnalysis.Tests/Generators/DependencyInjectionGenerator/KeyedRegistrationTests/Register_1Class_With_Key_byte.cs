@@ -39,7 +39,7 @@ public class Register_1Class_With_Key_byte : BaseDependencyInjectionGeneratorTes
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>((byte)42);";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>((byte)42);";
     }
 }
 

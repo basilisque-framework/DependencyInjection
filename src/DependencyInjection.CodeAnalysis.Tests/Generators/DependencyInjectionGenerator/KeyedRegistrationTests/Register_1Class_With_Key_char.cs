@@ -39,7 +39,7 @@ public class Register_1Class_With_Key_char : BaseDependencyInjectionGeneratorTes
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>('F');";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>('F');";
     }
 }
 

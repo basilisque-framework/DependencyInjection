@@ -39,7 +39,7 @@ public class Register_1Class_With_Key_Array_of_string : BaseDependencyInjectionG
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(new string[] { ""a"", ""b"", ""c"" });";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(new string[] { ""a"", ""b"", ""c"" });";
     }
 }
 

@@ -39,7 +39,7 @@ public class Register_1Class_With_Key_ulong : BaseDependencyInjectionGeneratorTe
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>((ulong)123);";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>((ulong)123);";
     }
 }
 

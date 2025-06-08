@@ -60,7 +60,7 @@ public class Register_1Class_DisabledITypeName_But_Other_Interface : BaseDepende
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IOtherInterface, MyPublicRegisteredClass>();";
+        services.AddTransient<global::Some.Namespace.IOtherInterface, global::MyPublicRegisteredClass>();";
     }
 }
 

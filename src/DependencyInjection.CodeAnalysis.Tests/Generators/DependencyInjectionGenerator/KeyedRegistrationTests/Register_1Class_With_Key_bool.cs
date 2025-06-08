@@ -40,8 +40,8 @@ public class Register_1Class_With_Key_bool : BaseDependencyInjectionGeneratorTes
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(true);
-        services.AddKeyedScoped<MyPublicRegisteredClass>(false);";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(true);
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(false);";
     }
 }
 

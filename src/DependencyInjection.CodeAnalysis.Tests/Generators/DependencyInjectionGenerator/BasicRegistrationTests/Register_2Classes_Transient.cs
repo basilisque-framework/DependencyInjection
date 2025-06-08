@@ -46,8 +46,8 @@ public class Register_2Classes_Transient : BaseDependencyInjectionGeneratorTest
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<MyPublicRegisteredClass>();
-        services.AddTransient<MyPublicRegisteredClass2>();";
+        services.AddTransient<global::MyPublicRegisteredClass>();
+        services.AddTransient<global::MyPublicRegisteredClass2>();";
     }
 }
 

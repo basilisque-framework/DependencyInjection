@@ -52,7 +52,7 @@ public class Register_1Class_Transient : BaseDependencyInjectionGeneratorTest
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddScoped<MyPublicRegisteredClass>();";
+        services.AddScoped<global::MyPublicRegisteredClass>();";
     }
 }
 

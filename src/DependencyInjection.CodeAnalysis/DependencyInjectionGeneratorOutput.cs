@@ -389,13 +389,15 @@ For more control over the details of this process use <see cref=""InitializeDepe
                 if (isKeyedRegistration && factoryInformation is not null)
                     keyedValue = $"{keyedValue}, ";
 
+                var symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Included);
+
                 if (item.HasRegisteredServices)
                 {
                     foreach (var registeredService in item.RegisteredServices!)
-                        body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol!.ToDisplayString()}>({keyedValue}{factoryInformation});");
+                        body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString(symbolDisplayFormat)}, {item.ImplementationSymbol!.ToDisplayString(symbolDisplayFormat)}>({keyedValue}{factoryInformation});");
                 }
                 else
-                    body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString()}>({keyedValue}{factoryInformation});");
+                    body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString(symbolDisplayFormat)}>({keyedValue}{factoryInformation});");
             }
         }
     }

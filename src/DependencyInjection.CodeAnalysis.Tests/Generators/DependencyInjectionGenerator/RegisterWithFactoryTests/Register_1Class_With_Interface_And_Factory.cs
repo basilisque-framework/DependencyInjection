@@ -64,7 +64,7 @@ public class Register_1Class_With_Interface_And_Factory : BaseDependencyInjectio
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddScoped<IMyPublicRegisteredClass, MyPublicRegisteredClass>(global::MyFactory.CreateInstance);";
+        services.AddScoped<global::IMyPublicRegisteredClass, global::MyPublicRegisteredClass>(global::MyFactory.CreateInstance);";
     }
 }
 

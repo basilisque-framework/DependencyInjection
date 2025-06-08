@@ -55,7 +55,7 @@ public class Register_1Class_With_Factory : BaseDependencyInjectionGeneratorTest
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>(global::MyFactory.Create);";
+        services.AddSingleton<global::MyPublicRegisteredClass>(global::MyFactory.Create);";
     }
 }
 

@@ -81,11 +81,11 @@ public class Register_2Classes_With_Factory_Differentiates_Methods_For_Keyed_And
     {
 #if NET8_0_OR_GREATER
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>(global::MyFactory.CreateNonKeyed);
-        services.AddKeyedSingleton<MyPublicRegisteredClass>(""MyKey"", global::MyFactory.CreateKeyed);";
+        services.AddSingleton<global::MyPublicRegisteredClass>(global::MyFactory.CreateNonKeyed);
+        services.AddKeyedSingleton<global::MyPublicRegisteredClass>(""MyKey"", global::MyFactory.CreateKeyed);";
 #else
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>(global::MyFactory.CreateNonKeyed);";
+        services.AddSingleton<global::MyPublicRegisteredClass>(global::MyFactory.CreateNonKeyed);";
 #endif
     }
 }

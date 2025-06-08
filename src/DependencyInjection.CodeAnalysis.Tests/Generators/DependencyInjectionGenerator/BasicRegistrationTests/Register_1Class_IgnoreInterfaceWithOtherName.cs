@@ -49,7 +49,7 @@ public class Register_1Class_IgnoreInterfaceWithOtherName : BaseDependencyInject
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<MyPublicRegisteredClass>();";
+        services.AddTransient<global::MyPublicRegisteredClass>();";
     }
 }
 

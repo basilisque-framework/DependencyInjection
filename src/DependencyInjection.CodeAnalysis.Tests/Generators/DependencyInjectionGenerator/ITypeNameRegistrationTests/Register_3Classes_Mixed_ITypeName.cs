@@ -90,9 +90,9 @@ public class Register_3Classes_Mixed_ITypeName : BaseDependencyInjectionGenerato
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.IMyPublicRegisteredClass, MyPublicRegisteredClass>();
-        services.AddSingleton<Some.Namespace.IMyPublicRegisteredClass2, MyPublicRegisteredClass2>();
-        services.AddScoped<Some.Namespace.IMyPublicRegisteredClass3, MyPublicRegisteredClass3>();";
+        services.AddTransient<global::Some.Namespace.IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();
+        services.AddSingleton<global::Some.Namespace.IMyPublicRegisteredClass2, global::MyPublicRegisteredClass2>();
+        services.AddScoped<global::Some.Namespace.IMyPublicRegisteredClass3, global::MyPublicRegisteredClass3>();";
     }
 }
 

@@ -41,7 +41,7 @@ public class Register_1Class_With_Key_Array_of_Type : BaseDependencyInjectionGen
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(new global::System.Type[] { typeof(int), typeof(string), typeof(global::System.Type) });";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(new global::System.Type[] { typeof(int), typeof(string), typeof(global::System.Type) });";
     }
 }
 

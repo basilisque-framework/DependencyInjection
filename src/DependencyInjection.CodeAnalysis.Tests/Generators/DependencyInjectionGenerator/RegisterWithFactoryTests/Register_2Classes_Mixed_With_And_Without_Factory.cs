@@ -65,8 +65,8 @@ public class Register_2Classes_Mixed_With_And_Without_Factory : BaseDependencyIn
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>(global::MyFactory.NewMyPublicRegisteredClass);
-        services.AddSingleton<MyPublicRegisteredClass2>();";
+        services.AddSingleton<global::MyPublicRegisteredClass>(global::MyFactory.NewMyPublicRegisteredClass);
+        services.AddSingleton<global::MyPublicRegisteredClass2>();";
     }
 }
 

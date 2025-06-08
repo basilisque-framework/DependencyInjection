@@ -49,7 +49,7 @@ public class Register_1Class_As_Interface : BaseDependencyInjectionGeneratorTest
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<Some.Namespace.ISomeInterface, MyPublicRegisteredClass>();";
+        services.AddTransient<global::Some.Namespace.ISomeInterface, global::MyPublicRegisteredClass>();";
     }
 }
 

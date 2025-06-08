@@ -39,7 +39,7 @@ public class Register_1Class_With_Key_ushort : BaseDependencyInjectionGeneratorT
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>((ushort)123);";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>((ushort)123);";
     }
 }
 

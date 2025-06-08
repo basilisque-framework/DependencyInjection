@@ -64,7 +64,7 @@ public class Register_1Class_With_Key_Array_of_Enum : BaseDependencyInjectionGen
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(new global::My.Namespace.MyEnum[] { global::My.Namespace.MyEnum.A, global::My.Namespace.MyEnum.C });";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(new global::My.Namespace.MyEnum[] { global::My.Namespace.MyEnum.A, global::My.Namespace.MyEnum.C });";
     }
 }
 

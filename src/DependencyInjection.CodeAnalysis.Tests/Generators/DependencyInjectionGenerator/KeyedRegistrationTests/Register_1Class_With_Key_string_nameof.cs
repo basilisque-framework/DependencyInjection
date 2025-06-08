@@ -57,8 +57,8 @@ public class Register_1Class_With_Key_string_nameof : BaseDependencyInjectionGen
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(""MyClass"");
-        services.AddKeyedScoped<MyPublicRegisteredClass>(""TestMethod"");";
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(""MyClass"");
+        services.AddKeyedScoped<global::MyPublicRegisteredClass>(""TestMethod"");";
     }
 }
 

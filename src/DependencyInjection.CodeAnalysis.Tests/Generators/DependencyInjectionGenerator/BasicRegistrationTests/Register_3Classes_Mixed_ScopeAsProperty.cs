@@ -62,8 +62,8 @@ public class Register_3Classes_Mixed_ScopeAsProperty : BaseDependencyInjectionGe
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddScoped<MyPublicRegisteredClass2>();
-        services.AddTransient<My.Test.NameSpace.MyPublicRegisteredClass3>();";
+        services.AddScoped<global::MyPublicRegisteredClass2>();
+        services.AddTransient<global::My.Test.NameSpace.MyPublicRegisteredClass3>();";
     }
 }
 

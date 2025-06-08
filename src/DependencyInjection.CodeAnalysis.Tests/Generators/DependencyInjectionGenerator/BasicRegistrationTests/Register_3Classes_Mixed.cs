@@ -56,9 +56,9 @@ public class Register_3Classes_Mixed : BaseDependencyInjectionGeneratorTest
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddTransient<MyPublicRegisteredClass>();
-        services.AddScoped<MyPublicRegisteredClass2>();
-        services.AddSingleton<My.Test.NameSpace.MyPublicRegisteredClass3>();";
+        services.AddTransient<global::MyPublicRegisteredClass>();
+        services.AddScoped<global::MyPublicRegisteredClass2>();
+        services.AddSingleton<global::My.Test.NameSpace.MyPublicRegisteredClass3>();";
     }
 }
 

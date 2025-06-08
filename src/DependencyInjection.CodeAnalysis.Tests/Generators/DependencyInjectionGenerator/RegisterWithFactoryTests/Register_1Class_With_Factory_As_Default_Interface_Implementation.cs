@@ -57,7 +57,7 @@ public class Register_1Class_With_Factory_As_Default_Interface_Implementation : 
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddSingleton<MyPublicRegisteredClass>(global::IMyFactory.Create);";
+        services.AddSingleton<global::MyPublicRegisteredClass>(global::IMyFactory.Create);";
     }
 }
 
