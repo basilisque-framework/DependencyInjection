@@ -62,7 +62,7 @@ public class Register_1Class_With_Factory_With_Invalid_Return_Type_Shows_Error :
     protected override IEnumerable<DiagnosticResult> GetExpectedDiagnostics()
     {
         //error CS0407: 'object MyFactory.Create(IServiceProvider)' has the wrong return type
-        yield return new Microsoft.CodeAnalysis.Testing.DiagnosticResult("CS0407", Microsoft.CodeAnalysis.DiagnosticSeverity.Error).WithSpan("Basilisque.DependencyInjection.CodeAnalysis-1.0-Alpha\\Basilisque.DependencyInjection.CodeAnalysis.DependencyInjectionGenerator\\DependencyRegistrator_RootNamespace.impl.g.cs", 16, 64, 16, 88);
+        yield return new Microsoft.CodeAnalysis.Testing.DiagnosticResult("CS0407", Microsoft.CodeAnalysis.DiagnosticSeverity.Error).WithSpan(PrependGeneratedFilePath("DependencyRegistrator_RootNamespace.impl.g.cs"), 16, 64, 16, 88);
     }
 }
 

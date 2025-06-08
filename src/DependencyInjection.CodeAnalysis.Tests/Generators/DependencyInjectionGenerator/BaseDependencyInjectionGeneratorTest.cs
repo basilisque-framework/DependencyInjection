@@ -152,6 +152,11 @@ public abstract class BaseDependencyInjectionGeneratorTest<TGenerator>
         yield break;
     }
 
+    protected string PrependGeneratedFilePath(string filename)
+    {
+        return Path.Combine(typeof(CodeAnalysis.DependencyInjectionGenerator).Assembly.GetName().Name ?? string.Empty, typeof(CodeAnalysis.DependencyInjectionGenerator).FullName!, filename);
+    }
+
     protected abstract void AddSourcesUnderTest(Microsoft.CodeAnalysis.Testing.SourceFileList sources);
 
     private List<(string Name, string SourceText)> getExpectedSources()
