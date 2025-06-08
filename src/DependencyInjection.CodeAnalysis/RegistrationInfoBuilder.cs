@@ -43,7 +43,7 @@ internal static class RegistrationInfoBuilder
 
             var childRegistrationInfos = GetRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
 
-            var args = readAttributeArguments(registrationAttribute);
+            var args = readAttributeArguments(context, registrationAttribute);
 
             var servicesToRegister = args.servicesToRegister;
 
@@ -55,7 +55,7 @@ internal static class RegistrationInfoBuilder
             {
                 isHandled = true;
 
-                assignValuesToRegistrationInfo(childRegistrationInfo, rootNode, nodeSymbol, args.registrationScope, servicesToRegister, args.factoryType, args.factoryMethodName);
+                assignValuesToRegistrationInfo(childRegistrationInfo, rootNode, nodeSymbol, args.registrationScope, servicesToRegister, args.factoryType, args.factoryMethodName, args.serviceKey);
 
                 yield return childRegistrationInfo;
             }
@@ -64,7 +64,7 @@ internal static class RegistrationInfoBuilder
             {
                 var result = new ServiceRegistrationInfo();
 
-                assignValuesToRegistrationInfo(result, rootNode, nodeSymbol, args.registrationScope, servicesToRegister, args.factoryType, args.factoryMethodName);
+                assignValuesToRegistrationInfo(result, rootNode, nodeSymbol, args.registrationScope, servicesToRegister, args.factoryType, args.factoryMethodName, args.serviceKey);
 
                 yield return result;
             }
@@ -89,13 +89,14 @@ internal static class RegistrationInfoBuilder
         }
     }
 
-    private static (Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, bool implementsITypeName, INamedTypeSymbol? factoryType, string? factoryMethodName) readAttributeArguments(AttributeData registrationAttribute)
+    private static (Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, bool implementsITypeName, INamedTypeSymbol? factoryType, string? factoryMethodName, string? serviceKey) readAttributeArguments(GeneratorSyntaxContext context, AttributeData registrationAttribute)
     {
         Registration.Annotations.RegistrationScope? registrationScope = null;
         List<INamedTypeSymbol>? servicesToRegister = null;
         bool implementsITypeName = true;
         INamedTypeSymbol? factoryType = null;
         string? factoryMethodName = null;
+        string? serviceKey = null;
 
         foreach (var ctorArg in registrationAttribute.ConstructorArguments)
         {
@@ -141,12 +142,70 @@ internal static class RegistrationInfoBuilder
 
                 factoryMethodName = tmpFactoryMethodName;
             }
+            else if (namedArgument.Key == "Key")
+            {
+                serviceKey = getServiceKeyFromNamedArgument(context, registrationAttribute, namedArgument);
+            }
         }
 
-        return (registrationScope, servicesToRegister, implementsITypeName, factoryType, factoryMethodName);
+        return (registrationScope, servicesToRegister, implementsITypeName, factoryType, factoryMethodName, serviceKey);
     }
 
-    private static void assignValuesToRegistrationInfo(ServiceRegistrationInfo registrationInfo, Microsoft.CodeAnalysis.SyntaxNode? implementationNode, INamedTypeSymbol implementationNodeSymbol, Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, INamedTypeSymbol? factoryType, string? factoryMethodName)
+    private static string? getServiceKeyFromNamedArgument(GeneratorSyntaxContext context, AttributeData registrationAttribute, KeyValuePair<string, TypedConstant> namedArgument)
+    {
+        var attributeSyntax = registrationAttribute.ApplicationSyntaxReference?.GetSyntax() as Microsoft.CodeAnalysis.CSharp.Syntax.AttributeSyntax;
+
+        var keyArgumentSyntax = attributeSyntax?.ArgumentList?.Arguments.Where(a => a.NameEquals?.Name.Identifier.Text == "Key").SingleOrDefault();
+
+        var expression = keyArgumentSyntax?.Expression;
+
+        // This sould never be null in that this case in user code that compiles successfully.
+        if (expression is null)
+            return null;
+
+        if (namedArgument.Value.Kind == TypedConstantKind.Primitive || namedArgument.Value.Kind == TypedConstantKind.Type)
+        {
+            var result = expression.ToString();
+
+            switch (namedArgument.Value.Value)
+            {
+                case string s when result.StartsWith("nameof("):
+                    return $"\"{s}\"";
+                default:
+                    return result;
+            }
+        }
+        else if (namedArgument.Value.Kind == TypedConstantKind.Enum)
+        {
+            var symbolInfo = context.SemanticModel.GetSymbolInfo(expression);
+            var symbol = symbolInfo.Symbol;
+
+            // Fallback, in case the symbol is not found, use the first candidate symbol.
+            symbol ??= symbolInfo.CandidateSymbols.FirstOrDefault();
+
+            if (symbol is null)
+                return null;
+
+            // Fallback in case the symbol is not a field symbol.
+            if (symbol is not IFieldSymbol fieldSymbol)
+            {
+                var enumType = namedArgument.Value.Type?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                var enumValue = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+                return $"{enumType}.{enumValue}";
+            }
+
+            return $"{fieldSymbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{fieldSymbol.Name}";
+        }
+        else if (namedArgument.Value.Kind == TypedConstantKind.Array)
+        {
+            return expression.ToString();
+        }
+
+        return null;
+    }
+
+    private static void assignValuesToRegistrationInfo(ServiceRegistrationInfo registrationInfo, Microsoft.CodeAnalysis.SyntaxNode? implementationNode, INamedTypeSymbol implementationNodeSymbol, Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, INamedTypeSymbol? factoryType, string? factoryMethodName, string? serviceKey)
     {
         if (implementationNode != null)
         {
@@ -170,5 +229,8 @@ internal static class RegistrationInfoBuilder
 
         if (factoryMethodName is not null)
             registrationInfo.FactoryMethodName = factoryMethodName;
+
+        if (serviceKey is not null)
+            registrationInfo.ServiceKey = serviceKey;
     }
 }

@@ -373,18 +373,29 @@ For more control over the details of this process use <see cref=""InitializeDepe
                 if (!validateRegistrationInfo(item))
                     continue;
 
-                bool isKeyedRegistration = false;
+                bool isKeyedRegistration = item.ServiceKey is not null;
+
+                string keyedPrefix = "";
+                string keyedValue = "";
+                if (isKeyedRegistration)
+                {
+                    keyedPrefix = "Keyed";
+                    keyedValue = item.ServiceKey!;
+                }
 
                 if (!tryGetFactoryInformation(context, item, isKeyedRegistration, out var factoryInformation))
                     continue;
 
+                if (isKeyedRegistration && factoryInformation is not null)
+                    keyedValue = $"{keyedValue}, ";
+
                 if (item.HasRegisteredServices)
                 {
                     foreach (var registeredService in item.RegisteredServices!)
-                        body.Add($"services.Add{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol!.ToDisplayString()}>({factoryInformation});");
+                        body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString()}, {item.ImplementationSymbol!.ToDisplayString()}>({keyedValue}{factoryInformation});");
                 }
                 else
-                    body.Add($"services.Add{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString()}>({factoryInformation});");
+                    body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString()}>({keyedValue}{factoryInformation});");
             }
         }
     }

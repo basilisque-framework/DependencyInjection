@@ -36,6 +36,7 @@ internal class ServiceRegistrationInfo
     public bool HasRegisteredServices { get { return _registeredServices?.Count > 0; } }
     public INamedTypeSymbol? FactoryType { get; set; } = null;
     public string? FactoryMethodName { get; set; } = null;
+    public string? ServiceKey { get; set; } = null;
 
     public ServiceRegistrationInfo()
     { }

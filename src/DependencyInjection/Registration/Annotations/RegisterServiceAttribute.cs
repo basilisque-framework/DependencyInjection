@@ -50,6 +50,11 @@ public class RegisterServiceAttribute : Attribute, IRegisterServiceAttribute
     public string? FactoryMethodName { get; set; } = null;
 
     /// <summary>
+    /// Options service key for keyed registrations.
+    /// </summary>
+    public object? Key { get; set; } = null;
+
+    /// <summary>
     /// Creates a new <see cref="RegisterServiceAttribute"/>
     /// </summary>
     /// <param name="scope">The scope of the registration</param>

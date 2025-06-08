@@ -23,6 +23,18 @@ public class Register_2Classes_With_Factory_Differentiates_Methods_For_Keyed_And
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
+#if NET8_0_OR_GREATER
+        sources.Add(@"
+        /// <summary>
+        /// Test class that will be registered with the factory method.
+        /// </summary>
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceSingleton(Factory = typeof(MyFactory))]
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceSingleton(Factory = typeof(MyFactory), Key = ""MyKey"")]
+        public class MyPublicRegisteredClass
+        {
+        }
+        ");
+#else
         sources.Add(@"
         /// <summary>
         /// Test class that will be registered with the factory method.
@@ -32,6 +44,7 @@ public class Register_2Classes_With_Factory_Differentiates_Methods_For_Keyed_And
         {
         }
         ");
+#endif
 
         sources.Add(@"
 #nullable enable
@@ -66,8 +79,14 @@ public class Register_2Classes_With_Factory_Differentiates_Methods_For_Keyed_And
 
     protected override string? GetRegisteredServicesSource()
     {
+#if NET8_0_OR_GREATER
+        return @"
+        services.AddSingleton<MyPublicRegisteredClass>(global::MyFactory.CreateNonKeyed);
+        services.AddKeyedSingleton<MyPublicRegisteredClass>(""MyKey"", global::MyFactory.CreateKeyed);";
+#else
         return @"
         services.AddSingleton<MyPublicRegisteredClass>(global::MyFactory.CreateNonKeyed);";
+#endif
     }
 }
 
