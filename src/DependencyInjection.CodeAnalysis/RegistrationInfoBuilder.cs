@@ -163,46 +163,12 @@ internal static class RegistrationInfoBuilder
         if (expression is null)
             return null;
 
-        if (namedArgument.Value.Kind == TypedConstantKind.Primitive || namedArgument.Value.Kind == TypedConstantKind.Type)
-        {
-            var result = expression.ToString();
+        if (namedArgument.Value.Kind == TypedConstantKind.Primitive && namedArgument.Value.Value is string s && expression.ToString().StartsWith("nameof("))
+            return $"\"{s}\"";
 
-            switch (namedArgument.Value.Value)
-            {
-                case string s when result.StartsWith("nameof("):
-                    return $"\"{s}\"";
-                default:
-                    return result;
-            }
-        }
-        else if (namedArgument.Value.Kind == TypedConstantKind.Enum)
-        {
-            var symbolInfo = context.SemanticModel.GetSymbolInfo(expression);
-            var symbol = symbolInfo.Symbol;
+        var rewriter = new FullQualifyingSyntaxRewriter(context.SemanticModel);
 
-            // Fallback, in case the symbol is not found, use the first candidate symbol.
-            symbol ??= symbolInfo.CandidateSymbols.FirstOrDefault();
-
-            if (symbol is null)
-                return null;
-
-            // Fallback in case the symbol is not a field symbol.
-            if (symbol is not IFieldSymbol fieldSymbol)
-            {
-                var enumType = namedArgument.Value.Type?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                var enumValue = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
-                return $"{enumType}.{enumValue}";
-            }
-
-            return $"{fieldSymbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{fieldSymbol.Name}";
-        }
-        else if (namedArgument.Value.Kind == TypedConstantKind.Array)
-        {
-            return expression.ToString();
-        }
-
-        return null;
+        return rewriter.Visit(expression).ToFullString();
     }
 
     private static void assignValuesToRegistrationInfo(ServiceRegistrationInfo registrationInfo, Microsoft.CodeAnalysis.SyntaxNode? implementationNode, INamedTypeSymbol implementationNodeSymbol, Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, INamedTypeSymbol? factoryType, string? factoryMethodName, string? serviceKey)

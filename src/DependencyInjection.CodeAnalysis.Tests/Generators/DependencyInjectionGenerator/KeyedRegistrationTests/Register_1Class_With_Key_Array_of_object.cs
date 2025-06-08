@@ -21,7 +21,7 @@ using Microsoft.CodeAnalysis.Testing;
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator.KeyedRegistrationTests;
 
 [TestClass]
-public class Register_1Class_With_Key_Array_of_Type : BaseDependencyInjectionGeneratorTest
+public class Register_1Class_With_Key_Array_of_object : BaseDependencyInjectionGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
@@ -31,7 +31,7 @@ public class Register_1Class_With_Key_Array_of_Type : BaseDependencyInjectionGen
         /// <summary>
         /// Test class that will be registered with the factory method.
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped(Key = new Type[] { typeof(int), typeof(string), typeof(Type) })]
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped(Key = new object[] { typeof(Type), 42, ""Test"" })]
         public class MyPublicRegisteredClass
         {
         }
@@ -41,7 +41,7 @@ public class Register_1Class_With_Key_Array_of_Type : BaseDependencyInjectionGen
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(new global::System.Type[] { typeof(int), typeof(string), typeof(global::System.Type) });";
+        services.AddKeyedScoped<MyPublicRegisteredClass>(new object[] { typeof(global::System.Type), 42, ""Test"" });";
     }
 }
 

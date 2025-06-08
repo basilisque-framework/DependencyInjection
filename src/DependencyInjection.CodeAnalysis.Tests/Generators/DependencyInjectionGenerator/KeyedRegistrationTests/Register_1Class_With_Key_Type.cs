@@ -29,7 +29,7 @@ public class Register_1Class_With_Key_Type : BaseDependencyInjectionGeneratorTes
         /// <summary>
         /// Test class that will be registered with the factory method.
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped(Key = typeof(string))]
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped(Key = typeof(System.String))]
         [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped(Key = typeof(System.Text.StringBuilder))]
         public class MyPublicRegisteredClass
         {
@@ -41,7 +41,7 @@ public class Register_1Class_With_Key_Type : BaseDependencyInjectionGeneratorTes
     {
         return @"
         services.AddKeyedScoped<MyPublicRegisteredClass>(typeof(string));
-        services.AddKeyedScoped<MyPublicRegisteredClass>(typeof(System.Text.StringBuilder));";
+        services.AddKeyedScoped<MyPublicRegisteredClass>(typeof(global::System.Text.StringBuilder));";
     }
 }
 

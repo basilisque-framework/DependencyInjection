@@ -54,7 +54,7 @@ public class Register_1Class_With_Key_Array_of_Enum : BaseDependencyInjectionGen
         /// <summary>
         /// Test class that will be registered with the factory method.
         /// </summary>
-        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped(Key = new My.Namespace.MyEnum[] { My.Namespace.MyEnum.A, My.Namespace.MyEnum.C })]
+        [Basilisque.DependencyInjection.Registration.Annotations.RegisterServiceScoped(Key = new MyEnum[] { MyEnum.A, MyEnum.C })]
         public class MyPublicRegisteredClass
         {
         }
@@ -64,7 +64,7 @@ public class Register_1Class_With_Key_Array_of_Enum : BaseDependencyInjectionGen
     protected override string? GetRegisteredServicesSource()
     {
         return @"
-        services.AddKeyedScoped<MyPublicRegisteredClass>(new My.Namespace.MyEnum[] { My.Namespace.MyEnum.A, My.Namespace.MyEnum.C });";
+        services.AddKeyedScoped<MyPublicRegisteredClass>(new global::My.Namespace.MyEnum[] { global::My.Namespace.MyEnum.A, global::My.Namespace.MyEnum.C });";
     }
 }
 
