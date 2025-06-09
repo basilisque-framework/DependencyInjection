@@ -43,7 +43,7 @@ internal static class RegistrationInfoBuilder
 
             var childRegistrationInfos = GetRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
 
-            var args = readAttributeArguments(context, registrationAttribute);
+            var args = readAttributeArguments(context, nodeSymbol, registrationAttribute);
 
             var servicesToRegister = args.servicesToRegister;
 
@@ -89,7 +89,7 @@ internal static class RegistrationInfoBuilder
         }
     }
 
-    private static (Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, bool implementsITypeName, INamedTypeSymbol? factoryType, string? factoryMethodName, string? serviceKey) readAttributeArguments(GeneratorSyntaxContext context, AttributeData registrationAttribute)
+    private static (Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, bool implementsITypeName, INamedTypeSymbol? factoryType, string? factoryMethodName, string? serviceKey) readAttributeArguments(GeneratorSyntaxContext context, INamedTypeSymbol typeToRegister, AttributeData registrationAttribute)
     {
         Registration.Annotations.RegistrationScope? registrationScope = null;
         List<INamedTypeSymbol>? servicesToRegister = null;
@@ -117,8 +117,11 @@ internal static class RegistrationInfoBuilder
             else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "As" || namedArgument.Key == "RegisterAs"))
             {
                 var innerServiceToRegister = namedArgument.Value.Value as INamedTypeSymbol;
-                if (innerServiceToRegister != null)
-                    servicesToRegister = new List<INamedTypeSymbol>() { innerServiceToRegister };
+
+                if (innerServiceToRegister is null)
+                    continue;
+
+                servicesToRegister = new List<INamedTypeSymbol>() { innerServiceToRegister };
             }
             else if (namedArgument.Value.Kind == TypedConstantKind.Primitive && (namedArgument.Key == "ImplementsITypeName"))
             {

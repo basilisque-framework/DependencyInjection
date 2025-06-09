@@ -389,17 +389,69 @@ For more control over the details of this process use <see cref=""InitializeDepe
                 if (isKeyedRegistration && factoryInformation is not null)
                     keyedValue = $"{keyedValue}, ";
 
-                var symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Included);
+                var registrationScope = item.RegistrationScope.ToString();
 
                 if (item.HasRegisteredServices)
                 {
                     foreach (var registeredService in item.RegisteredServices!)
-                        body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{registeredService.ToDisplayString(symbolDisplayFormat)}, {item.ImplementationSymbol!.ToDisplayString(symbolDisplayFormat)}>({keyedValue}{factoryInformation});");
+                    {
+                        var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, registeredService, item.ImplementationSymbol!);
+                        body.Add(bodyLine);
+                    }
                 }
                 else
-                    body.Add($"services.Add{keyedPrefix}{item.RegistrationScope.ToString()}<{item.ImplementationSymbol!.ToDisplayString(symbolDisplayFormat)}>({keyedValue}{factoryInformation});");
+                {
+                    var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, registeredService: null, item.ImplementationSymbol!);
+                    body.Add(bodyLine);
+                }
             }
         }
+    }
+
+    private static string getServiceRegistrationBody(string registrationScope, bool isKeyedRegistration, string keyedPrefix, string keyedValue, string? factoryInformation, INamedTypeSymbol? registeredService, INamedTypeSymbol implementationSymbol)
+    {
+        var symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Included);
+
+        string? registeredServiceInfo = null;
+        bool registeredServiceIsOpenGeneric;
+        if (registeredService is not null)
+        {
+            registeredServiceIsOpenGeneric = registeredService.IsUnboundGenericType;
+
+            string registeredServiceDisplayString;
+            if (registeredServiceIsOpenGeneric)
+                registeredServiceDisplayString = registeredService.ConstructUnboundGenericType().ToDisplayString(symbolDisplayFormat);
+            else
+                registeredServiceDisplayString = registeredService.ToDisplayString(symbolDisplayFormat);
+
+            if (registeredServiceIsOpenGeneric || implementationSymbol.IsGenericType)
+                registeredServiceInfo = $"typeof({registeredServiceDisplayString}), ";
+            else
+                registeredServiceInfo = $"{registeredServiceDisplayString}, ";
+        }
+        else
+            registeredServiceIsOpenGeneric = false;
+
+        string implementationInfo;
+        if (implementationSymbol.IsGenericType)
+            implementationInfo = implementationSymbol.ConstructUnboundGenericType().ToDisplayString(symbolDisplayFormat);
+        else
+            implementationInfo = implementationSymbol.ToDisplayString(symbolDisplayFormat);
+
+        string result;
+        if (registeredServiceIsOpenGeneric || implementationSymbol.IsGenericType)
+        {
+            if (isKeyedRegistration || factoryInformation is not null)
+                keyedValue = $", {keyedValue}";
+
+            result = $"services.Add{keyedPrefix}{registrationScope}({registeredServiceInfo}typeof({implementationInfo}){keyedValue}{factoryInformation});";
+        }
+        else
+        {
+            result = $"services.Add{keyedPrefix}{registrationScope}<{registeredServiceInfo}{implementationInfo}>({keyedValue}{factoryInformation});";
+        }
+
+        return result;
     }
 
     private static bool tryGetFactoryInformation(SourceProductionContext context, ServiceRegistrationInfo item, bool isKeyedRegistration, out string? factoryInformation)
