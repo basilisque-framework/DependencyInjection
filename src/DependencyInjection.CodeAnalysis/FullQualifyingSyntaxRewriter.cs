@@ -12,6 +12,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis;
 public class FullQualifyingSyntaxRewriter : CSharpSyntaxRewriter
 {
     private readonly SemanticModel _semanticModel;
+    private readonly SymbolDisplayFormat _fullyQualifiedFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithMemberOptions(SymbolDisplayMemberOptions.IncludeContainingType);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FullQualifyingSyntaxRewriter"/> class.
@@ -29,7 +30,7 @@ public class FullQualifyingSyntaxRewriter : CSharpSyntaxRewriter
 
         if (typeSymbol != null && !typeSymbol.IsErrorType())
         {
-            var fullTypeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var fullTypeName = typeSymbol.ToDisplayString(_fullyQualifiedFormat);
             var newTypeSyntax = SyntaxFactory.ParseTypeName(fullTypeName).WithTriviaFrom(node.Type);
 
             return node.WithType(newTypeSyntax);
@@ -91,7 +92,7 @@ public class FullQualifyingSyntaxRewriter : CSharpSyntaxRewriter
         if (typeSymbol != null && !typeSymbol.IsErrorType())
         {
             var fullElementType = SyntaxFactory.ParseTypeName(
-                typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                typeSymbol.ToDisplayString(_fullyQualifiedFormat))
                 .WithTriviaFrom(node.ElementType);
 
             return node.WithElementType(fullElementType);
@@ -107,13 +108,10 @@ public class FullQualifyingSyntaxRewriter : CSharpSyntaxRewriter
 
         if (symbol != null && symbol.Kind is SymbolKind.Field or SymbolKind.Property)
         {
-            string? fullName;
-            if (symbol is IFieldSymbol { ContainingType.TypeKind: TypeKind.Enum })
-                fullName = $"{symbol.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{symbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}";
-            else
-                fullName = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var fullName = symbol.ToDisplayString(_fullyQualifiedFormat);
 
             var parsed = SyntaxFactory.ParseExpression(fullName).WithTriviaFrom(node);
+
             return parsed;
         }
 
@@ -130,7 +128,7 @@ public class FullQualifyingSyntaxRewriter : CSharpSyntaxRewriter
                 var symbol = _semanticModel.GetSymbolInfo(expr).Symbol;
                 if (symbol != null && symbol.Kind == SymbolKind.NamedType)
                 {
-                    var fullName = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                    var fullName = symbol.ToDisplayString(_fullyQualifiedFormat);
                     var stringLiteral = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression,
                         SyntaxFactory.Literal(fullName)).WithTriviaFrom(node);
                     return stringLiteral;
@@ -148,7 +146,7 @@ public class FullQualifyingSyntaxRewriter : CSharpSyntaxRewriter
 
         if (symbol is ITypeSymbol typeSymbol && !typeSymbol.IsErrorType())
         {
-            var fullName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var fullName = typeSymbol.ToDisplayString(_fullyQualifiedFormat);
             var parsed = SyntaxFactory.ParseTypeName(fullName).WithTriviaFrom(node);
             return parsed;
         }
