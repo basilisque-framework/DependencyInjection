@@ -38,7 +38,7 @@ internal static class RegistrationInfoBuilder
 
         foreach (var registrationAttribute in registrationAttributes)
         {
-            if (registrationAttribute.AttributeClass == null)
+            if (registrationAttribute.AttributeClass is null)
                 continue;
 
             var childRegistrationInfos = GetRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
