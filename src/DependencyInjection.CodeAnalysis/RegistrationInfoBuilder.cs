@@ -20,6 +20,38 @@ internal static class RegistrationInfoBuilder
 {
     internal static IEnumerable<ServiceRegistrationInfo> GetRegistrationInfos(GeneratorSyntaxContext context, INamedTypeSymbol baseAttrInterface, INamedTypeSymbol nodeSymbol, Microsoft.CodeAnalysis.SyntaxNode? rootNode)
     {
+        var result = getRegistrationInfos(context, baseAttrInterface, nodeSymbol, rootNode);
+
+        foreach (var item in result)
+        {
+            if (!ValidateRegistrationInfo(item))
+                continue;
+
+            resolveFactoryInformation(context, item);
+
+            yield return item;
+        }
+    }
+
+    internal static bool ValidateRegistrationInfo(ServiceRegistrationInfo? registrationInfo)
+    {
+        if (registrationInfo == null)
+            return false;
+
+        if (registrationInfo.ImplementationSymbol == null)
+            return false;
+
+        if (registrationInfo.ImplementationSyntaxNode == null)
+            return false;
+
+        if (registrationInfo.RegistrationScope == null)
+            return false;
+
+        return true;
+    }
+
+    private static IEnumerable<ServiceRegistrationInfo> getRegistrationInfos(GeneratorSyntaxContext context, INamedTypeSymbol baseAttrInterface, INamedTypeSymbol nodeSymbol, Microsoft.CodeAnalysis.SyntaxNode? rootNode)
+    {
         var isRootNode = rootNode is not null;
 
         if (isRootNode && context.SemanticModel.Compilation.HasImplicitConversion(nodeSymbol, baseAttrInterface))
@@ -41,7 +73,7 @@ internal static class RegistrationInfoBuilder
             if (registrationAttribute.AttributeClass is null)
                 continue;
 
-            var childRegistrationInfos = GetRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
+            var childRegistrationInfos = getRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
 
             var args = readAttributeArguments(context, nodeSymbol, registrationAttribute);
 
@@ -201,5 +233,107 @@ internal static class RegistrationInfoBuilder
 
         if (serviceKey is not null)
             registrationInfo.ServiceKey = serviceKey;
+    }
+
+    private static void resolveFactoryInformation(GeneratorSyntaxContext context, ServiceRegistrationInfo item)
+    {
+        if (item.FactoryType is null)
+        {
+            if (item.FactoryMethodName is not null)
+            {
+                // The factory method name is defined, but no factory type is defined.
+                // This doesn't make sense, so we report a diagnostic.
+
+                var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
+                var factoryTypeDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryTypeNotDefined, location, item.FactoryMethodName);
+                item.Diagnostics.Add(factoryTypeDiagnostic);
+            }
+
+            // No factory type or factory method name defined.
+            // This is fine, so we just register the service without a factory.
+            return;
+        }
+
+        var factoryTypeName = item.FactoryType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        bool isKeyedRegistration = item.ServiceKey is not null;
+
+        var factoryMethod = getValidFactoryMethod(context, item.FactoryType, isKeyedRegistration, item.FactoryMethodName);
+        if (factoryMethod is null)
+        {
+            // No valid factory method found, so we report a diagnostic.
+            var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
+            Diagnostic factoryMethodDiagnostic;
+            if (item.FactoryMethodName is null)
+                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNotFound, location, factoryTypeName);
+            else
+                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNameIsInvalid, location, item.FactoryMethodName, factoryTypeName);
+            item.Diagnostics.Add(factoryMethodDiagnostic);
+            return;
+        }
+
+        item.FactoryRegistrationWithoutImplementation = !context.SemanticModel.Compilation.HasImplicitConversion(factoryMethod.ReturnType, item.ImplementationSymbol);
+
+        item.FactoryInformation = $"{factoryTypeName}.{factoryMethod.Name}";
+    }
+
+    private static IMethodSymbol? getValidFactoryMethod(GeneratorSyntaxContext context, INamedTypeSymbol factoryType, bool isKeyed, string? expectedMethodName)
+    {
+        var getMembers = expectedMethodName is null ? factoryType.GetMembers() : factoryType.GetMembers(expectedMethodName);
+
+        var methodCandidates = getMembers.OfType<IMethodSymbol>().Where(member =>
+        {
+            // has to be static
+            if (!member.IsStatic)
+                return false;
+
+            // has to be public or internal
+            if (member.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal))
+                return false;
+
+            // has to return a value (not void)
+            if (member.ReturnsVoid)
+                return false;
+
+            // regular methods only (no constructors, operators, property accessors, ...)
+            if (member.MethodKind != MethodKind.Ordinary)
+                return false;
+
+            // check parameters
+            var parameters = member.Parameters;
+
+            if (isKeyed)
+            {
+                if (parameters.Length == 2 &&
+                     parameters[0].Type.ToDisplayString() == "System.IServiceProvider" &&
+                     parameters[1].Type.ToDisplayString() is "object" or "object?")
+                {
+                    // Keyed Factory
+                    return true;
+                }
+            }
+            else
+            {
+                if (parameters.Length == 1 &&
+                parameters[0].Type.ToDisplayString() == "System.IServiceProvider")
+                {
+                    // Non-Keyed Factory
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        try
+        {
+            var factoryMethod = methodCandidates.SingleOrDefault();
+
+            return factoryMethod;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }

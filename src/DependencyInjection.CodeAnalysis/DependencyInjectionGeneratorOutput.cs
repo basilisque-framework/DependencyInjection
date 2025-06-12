@@ -370,8 +370,16 @@ For more control over the details of this process use <see cref=""InitializeDepe
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
-                if (!validateRegistrationInfo(item))
+                if (!RegistrationInfoBuilder.ValidateRegistrationInfo(item))
                     continue;
+
+                if (item.Diagnostics is { Count: > 0 })
+                {
+                    foreach (var diagnostic in item.Diagnostics)
+                        context.ReportDiagnostic(diagnostic);
+
+                    continue;
+                }
 
                 bool isKeyedRegistration = item.ServiceKey is not null;
 
@@ -383,25 +391,35 @@ For more control over the details of this process use <see cref=""InitializeDepe
                     keyedValue = item.ServiceKey!;
                 }
 
-                if (!tryGetFactoryInformation(context, item, isKeyedRegistration, out var factoryInformation))
-                    continue;
-
-                if (isKeyedRegistration && factoryInformation is not null)
+                if (isKeyedRegistration && item.FactoryInformation is not null)
                     keyedValue = $"{keyedValue}, ";
 
                 var registrationScope = item.RegistrationScope.ToString();
 
                 if (item.HasRegisteredServices)
                 {
+                    INamedTypeSymbol? serviceSymbol;
+                    INamedTypeSymbol implSymbol;
                     foreach (var registeredService in item.RegisteredServices!)
                     {
-                        var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, registeredService, item.ImplementationSymbol!);
+                        if (item.FactoryRegistrationWithoutImplementation)
+                        {
+                            serviceSymbol = null;
+                            implSymbol = registeredService;
+                        }
+                        else
+                        {
+                            serviceSymbol = registeredService;
+                            implSymbol = item.ImplementationSymbol!;
+                        }
+
+                        var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, item.FactoryInformation, serviceSymbol, implSymbol);
                         body.Add(bodyLine);
                     }
                 }
                 else
                 {
-                    var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, registeredService: null, item.ImplementationSymbol!);
+                    var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, item.FactoryInformation, registeredService: null, item.ImplementationSymbol!);
                     body.Add(bodyLine);
                 }
             }
@@ -454,65 +472,6 @@ For more control over the details of this process use <see cref=""InitializeDepe
         return result;
     }
 
-    private static bool tryGetFactoryInformation(SourceProductionContext context, ServiceRegistrationInfo item, bool isKeyedRegistration, out string? factoryInformation)
-    {
-        factoryInformation = null;
-
-        if (item.FactoryType is null)
-        {
-            if (item.FactoryMethodName is not null)
-            {
-                // The factory method name is defined, but no factory type is defined.
-                // This doesn't make sense, so we report a diagnostic.
-
-                var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
-                var factoryTypeDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryTypeNotDefined, location, item.FactoryMethodName);
-                context.ReportDiagnostic(factoryTypeDiagnostic);
-                return false;
-            }
-
-            // No factory type or factory method name defined.
-            // This is fine, so we just return true and register the service without a factory.
-            return true;
-        }
-
-        var factoryTypeName = item.FactoryType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
-        var factoryMethodName = getValidFactoryMethod(item.FactoryType, isKeyedRegistration, item.FactoryMethodName);
-        if (factoryMethodName is null)
-        {
-            // No valid factory method found, so we report a diagnostic.
-            var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
-            Diagnostic factoryMethodDiagnostic;
-            if (item.FactoryMethodName is null)
-                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNotFound, location, factoryTypeName);
-            else
-                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNameIsInvalid, location, item.FactoryMethodName, factoryTypeName);
-            context.ReportDiagnostic(factoryMethodDiagnostic);
-            return false;
-        }
-
-        factoryInformation = $"{factoryTypeName}.{factoryMethodName}";
-        return true;
-    }
-
-    private static bool validateRegistrationInfo(ServiceRegistrationInfo? registrationInfo)
-    {
-        if (registrationInfo == null)
-            return false;
-
-        if (registrationInfo.ImplementationSymbol == null)
-            return false;
-
-        if (registrationInfo.ImplementationSyntaxNode == null)
-            return false;
-
-        if (registrationInfo.RegistrationScope == null)
-            return false;
-
-        return true;
-    }
-
     private static void outputExtensions(ClassInfo cl, string prefix, string type, string paramType, string paramName, IEnumerable<string>? dependencyInjectionExtensions)
     {
         var extensionsMethod = new MethodInfo(false, $"{prefix}{type}OfExtensions")
@@ -553,66 +512,6 @@ var newline = workspace.GetOption(new OptionKey(FormattingOptions.NewLine, Langu
                     new ParameterInfo(ParameterKind.Ordinary, paramType, paramName)
                 }
             });
-        }
-    }
-
-    private static string? getValidFactoryMethod(INamedTypeSymbol factoryType, bool isKeyed, string? expectedMethodName)
-    {
-        var getMembers = expectedMethodName is null ? factoryType.GetMembers() : factoryType.GetMembers(expectedMethodName);
-
-        var methodCandidates = getMembers.OfType<IMethodSymbol>().Where(member =>
-        {
-            // has to be static
-            if (!member.IsStatic)
-                return false;
-
-            // has to be public or internal
-            if (member.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal))
-                return false;
-
-            // has to return a value (not void)
-            if (member.ReturnsVoid)
-                return false;
-
-            // regular methods only (no constructors, operators, property accessors, ...)
-            if (member.MethodKind != MethodKind.Ordinary)
-                return false;
-
-            // check parameters
-            var parameters = member.Parameters;
-
-            if (isKeyed)
-            {
-                if (parameters.Length == 2 &&
-                     parameters[0].Type.ToDisplayString() == "System.IServiceProvider" &&
-                     parameters[1].Type.ToDisplayString() is "object" or "object?")
-                {
-                    // Keyed Factory
-                    return true;
-                }
-            }
-            else
-            {
-                if (parameters.Length == 1 &&
-                parameters[0].Type.ToDisplayString() == "System.IServiceProvider")
-                {
-                    // Non-Keyed Factory
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        try
-        {
-            var factoryMethod = methodCandidates.SingleOrDefault();
-
-            return factoryMethod?.Name;
-        }
-        catch (Exception)
-        {
-            return null;
         }
     }
 }
