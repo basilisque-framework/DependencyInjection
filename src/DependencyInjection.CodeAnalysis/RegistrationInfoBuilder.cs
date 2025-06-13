@@ -116,8 +116,18 @@ internal static class RegistrationInfoBuilder
 
         foreach (var item in implementedITypeNameInterfaces)
         {
-            if (!servicesToRegister.Contains(item))
-                servicesToRegister.Add(item);
+            var itemToRegister = item;
+
+            if (item.IsGenericType && !item.IsUnboundGenericType)
+            {
+                var hasTypeArgumentsWithRealTypes = item.TypeArguments.Any() && !item.TypeArguments.Any(a => a.Kind != SymbolKind.TypeParameter);
+
+                if (hasTypeArgumentsWithRealTypes)
+                    itemToRegister = item.ConstructUnboundGenericType();
+            }
+
+            if (!servicesToRegister.Contains(itemToRegister))
+                servicesToRegister.Add(itemToRegister);
         }
     }
 
