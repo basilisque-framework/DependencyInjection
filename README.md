@@ -1,5 +1,5 @@
 <!--
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@
 ## Overview
 This project provides functionality to easily register all services of the target project at the IServiceCollection.
 
-[![NuGet Basilisque.DependencyInjection](https://img.shields.io/badge/NuGet_Basilisque.DependencyInjection-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.DependencyInjection)
-[![License](https://img.shields.io/badge/License-Apache%20License%202.0-red.svg)](LICENSE.txt)
+[![NuGet Basilisque.DependencyInjection](https://img.shields.io/badge/NuGet_Basilisque.DependencyInjection-latest-%23004880.svg?logo=nuget)](https://www.nuget.org/packages/Basilisque.DependencyInjection)
+[![License](https://img.shields.io/badge/License-Apache%20License%202.0-%23D22128.svg?logo=apache&logoColor=%23D22128)](LICENSE.txt)
+[![SonarCloud](https://img.shields.io/badge/SonarCloud-main-%23F3702A.svg?logo=sonarcloud&logoColor=%23F3702A)](https://sonarcloud.io/project/overview?id=basilisque-framework_DependencyInjection)  
 
 ## Description
 This project contains functionality for registering services at the IServiceCollection.  
