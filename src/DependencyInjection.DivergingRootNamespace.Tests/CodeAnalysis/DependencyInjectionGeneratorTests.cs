@@ -38,7 +38,7 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
         [TestMethod]
         public void Ensure_Generated_DependencyRegistrator_In_AssemblyName_InheritsFromRootNamespace()
         {
-            var registrator = new DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator();
+            _ = new DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator();
 
             var isAssignable = typeof(Basilisque.DependencyInjection.Tests.DependencyRegistrator).IsAssignableFrom(typeof(DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator));
 

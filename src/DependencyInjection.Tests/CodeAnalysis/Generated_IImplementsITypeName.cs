@@ -44,7 +44,7 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
         {
             var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsITypeNameBase))).ToList();
 
-            Assert.IsTrue(registeredServices.Count() == 2);
+            Assert.IsTrue(registeredServices.Count == 2);
 
             Assert.AreEqual(typeof(ImplementsITypeName), registeredServices[0].ImplementationType);
             Assert.AreEqual(ServiceLifetime.Singleton, registeredServices[0].Lifetime);
@@ -58,7 +58,7 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
         {
             var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsITypeName))).ToList();
 
-            Assert.IsTrue(registeredServices.Count() == 1);
+            Assert.IsTrue(registeredServices.Count == 1);
 
             Assert.AreEqual(typeof(ImplementsITypeName), registeredServices[0].ImplementationType);
             Assert.AreEqual(ServiceLifetime.Singleton, registeredServices[0].Lifetime);
@@ -69,7 +69,7 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
         {
             var instances = Provider.GetServices<IImplementsITypeNameBase>().ToList();
 
-            Assert.IsTrue(instances.Count() == 2);
+            Assert.IsTrue(instances.Count == 2);
 
             Assert.AreEqual(typeof(ImplementsITypeName), instances[0].GetType());
             Assert.AreEqual(typeof(ImplementsITypeName2), instances[1].GetType());
@@ -80,7 +80,7 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
         {
             var instances = Provider.GetServices<IImplementsITypeName>().ToList();
 
-            Assert.IsTrue(instances.Count() == 1);
+            Assert.IsTrue(instances.Count == 1);
 
             Assert.AreEqual(typeof(ImplementsITypeName), instances[0].GetType());
         }

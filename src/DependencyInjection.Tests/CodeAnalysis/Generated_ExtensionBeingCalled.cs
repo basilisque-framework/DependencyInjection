@@ -53,7 +53,7 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
         {
             var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IMyExtensionInterface1))).ToList();
 
-            Assert.IsTrue(registeredServices.Count() == 1);
+            Assert.IsTrue(registeredServices.Count == 1);
 
             Assert.AreEqual(typeof(MyExtension1), registeredServices[0].ImplementationType);
             Assert.AreEqual(ServiceLifetime.Transient, registeredServices[0].Lifetime);
@@ -64,7 +64,7 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
         {
             var instances = Provider.GetServices<IMyExtensionInterface1>().ToList();
 
-            Assert.IsTrue(instances.Count() == 1);
+            Assert.IsTrue(instances.Count == 1);
 
             Assert.AreEqual(typeof(MyExtension1), instances[0].GetType());
         }

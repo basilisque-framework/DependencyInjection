@@ -23,8 +23,8 @@ namespace Basilisque.DependencyInjection.Registration
     public class DependencyRegistratorBuilder<TRootDependencyRegistrator>
         where TRootDependencyRegistrator : IDependencyRegistrator, new()
     {
-        private Microsoft.Extensions.DependencyInjection.IServiceCollection _services;
-        private DependencyCollection _dependencyCollection;
+        private readonly Microsoft.Extensions.DependencyInjection.IServiceCollection _services;
+        private readonly DependencyCollection _dependencyCollection;
 
         /// <summary>
         /// Creates a new <see cref="DependencyRegistratorBuilder{TRootDependencyRegistrator}"/>

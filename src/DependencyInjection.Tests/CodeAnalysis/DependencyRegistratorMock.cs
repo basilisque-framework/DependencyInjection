@@ -21,7 +21,7 @@ namespace Basilisque.DependencyInjection.Tests
 {
     public partial class DependencyRegistrator
     {
-        public List<string> MethodCalls = new List<string>();
+        public List<string> MethodCalls = new();
 
         partial void doBeforeInitialization(DependencyCollection collection)
         {

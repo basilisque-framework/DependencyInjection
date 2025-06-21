@@ -24,9 +24,9 @@ namespace Basilisque.DependencyInjection.Tests.Registration
         {
             Microsoft.Extensions.DependencyInjection.IServiceCollection services = null!;
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            Assert.ThrowsExactly<ArgumentNullException>(() =>
             {
-                DependencyInjection.Registration.DependencyRegistratorBuilder<Basilisque.DependencyInjection.Tests.DependencyRegistrator> builder = new(services);
+                _ = new DependencyInjection.Registration.DependencyRegistratorBuilder<Basilisque.DependencyInjection.Tests.DependencyRegistrator>(services);
             });
         }
     }

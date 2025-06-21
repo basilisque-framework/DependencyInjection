@@ -22,7 +22,7 @@ namespace Basilisque.DependencyInjection.Registration
     /// </summary>
     public class DependencyCollection
     {
-        private Dictionary<Type, IDependencyRegistrator> _dependencyRegistrators = new Dictionary<Type, IDependencyRegistrator>();
+        private readonly Dictionary<Type, IDependencyRegistrator> _dependencyRegistrators = new();
 
         /// <summary>
         /// The constructor is private, because it should not be called directly.

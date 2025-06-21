@@ -27,8 +27,7 @@ internal class ServiceRegistrationInfo
     {
         get
         {
-            if (_registeredServices == null)
-                _registeredServices = new List<INamedTypeSymbol>();
+            _registeredServices ??= new List<INamedTypeSymbol>();
 
             return _registeredServices;
         }

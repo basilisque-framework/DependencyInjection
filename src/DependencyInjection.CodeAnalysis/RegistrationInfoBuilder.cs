@@ -75,7 +75,7 @@ internal static class RegistrationInfoBuilder
 
             var childRegistrationInfos = getRegistrationInfos(context, baseAttrInterface, registrationAttribute.AttributeClass, null);
 
-            var args = readAttributeArguments(context, nodeSymbol, registrationAttribute);
+            var args = readAttributeArguments(context, registrationAttribute);
 
             var servicesToRegister = args.servicesToRegister;
 
@@ -111,8 +111,7 @@ internal static class RegistrationInfoBuilder
         if (!implementedITypeNameInterfaces.Any())
             return;
 
-        if (servicesToRegister == null)
-            servicesToRegister = new List<INamedTypeSymbol>();
+        servicesToRegister ??= new List<INamedTypeSymbol>();
 
         foreach (var item in implementedITypeNameInterfaces)
         {
@@ -131,7 +130,7 @@ internal static class RegistrationInfoBuilder
         }
     }
 
-    private static (Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, bool implementsITypeName, INamedTypeSymbol? factoryType, string? factoryMethodName, string? serviceKey) readAttributeArguments(GeneratorSyntaxContext context, INamedTypeSymbol typeToRegister, AttributeData registrationAttribute)
+    private static (Registration.Annotations.RegistrationScope? registrationScope, List<INamedTypeSymbol>? servicesToRegister, bool implementsITypeName, INamedTypeSymbol? factoryType, string? factoryMethodName, string? serviceKey) readAttributeArguments(GeneratorSyntaxContext context, AttributeData registrationAttribute)
     {
         Registration.Annotations.RegistrationScope? registrationScope = null;
         List<INamedTypeSymbol>? servicesToRegister = null;
@@ -167,8 +166,7 @@ internal static class RegistrationInfoBuilder
             }
             else if (namedArgument.Value.Kind == TypedConstantKind.Primitive && (namedArgument.Key == "ImplementsITypeName"))
             {
-                bool innerImplementsITypeName;
-                if (bool.TryParse(namedArgument.Value.Value?.ToString(), out innerImplementsITypeName))
+                if (bool.TryParse(namedArgument.Value.Value?.ToString(), out var innerImplementsITypeName))
                     implementsITypeName = innerImplementsITypeName;
             }
             else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "Factory"))
@@ -268,7 +266,7 @@ internal static class RegistrationInfoBuilder
 
         bool isKeyedRegistration = item.ServiceKey is not null;
 
-        var factoryMethod = getValidFactoryMethod(context, item.FactoryType, isKeyedRegistration, item.FactoryMethodName);
+        var factoryMethod = getValidFactoryMethod(item.FactoryType, isKeyedRegistration, item.FactoryMethodName);
         if (factoryMethod is null)
         {
             // No valid factory method found, so we report a diagnostic.
@@ -287,7 +285,7 @@ internal static class RegistrationInfoBuilder
         item.FactoryInformation = $"{factoryTypeName}.{factoryMethod.Name}";
     }
 
-    private static IMethodSymbol? getValidFactoryMethod(GeneratorSyntaxContext context, INamedTypeSymbol factoryType, bool isKeyed, string? expectedMethodName)
+    private static IMethodSymbol? getValidFactoryMethod(INamedTypeSymbol factoryType, bool isKeyed, string? expectedMethodName)
     {
         var getMembers = expectedMethodName is null ? factoryType.GetMembers() : factoryType.GetMembers(expectedMethodName);
 

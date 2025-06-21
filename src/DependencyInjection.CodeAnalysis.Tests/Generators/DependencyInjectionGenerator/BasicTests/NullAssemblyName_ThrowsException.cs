@@ -26,7 +26,7 @@ public class NullAssemblyName_ThrowsException : BaseDependencyInjectionGenerator
     {
         var verifier = GetVerifier();
 
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => verifier.RunAsync());
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(() => verifier.RunAsync());
     }
 
     protected override void AddSourcesUnderTest(SourceFileList sources)

@@ -135,10 +135,9 @@ Although there is technically no reason to not manually interact with this class
                     IsOverride = true,
                     Parameters = {
                         new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
-                    }
+                    },
+                    InheritXmlDoc = true,
                 };
-
-                performInitializationMethod.InheritXmlDoc = true;
 
                 performInitializationMethod.Body.Add(@"
 doBeforeInitialization(collection);
@@ -191,10 +190,9 @@ doAfterInitialization(collection);
                     IsOverride = true,
                     Parameters = {
                         new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
-                    }
+                    },
+                    InheritXmlDoc = true,
                 };
-
-                performServiceRegistrationMethod.InheritXmlDoc = true;
 
                 performServiceRegistrationMethod.Body.Add(@"
 doBeforeRegistration(services);
@@ -503,8 +501,8 @@ if (options.TryGetValue("end_of_line", out var newline))
              var workspace = ... // get a reference to a workspace
 var newline = workspace.GetOption(new OptionKey(FormattingOptions.NewLine, LanguageNames.CSharp));
              */
-            if (extNewLine is null)
-                extNewLine = SyntaxFactory.ElasticCarriageReturnLineFeed.ToString();
+
+            extNewLine ??= SyntaxFactory.ElasticCarriageReturnLineFeed.ToString();
 
             cl.Methods.Add(new MethodInfo(true, $"{prefix}Extension_{extension}")
             {

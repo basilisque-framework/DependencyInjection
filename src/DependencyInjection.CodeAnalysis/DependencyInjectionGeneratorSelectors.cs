@@ -25,7 +25,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
     {
         internal const string C_DEPENDENCY_REGISTRATOR_CLASSNAME = "DependencyRegistrator";
 
-        private static List<string> _assemblyNamePrefixesToIgnore = new List<string>()
+        private static readonly List<string> _assemblyNamePrefixesToIgnore = new()
         {
             "System",
             "Microsoft",
@@ -36,10 +36,13 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
             "WindowsBase"
         };
 
-        private static char[] _dependencyInjectionExtensionsSeparators = new char[] { ';', ',' };
+        private static readonly char[] _dependencyInjectionExtensionsSeparators = new char[] { ';', ',' };
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "For debuging purposes")]
         internal static string? RootNamespaceSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (provider.GlobalOptions.TryGetValue("build_property.RootNamespace", out string? rootNamespace))
             {
                 //#if DEBUG
@@ -57,6 +60,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
 
         internal static IEnumerable<string>? DependencyInjectionExtensionsSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (provider.GlobalOptions.TryGetValue("build_property.BAS_DI_Extensions", out string? dependencyInjectionExtensions)
                 && !string.IsNullOrWhiteSpace(dependencyInjectionExtensions))
             {
@@ -70,6 +75,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
 
         internal static IEnumerable<INamedTypeSymbol> ReferencedAssemblySymbolsSelector(Compilation compilation, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var relevantReferencedAssemblies = compilation.SourceModule.ReferencedAssemblySymbols.Where(a => !a.IsImplicitlyDeclared && !_assemblyNamePrefixesToIgnore.Any(p => a.Name.StartsWith(p)));
 
             var referencedDependencyRegistrators = relevantReferencedAssemblies.Select((assembly) => assembly.GetTypeByMetadataName($"{assembly.Name.ToValidNamespace()}.{C_DEPENDENCY_REGISTRATOR_CLASSNAME}"));
@@ -91,9 +98,11 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
 
         private static bool isSyntaxTargetForGeneration(Microsoft.CodeAnalysis.SyntaxNode node, CancellationToken cancellationToken)
         {
-            string? name = null;
-            Microsoft.CodeAnalysis.CSharp.Syntax.BaseListSyntax? baseList = null;
-            SyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax>? attributes = null;
+            cancellationToken.ThrowIfCancellationRequested();
+
+            string? name;
+            Microsoft.CodeAnalysis.CSharp.Syntax.BaseListSyntax? baseList;
+            SyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax>? attributes;
             if (node is Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax cds)
             {
                 name = cds.Identifier.ValueText;
