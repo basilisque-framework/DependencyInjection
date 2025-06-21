@@ -152,7 +152,7 @@ public abstract class BaseDependencyInjectionGeneratorTest<TGenerator>
         yield break;
     }
 
-    protected string PrependGeneratedFilePath(string filename)
+    protected static string PrependGeneratedFilePath(string filename)
     {
         return Path.Combine(typeof(CodeAnalysis.DependencyInjectionGenerator).Assembly.GetName().Name ?? string.Empty, typeof(CodeAnalysis.DependencyInjectionGenerator).FullName!, filename);
     }
@@ -190,7 +190,7 @@ public abstract class BaseDependencyInjectionGeneratorTest<TGenerator>
         return result;
     }
 
-    private (string, string)? getAssemblyNamespaceImplSrc(string? rootNamespace, string assemblyName, string version)
+    private static (string, string)? getAssemblyNamespaceImplSrc(string? rootNamespace, string assemblyName, string version)
     {
         if (string.IsNullOrWhiteSpace(rootNamespace))
             return null;
@@ -222,7 +222,7 @@ public sealed class DependencyRegistrator : {rootNamespace}.DependencyRegistrato
         return ("DependencyRegistrator_AssemblyNameNamespace.g.cs", src);
     }
 
-    private (string, string) getRootNamespaceStubSrc(string? rootNamespace, string assemblyName, string version)
+    private static (string, string) getRootNamespaceStubSrc(string? rootNamespace, string assemblyName, string version)
     {
         string filename;
         if (rootNamespace == null)
@@ -292,7 +292,7 @@ public partial class DependencyRegistrator : BaseDependencyRegistrator
         return (filename, src);
     }
 
-    private (string, string) getServiceCollectionExtensionsSrc(string? rootNamespace, string assemblyName, string version)
+    private static (string, string) getServiceCollectionExtensionsSrc(string? rootNamespace, string assemblyName, string version)
     {
         rootNamespace ??= "TestProject";
 

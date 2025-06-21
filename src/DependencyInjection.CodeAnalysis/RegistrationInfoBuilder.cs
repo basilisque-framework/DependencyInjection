@@ -198,7 +198,7 @@ internal static class RegistrationInfoBuilder
     {
         var attributeSyntax = registrationAttribute.ApplicationSyntaxReference?.GetSyntax() as Microsoft.CodeAnalysis.CSharp.Syntax.AttributeSyntax;
 
-        var keyArgumentSyntax = attributeSyntax?.ArgumentList?.Arguments.Where(a => a.NameEquals?.Name.Identifier.Text == "Key").SingleOrDefault();
+        var keyArgumentSyntax = attributeSyntax?.ArgumentList?.Arguments.SingleOrDefault(a => a.NameEquals?.Name.Identifier.Text == "Key");
 
         var expression = keyArgumentSyntax?.Expression;
 
