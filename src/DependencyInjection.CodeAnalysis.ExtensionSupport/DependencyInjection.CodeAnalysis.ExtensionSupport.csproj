@@ -1,5 +1,5 @@
 ﻿<!--
-   Copyright 2023-2026 Alexander Stärk
+   Copyright 2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -20,10 +20,19 @@
     <PackageId>$(AssemblyName)</PackageId>
   </PropertyGroup>
 
+  <!-- set BAS_CB_ProjType_CodeAnalysis to true -->
+  <PropertyGroup>
+    <BAS_CB_ProjType_CodeAnalysis>true</BAS_CB_ProjType_CodeAnalysis>
+    <BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
+    <BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <BAS_CB_Set_LangVersion>false</BAS_CB_Set_LangVersion>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <DefineConstants>$(DefineConstants);BASILISQUE_CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>$(DefineConstants);BASILISQUE_CODE_ANALYSIS_EXTENSIONSUPPORT</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,11 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\DependencyInjection.CodeAnalysis.ExtensionSupport\Common\**">
-      <Link>Common\%(RecursiveDir)%(FileName)%(Extension)</Link>
-    </Compile>
     <Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="Registration\Annotations\RegistrationScope.cs" />
-
+    
     <None Include="build/**" Pack="true" PackagePath="build" />
 
     <!-- Pack README -->

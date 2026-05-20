@@ -1,5 +1,5 @@
 <!--
-   Copyright 2024-2025 Alexander Stärk
+   Copyright 2024-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,42 +14,42 @@
    limitations under the License.
 -->
 <Project>
-	<PropertyGroup>
-		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-	</PropertyGroup>
-	
-	<!-- define NuGet package versions -->
-	<ItemGroup>
-		<PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.0" />
-		<PackageVersion Include="Basilisque.CodeAnalysis.TestSupport" Version="1.0.0" />
-		<PackageVersion Include="coverlet.collector" Version="6.0.4" />
-		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
-		<PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net6.0'" Version="6.0.1" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net7.0'" Version="7.0.0" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net8.0'" Version="8.0.0" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net9.0'" Version="9.0.0" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net6.0'" Version="6.0.0" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net7.0'" Version="7.0.0" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net8.0'" Version="8.0.1" />
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net9.0'" Version="9.0.0" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-		<PackageVersion Include="MSTest.TestAdapter" Version="3.8.3" />
-		<PackageVersion Include="MSTest.TestFramework" Version="3.8.3" />
-	</ItemGroup>
-	
-	<!-- import common NuGet packages -->
-	<ItemGroup>
-		<GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0">
-			<PrivateAssets>all</PrivateAssets>
-		</GlobalPackageReference>
-	</ItemGroup>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
 
-	<!-- import test packages -->
-	<ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
-		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="MSTest.TestAdapter" />
-		<PackageReference Include="MSTest.TestFramework" />
-		<PackageReference Include="coverlet.collector" />
-	</ItemGroup>
+  <!-- define NuGet package versions -->
+  <ItemGroup>
+    <PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.0" />
+    <PackageVersion Include="Basilisque.CodeAnalysis.TestSupport" Version="1.0.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net6.0'" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net7.0'" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net8.0'" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net9.0'" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net6.0'" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net7.0'" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net8.0'" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net9.0'" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="3.8.3" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.8.3" />
+  </ItemGroup>
+
+  <!-- import common NuGet packages -->
+  <ItemGroup>
+    <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="2.0.0-Preview00006">
+      <PrivateAssets>all</PrivateAssets>
+    </GlobalPackageReference>
+  </ItemGroup>
+
+  <!-- import test packages -->
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
 </Project>

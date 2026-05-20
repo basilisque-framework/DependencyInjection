@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
+# Visual Studio Version 18
 
-#   Copyright 2023-2024 Alexander Stärk
+#   Copyright 2023-2026 Alexander Stärk
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-VisualStudioVersion = 17.1.32210.238
+VisualStudioVersion = 18.5.11723.231
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection", "DependencyInjection\DependencyInjection.csproj", "{DF38BB18-6193-4E56-8CEA-1392B25A9930}"
 EndProject
@@ -38,6 +38,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.TestAssembly.Child1", "DependencyInjection.TestAssembly.Child1\DependencyInjection.TestAssembly.Child1.csproj", "{78FD9281-6DE0-462A-B3FE-9BCD08526839}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection.CodeAnalysis.Tests", "DependencyInjection.CodeAnalysis.Tests\DependencyInjection.CodeAnalysis.Tests.csproj", "{9A583300-F622-4FEC-AF24-170E1522C0B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.CodeAnalysis.ExtensionSupport", "DependencyInjection.CodeAnalysis.ExtensionSupport\DependencyInjection.CodeAnalysis.ExtensionSupport.csproj", "{4F8F51B7-E607-4387-AA32-E6FB6681209E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection.CodeAnalysis.ExtensionSupport.Tests", "DependencyInjection.CodeAnalysis.ExtensionSupport.Tests\DependencyInjection.CodeAnalysis.ExtensionSupport.Tests.csproj", "{6DA82021-5D7F-403B-B6D6-58FF3DD3ECC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +77,14 @@ Global
 		{9A583300-F622-4FEC-AF24-170E1522C0B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A583300-F622-4FEC-AF24-170E1522C0B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A583300-F622-4FEC-AF24-170E1522C0B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F8F51B7-E607-4387-AA32-E6FB6681209E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F8F51B7-E607-4387-AA32-E6FB6681209E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F8F51B7-E607-4387-AA32-E6FB6681209E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F8F51B7-E607-4387-AA32-E6FB6681209E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DA82021-5D7F-403B-B6D6-58FF3DD3ECC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DA82021-5D7F-403B-B6D6-58FF3DD3ECC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DA82021-5D7F-403B-B6D6-58FF3DD3ECC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DA82021-5D7F-403B-B6D6-58FF3DD3ECC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 */
 
 using Basilisque.CodeAnalysis.Syntax;
+using Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Common;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Immutable;
 using System.Threading;
@@ -23,18 +24,16 @@ namespace Basilisque.DependencyInjection.CodeAnalysis;
 
 internal static class DependencyInjectionGeneratorOutput
 {
-    private const string C_DEPENDENCY_REGISTRATOR_ROOTNAMESPACE_COMPILATIONNAME = DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME + "_RootNamespace";
-    private const string C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME = DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME + "_AssemblyNameNamespace";
     private const string C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION = @"Registers all dependencies and services of this assembly.";
     private const string C_DEPENDENCYREGISTRATORBUILDER_TYPE = "DependencyRegistratorBuilder";
     private const string C_IDEPENDENCYREGISTRATOR_TYPE = "IDependencyRegistrator";
 
     internal static void OutputStubs(SourceProductionContext context, ((string? RootNamespace, string? AssemblyName) General, IEnumerable<string>? Extensions) provider, RegistrationOptions registrationOptions)
     {
-        if (!checkPreconditions(context, provider.General, registrationOptions))
+        if (!DependencyInjectionGeneratorOutputUtilities.CheckPreconditions(context, provider.General, registrationOptions))
             return;
 
-        (string mainCompilationName, string mainNamespace, bool hasRootNamespace, string? rootNamespace, string assemblyNameNamespace) = getMainCompilationTarget(provider.General);
+        (string mainCompilationName, string mainNamespace, bool hasRootNamespace, string? rootNamespace, string assemblyNameNamespace) = DependencyInjectionGeneratorOutputUtilities.GetMainCompilationTarget(provider.General);
 
         //output the source
         outputDependencyRegistratorStub(registrationOptions, hasRootNamespace, rootNamespace, mainNamespace, mainCompilationName, assemblyNameNamespace, provider.Extensions);
@@ -43,62 +42,12 @@ internal static class DependencyInjectionGeneratorOutput
 
     internal static void OutputImplementations(SourceProductionContext context, (((string? RootNamespace, string? AssemblyName) Options, IEnumerable<INamedTypeSymbol> NamedDependencyRegistratorTypes) GeneralAndDependencies, ImmutableArray<List<ServiceRegistrationInfo>?> ServicesToRegister) provider, RegistrationOptions registrationOptions)
     {
-        if (!checkPreconditions(context, provider.GeneralAndDependencies.Options, registrationOptions))
+        if (!DependencyInjectionGeneratorOutputUtilities.CheckPreconditions(context, provider.GeneralAndDependencies.Options, registrationOptions))
             return;
 
-        (string mainCompilationName, string mainNamespace, _, _, _) = getMainCompilationTarget(provider.GeneralAndDependencies.Options);
+        (string mainCompilationName, string mainNamespace, _, _, _) = DependencyInjectionGeneratorOutputUtilities.GetMainCompilationTarget(provider.GeneralAndDependencies.Options);
 
         outputDependencyRegistratorImplementation(context, registrationOptions, mainNamespace, mainCompilationName, provider.GeneralAndDependencies.NamedDependencyRegistratorTypes, provider.ServicesToRegister);
-    }
-
-    private static bool checkPreconditions(SourceProductionContext context, (string? RootNamespace, string? AssemblyName) provider, RegistrationOptions registrationOptions)
-    {
-        //check preconditions
-        if (registrationOptions.Language != Language.CSharp)
-            throw new System.NotSupportedException($"The language '{registrationOptions.Language}' is currently not supported by this generator.");
-
-        if (!checkPreconditionAssemblyName(context, provider.AssemblyName))
-            return false;
-
-        return true;
-    }
-
-    private static bool checkPreconditionAssemblyName(SourceProductionContext context, string? assemblyName)
-    {
-        if (!string.IsNullOrEmpty(assemblyName))
-            return true;
-
-        var missingAssemblyNameDiagnostic = Diagnostic.Create(DiagnosticDescriptors.MissingAssemblyName, Location.None);
-        context.ReportDiagnostic(missingAssemblyNameDiagnostic);
-
-        return false;
-    }
-
-    private static (string mainCompilationName, string mainNamespace, bool hasRootNamespace, string? rootNamespace, string assemblyNameNamespace) getMainCompilationTarget((string? RootNamespace, string? AssemblyName) provider)
-    {
-        //get the target namespace(s)
-        var rootNamespace = provider.RootNamespace;
-        var hasRootNamespace = !string.IsNullOrWhiteSpace(rootNamespace) && rootNamespace != provider.AssemblyName;
-
-        var assemblyNameNamespace = provider.AssemblyName.ToValidNamespace()!;
-
-        //check if the target project has a rootnamespace defined and if it differs from the assemblyname
-        string mainCompilationName;
-        string mainNamespace;
-        if (hasRootNamespace)
-        {
-            //prepare to output the main registrator class in the rootnamespace
-            mainCompilationName = C_DEPENDENCY_REGISTRATOR_ROOTNAMESPACE_COMPILATIONNAME;
-            mainNamespace = rootNamespace!;
-        }
-        else
-        {
-            //prepare to output the main registrator class in the assemblyname as namespace
-            mainCompilationName = C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME;
-            mainNamespace = assemblyNameNamespace;
-        }
-
-        return (mainCompilationName, mainNamespace, hasRootNamespace, rootNamespace, assemblyNameNamespace);
     }
 
     private static void outputDependencyRegistratorStub(RegistrationOptions registrationOptions, bool hasRootNamespace, string? rootNamespace, string mainNamespace, string mainCompilationName, string assemblyNameNamespace, IEnumerable<string>? dependencyInjectionExtensions)
@@ -106,11 +55,11 @@ internal static class DependencyInjectionGeneratorOutput
         if (hasRootNamespace)
         {
             //output a helper class in the assemblyname as namespace to make it easier to find in completely compiled assemblies
-            registrationOptions.CreateCompilationInfo(C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME, targetNamespace: assemblyNameNamespace)
-                .AddNewClassInfo(DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
+            registrationOptions.CreateCompilationInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME, targetNamespace: assemblyNameNamespace)
+                .AddNewClassInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
                 {
                     cl.IsSealed = true;
-                    cl.BaseClass = string.Concat(rootNamespace, ".", DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME);
+                    cl.BaseClass = string.Concat(rootNamespace, ".", DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME);
 
                     cl.XmlDocSummary = $@"{C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION}
 This class mainly exists for performance and simplicity reasons during code compilation.
@@ -122,7 +71,7 @@ Although there is technically no reason to not manually interact with this class
 
         //output the main registrator class
         var compInfo = registrationOptions.CreateCompilationInfo(mainCompilationName, mainNamespace)
-            .AddNewClassInfo(DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
+            .AddNewClassInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
             {
                 var hasExtensions = dependencyInjectionExtensions?.Any() == true;
 
@@ -249,7 +198,7 @@ doAfterRegistration(services);
         const string C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME = "IServiceCollectionExtensions";
         const string C_ISERVICECOLLECTION_TYPE = "IServiceCollection";
 
-        var dependencyRegistratorFullQualifiedName = $"{mainNamespace}.{DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME}";
+        var dependencyRegistratorFullQualifiedName = $"{mainNamespace}.{DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME}";
         var dependencyRegistratorBuilderNameWithGeneric = $"{C_DEPENDENCYREGISTRATORBUILDER_TYPE}<{dependencyRegistratorFullQualifiedName}>";
         var dependencyRegistratorBuilderNameWithGenericForXmlDoc = $"{C_DEPENDENCYREGISTRATORBUILDER_TYPE}{{TDependencyRegistrator}}";
 
@@ -311,7 +260,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
         ci.AddGeneratedCodeAttributes = false;
         ci.Usings.Add("Basilisque.DependencyInjection.Registration");
         ci.Usings.Add("Microsoft.Extensions.DependencyInjection");
-        ci.AddNewClassInfo(DependencyInjectionGeneratorSelectors.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
+        ci.AddNewClassInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
         {
             cl.IsPartial = true;
 
@@ -379,95 +328,9 @@ For more control over the details of this process use <see cref=""InitializeDepe
                     continue;
                 }
 
-                bool isKeyedRegistration = item.ServiceKey is not null;
-
-                string keyedPrefix = "";
-                string keyedValue = "";
-                if (isKeyedRegistration)
-                {
-                    keyedPrefix = "Keyed";
-                    keyedValue = item.ServiceKey!;
-                }
-
-                if (isKeyedRegistration && item.FactoryInformation is not null)
-                    keyedValue = $"{keyedValue}, ";
-
-                var registrationScope = item.RegistrationScope.ToString();
-
-                if (item.HasRegisteredServices)
-                {
-                    INamedTypeSymbol? serviceSymbol;
-                    INamedTypeSymbol implSymbol;
-                    foreach (var registeredService in item.RegisteredServices!)
-                    {
-                        if (item.FactoryRegistrationWithoutImplementation)
-                        {
-                            serviceSymbol = null;
-                            implSymbol = registeredService;
-                        }
-                        else
-                        {
-                            serviceSymbol = registeredService;
-                            implSymbol = item.ImplementationSymbol!;
-                        }
-
-                        var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, item.FactoryInformation, serviceSymbol, implSymbol);
-                        body.Add(bodyLine);
-                    }
-                }
-                else
-                {
-                    var bodyLine = getServiceRegistrationBody(registrationScope, isKeyedRegistration, keyedPrefix, keyedValue, item.FactoryInformation, registeredService: null, item.ImplementationSymbol!);
-                    body.Add(bodyLine);
-                }
+                body.AddServicesRegistrationToMethodBody(item);
             }
         }
-    }
-
-    private static string getServiceRegistrationBody(string registrationScope, bool isKeyedRegistration, string keyedPrefix, string keyedValue, string? factoryInformation, INamedTypeSymbol? registeredService, INamedTypeSymbol implementationSymbol)
-    {
-        var symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Included);
-
-        string? registeredServiceInfo = null;
-        bool registeredServiceIsOpenGeneric;
-        if (registeredService is not null)
-        {
-            registeredServiceIsOpenGeneric = registeredService.IsUnboundGenericType;
-
-            string registeredServiceDisplayString;
-            if (registeredServiceIsOpenGeneric)
-                registeredServiceDisplayString = registeredService.ConstructUnboundGenericType().ToDisplayString(symbolDisplayFormat);
-            else
-                registeredServiceDisplayString = registeredService.ToDisplayString(symbolDisplayFormat);
-
-            if (registeredServiceIsOpenGeneric || implementationSymbol.IsGenericType)
-                registeredServiceInfo = $"typeof({registeredServiceDisplayString}), ";
-            else
-                registeredServiceInfo = $"{registeredServiceDisplayString}, ";
-        }
-        else
-            registeredServiceIsOpenGeneric = false;
-
-        string implementationInfo;
-        if (implementationSymbol.IsGenericType)
-            implementationInfo = implementationSymbol.ConstructUnboundGenericType().ToDisplayString(symbolDisplayFormat);
-        else
-            implementationInfo = implementationSymbol.ToDisplayString(symbolDisplayFormat);
-
-        string result;
-        if (registeredServiceIsOpenGeneric || implementationSymbol.IsGenericType)
-        {
-            if (isKeyedRegistration || factoryInformation is not null)
-                keyedValue = $", {keyedValue}";
-
-            result = $"services.Add{keyedPrefix}{registrationScope}({registeredServiceInfo}typeof({implementationInfo}){keyedValue}{factoryInformation});";
-        }
-        else
-        {
-            result = $"services.Add{keyedPrefix}{registrationScope}<{registeredServiceInfo}{implementationInfo}>({keyedValue}{factoryInformation});";
-        }
-
-        return result;
     }
 
     private static void outputExtensions(ClassInfo cl, string prefix, string type, string paramType, string paramName, IEnumerable<string>? dependencyInjectionExtensions)

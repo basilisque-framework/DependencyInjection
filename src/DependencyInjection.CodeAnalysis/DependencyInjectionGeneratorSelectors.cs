@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 */
 
 using Basilisque.CodeAnalysis.Syntax;
+using Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Common;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Threading;
@@ -23,8 +24,6 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
 {
     internal static class DependencyInjectionGeneratorSelectors
     {
-        internal const string C_DEPENDENCY_REGISTRATOR_CLASSNAME = "DependencyRegistrator";
-
         private static readonly List<string> _assemblyNamePrefixesToIgnore = new()
         {
             "System",
@@ -37,26 +36,6 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
         };
 
         private static readonly char[] _dependencyInjectionExtensionsSeparators = new char[] { ';', ',' };
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "For debuging purposes")]
-        internal static string? RootNamespaceSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (provider.GlobalOptions.TryGetValue("build_property.RootNamespace", out string? rootNamespace))
-            {
-                //#if DEBUG
-                //                if (!System.Diagnostics.Debugger.IsAttached && rootNamespace == "Basilisque.DependencyInjection.Tests")
-                //                {
-                //                    System.Diagnostics.Debugger.Launch();
-                //                }
-                //#endif
-
-                return rootNamespace;
-            }
-            else
-                return null;
-        }
 
         internal static IEnumerable<string>? DependencyInjectionExtensionsSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
         {
@@ -79,7 +58,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis
 
             var relevantReferencedAssemblies = compilation.SourceModule.ReferencedAssemblySymbols.Where(a => !a.IsImplicitlyDeclared && !_assemblyNamePrefixesToIgnore.Any(p => a.Name.StartsWith(p)));
 
-            var referencedDependencyRegistrators = relevantReferencedAssemblies.Select((assembly) => assembly.GetTypeByMetadataName($"{assembly.Name.ToValidNamespace()}.{C_DEPENDENCY_REGISTRATOR_CLASSNAME}"));
+            var referencedDependencyRegistrators = relevantReferencedAssemblies.Select((assembly) => assembly.GetTypeByMetadataName($"{assembly.Name.ToValidNamespace()}.{DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME}"));
 
             var result = referencedDependencyRegistrators.Where(namedTypeSymbol => namedTypeSymbol != null);
 
