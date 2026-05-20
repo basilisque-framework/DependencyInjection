@@ -29,8 +29,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>14.0</LangVersion>
-    <BAS_CB_Set_LangVersion>false</BAS_CB_Set_LangVersion>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <DefineConstants>$(DefineConstants);BASILISQUE_CODE_ANALYSIS_EXTENSIONSUPPORT</DefineConstants>
   </PropertyGroup>
