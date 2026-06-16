@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+using Basilisque.CodeAnalysis.Syntax;
+
 namespace Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.DependencyInjectionGenerator;
 
 /// <summary>
@@ -23,5 +25,6 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Dependenc
 /// context and user-defined parameters. The callback is typically invoked during incremental source generation workflows.</remarks>
 /// <typeparam name="TParam">The type of the implementation parameters provided to the callback.</typeparam>
 /// <param name="context">The context for source production, providing access to code generation APIs and reporting mechanisms.</param>
+/// <param name="registrationMethodBody">The body of the registration method where generated code will be added.</param>
 /// <param name="implementationParameters">The parameters that supply additional information or configuration for the source generation implementation.</param>
-public delegate void SourceGenerationImplementationCallback<TParam>(SourceProductionContext context, TParam implementationParameters);
+public delegate void SourceGenerationImplementationCallback<TParam>(SourceProductionContext context, CodeLines registrationMethodBody, TParam implementationParameters);

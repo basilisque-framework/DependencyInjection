@@ -73,8 +73,7 @@ public static class DependencyInjectionExtensionGeneratorOutput
 
             initializeMethod.Body.Add($@"/* register services for extension '{extensionName}' */");
 
-            //addServicesToBody(context, registerServicesGeneratedMethod.Body, servicesToRegister);
-            implementationCallback(context, implementationParameters);
+            implementationCallback(context, initializeMethod.Body, implementationParameters);
 
             cl.Methods.Add(initializeMethod);
         })
