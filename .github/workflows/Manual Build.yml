@@ -1,4 +1,4 @@
-# Copyright 2023-2025 Alexander Stärk
+# Copyright 2023-2026 Alexander Stärk
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -33,10 +33,11 @@ on:
 
 jobs:
   call-build:
-    uses: basilisque-framework/CommonBuild/.github/workflows/Common-Build.yml@release/v1.0
+    uses: basilisque-framework/CommonBuild-GitHubActions/.github/workflows/Common-Build.yml@v1.0
     with:
       basBuildType: ${{ inputs.basBuildTypeChoice }}
       publishTargetFramework: 'netstandard2.0'
       sonarProjectKey: 'basilisque-framework_DependencyInjection'
       sonarOrganization: 'basilisque-framework'
+      runDotnetPack: true
     secrets: inherit
