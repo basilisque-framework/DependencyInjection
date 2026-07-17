@@ -22,6 +22,7 @@
     <CompilerVisibleProperty Include="LangVersion" />
     <ProjectReference Include="..\DependencyInjection.CodeAnalysis.ExtensionSupport\DependencyInjection.CodeAnalysis.ExtensionSupport.csproj">
       <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+      <GlobalPropertiesToRemove>RuntimeIdentifier;SelfContained</GlobalPropertiesToRemove>
     </ProjectReference>
 
     <PackageReference Include="Basilisque.CodeAnalysis" />
