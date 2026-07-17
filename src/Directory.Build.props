@@ -28,6 +28,7 @@
     <TargetFrameworks Condition="$(MSBuildProjectName.EndsWith('.Tests')) == true AND $([MSBuild]::IsOSPlatform('Windows'))">$(TargetFrameworks);net462</TargetFrameworks>
 
     <LangVersion Condition="'$(TargetFramework)'=='net462'">latest</LangVersion>
+    <RuntimeIdentifier Condition="'$(TargetFramework)'=='net462'">win-x86</RuntimeIdentifier>
   </PropertyGroup>
 
   <!-- NuGet package properties and project info -->
