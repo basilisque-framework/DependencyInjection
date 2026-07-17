@@ -24,6 +24,7 @@
       <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
     </ProjectReference>
 
+    <PackageReference Include="Basilisque.CodeAnalysis" />
     <PackageReference Include="Basilisque.CodeAnalysis.TestSupport" />
   </ItemGroup>
 </Project>

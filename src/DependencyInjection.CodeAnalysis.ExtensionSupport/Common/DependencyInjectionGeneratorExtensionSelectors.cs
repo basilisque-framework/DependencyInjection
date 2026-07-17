@@ -43,6 +43,8 @@ internal class DependencyInjectionGeneratorExtensionSelectors
 
     internal static string? AssemblyNameSelector(Compilation compilation, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return compilation.AssemblyName;
     }
 }
