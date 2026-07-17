@@ -20,13 +20,6 @@
     <PackageId>$(AssemblyName)</PackageId>
   </PropertyGroup>
 
-  <!-- set BAS_CB_ProjType_CodeAnalysis to true -->
-  <PropertyGroup>
-    <BAS_CB_ProjType_CodeAnalysis>true</BAS_CB_ProjType_CodeAnalysis>
-    <BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
-    <BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
-  </PropertyGroup>
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
@@ -49,6 +42,8 @@
     <Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="Registration\Annotations\RegistrationScope.cs" />
     
     <None Include="build/**" Pack="true" PackagePath="build" />
+
+    <None Include="$(PkgBasilisque_CodeAnalysis)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false" />
 
     <!-- Pack README -->
     <None Include="README.md" Pack="true" PackagePath="docs" />

@@ -44,6 +44,16 @@
     <PackageReadmeFile>docs\README.md</PackageReadmeFile>
   </PropertyGroup>
 
+  <!-- set BAS_CB_ProjType_CodeAnalysis to true -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'DependencyInjection.CodeAnalysis.ExtensionSupport'">
+    <BAS_CB_ProjType_CodeAnalysis>true</BAS_CB_ProjType_CodeAnalysis>
+    <BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
+    <BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
+    <BAS_CA_Dependency_PackCS>false</BAS_CA_Dependency_PackCS>
+    <BAS_CA_Set_IncludeBuildOutput>false</BAS_CA_Set_IncludeBuildOutput>
+    <BAS_CA_Assembly_PackCS>false</BAS_CA_Assembly_PackCS>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- Pack the build props/targets in the build directory -->
     <None Include="$(SolutionDir)\$(AssemblyName).props" Pack="true" PackagePath="build" Condition="Exists('$(SolutionDir)\$(AssemblyName).props')" />
