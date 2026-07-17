@@ -17,13 +17,11 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
-    <UseAppHost>false</UseAppHost>
   </PropertyGroup>
   <ItemGroup>
     <CompilerVisibleProperty Include="LangVersion" />
     <ProjectReference Include="..\DependencyInjection.CodeAnalysis.ExtensionSupport\DependencyInjection.CodeAnalysis.ExtensionSupport.csproj">
-      <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
-      <GlobalPropertiesToRemove>RuntimeIdentifier;SelfContained</GlobalPropertiesToRemove>
+      <SetTargetFramework Condition="'$(TargetFramework)'=='net462'">TargetFramework=netstandard2.0</SetTargetFramework>
     </ProjectReference>
 
     <PackageReference Include="Basilisque.CodeAnalysis" />

@@ -21,7 +21,7 @@
 	<ItemGroup>
 		<CompilerVisibleProperty Include="LangVersion" />
 		<ProjectReference Include="..\DependencyInjection.CodeAnalysis\DependencyInjection.CodeAnalysis.csproj">
-			<SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+      <SetTargetFramework Condition="'$(TargetFramework)'=='net462'">TargetFramework=netstandard2.0</SetTargetFramework>
 		</ProjectReference>
 		<ProjectReference Include="..\DependencyInjection.TestAssembly\DependencyInjection.TestAssembly.csproj">
 			<SetTargetFramework Condition="'$(TargetFramework)'=='net462'">TargetFramework=netstandard2.0</SetTargetFramework>
