@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,27 +14,25 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
+namespace Basilisque.DependencyInjection.Tests.CodeAnalysis;
+
+public class Generated_DependencyRegistratorTests
 {
-    [TestClass]
-    public class Generated_DependencyRegistratorTests
+    [Test]
+    public void Ensure_Generated_DependencyRegistrator_Exists()
     {
-        [TestMethod]
-        public void Ensure_Generated_DependencyRegistrator_Exists()
-        {
-            var registrator = new Basilisque.DependencyInjection.Tests.DependencyRegistrator();
+        var registrator = new Basilisque.DependencyInjection.Tests.DependencyRegistrator();
 
-            Assert.IsNotNull(registrator);
-        }
+        Assert.NotNull(registrator);
+    }
 
-        [TestMethod]
-        public void Ensure_CanCall_GenericInitializeDependencies_WithGenerated_DependencyRegistrator()
-        {
-            Microsoft.Extensions.DependencyInjection.IServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+    [Test]
+    public void Ensure_CanCall_GenericInitializeDependencies_WithGenerated_DependencyRegistrator()
+    {
+        Microsoft.Extensions.DependencyInjection.IServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-            var builder = services.InitializeDependencies<Basilisque.DependencyInjection.Tests.DependencyRegistrator>();
+        var builder = services.InitializeDependencies<Basilisque.DependencyInjection.Tests.DependencyRegistrator>();
 
-            Assert.IsNotNull(builder);
-        }
+        Assert.NotNull(builder);
     }
 }

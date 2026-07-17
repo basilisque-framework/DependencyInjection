@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,27 +14,25 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
+namespace Basilisque.DependencyInjection.Tests.CodeAnalysis;
+
+public class Generated_IServiceCollectionExtensionsTests
 {
-    [TestClass]
-    public class Generated_IServiceCollectionExtensionsTests
+    [Test]
+    public void Ensure_Generated_InitializeDependencies_Method_Exists()
     {
-        [TestMethod]
-        public void Ensure_Generated_InitializeDependencies_Method_Exists()
-        {
-            Microsoft.Extensions.DependencyInjection.IServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        Microsoft.Extensions.DependencyInjection.IServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-            var builder = services.InitializeDependencies();
+        var builder = services.InitializeDependencies();
 
-            Assert.IsNotNull(builder);
-        }
+        Assert.NotNull(builder);
+    }
 
-        [TestMethod]
-        public void Ensure_Generated_RegisterServices_Method_Exists()
-        {
-            Microsoft.Extensions.DependencyInjection.IServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+    [Test]
+    public void Ensure_Generated_RegisterServices_Method_Exists()
+    {
+        Microsoft.Extensions.DependencyInjection.IServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-            services.RegisterServices();
-        }
+        services.RegisterServices();
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,38 +16,37 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
+namespace Basilisque.DependencyInjection.Tests.CodeAnalysis;
+
+public class BaseRegistrationTests
 {
-    public class BaseRegistrationTests
+    private IServiceProviderIsService? _isService;
+    private IServiceCollection? _serviceCollection;
+    private ServiceProvider? _provider;
+
+    protected IServiceCollection ServiceCollection { get { return _serviceCollection!; } }
+    protected ServiceProvider Provider { get { return _provider!; } }
+
+    [Before(Test)]
+    public void Initialize()
     {
-        private IServiceProviderIsService? _isService;
-        private IServiceCollection? _serviceCollection;
-        private ServiceProvider? _provider;
+        _serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-        protected IServiceCollection ServiceCollection { get { return _serviceCollection!; } }
-        protected ServiceProvider Provider { get { return _provider!; } }
+        ServiceCollection
+            .InitializeDependencies<Basilisque.DependencyInjection.Tests.DependencyRegistrator>()
+            .RegisterServices();
 
-        [TestInitialize]
-        public void Initialize()
-        {
-            _serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        _provider = ServiceCollection.BuildServiceProvider();
+        _isService = Provider.GetService<IServiceProviderIsService>()!;
+    }
 
-            ServiceCollection
-                .InitializeDependencies<Basilisque.DependencyInjection.Tests.DependencyRegistrator>()
-                .RegisterServices();
+    protected bool IsService<TService>()
+    {
+        return IsService(typeof(TService));
+    }
 
-            _provider = ServiceCollection.BuildServiceProvider();
-            _isService = Provider.GetService<IServiceProviderIsService>()!;
-        }
-
-        protected bool IsService<TService>()
-        {
-            return IsService(typeof(TService));
-        }
-
-        protected bool IsService(Type serviceType)
-        {
-            return _isService!.IsService(serviceType);
-        }
+    protected bool IsService(Type serviceType)
+    {
+        return _isService!.IsService(serviceType);
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 */
 
 using Basilisque.DependencyInjection.Registration.Annotations;
+using Shouldly;
 
-namespace Basilisque.DependencyInjection.Tests.Registration.Annotations
+namespace Basilisque.DependencyInjection.Tests.Registration.Annotations;
+
+public class RegisterServiceScopedAttributeTests
 {
-    [TestClass]
-    public class RegisterServiceScopedAttributeTests
+    [Test]
+    public void Scope_Is_Correct()
     {
-        [TestMethod]
-        public void Scope_Is_Correct()
-        {
-            RegisterServiceScopedAttribute a = new();
-            Assert.AreEqual(1, (int)a.Scope);
-        }
+        RegisterServiceScopedAttribute a = new();
+        ((int)a.Scope).ShouldBe(1);
     }
 }

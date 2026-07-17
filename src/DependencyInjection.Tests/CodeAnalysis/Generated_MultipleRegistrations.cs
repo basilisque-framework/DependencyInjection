@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,97 +17,96 @@
 using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 using Basilisque.DependencyInjection.TestAssembly.TestObjects;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 
-namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
+namespace Basilisque.DependencyInjection.Tests.CodeAnalysis;
+
+public class Generated_MultipleRegistrations : BaseRegistrationTests
 {
-    [TestClass]
-    public class Generated_MultipleRegistrations : BaseRegistrationTests
+    [Test]
+    public void Ensure_MultipleRegistrations_IsService()
     {
-        [TestMethod]
-        public void Ensure_MultipleRegistrations_IsService()
-        {
-            var isService = IsService<MultipleRegistrations>();
+        var isService = IsService<MultipleRegistrations>();
 
-            Assert.IsTrue(isService);
-        }
+        isService.ShouldBeTrue();
+    }
 
-        [TestMethod]
-        public void Ensure_IMultipleRegistration_IsService()
-        {
-            var isService = IsService<IMultipleRegistration>();
+    [Test]
+    public void Ensure_IMultipleRegistration_IsService()
+    {
+        var isService = IsService<IMultipleRegistration>();
 
-            Assert.IsTrue(isService);
-        }
+        isService.ShouldBeTrue();
+    }
 
-        [TestMethod]
-        public void Ensure_IMultipleRegistrations_IsService()
-        {
-            var isService = IsService<IMultipleRegistrations>();
+    [Test]
+    public void Ensure_IMultipleRegistrations_IsService()
+    {
+        var isService = IsService<IMultipleRegistrations>();
 
-            Assert.IsTrue(isService);
-        }
+        isService.ShouldBeTrue();
+    }
 
-        [TestMethod]
-        public void Check_MultipleRegistrations_Registered_Types()
-        {
-            var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(MultipleRegistrations))).ToList();
+    [Test]
+    public void Check_MultipleRegistrations_Registered_Types()
+    {
+        var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(MultipleRegistrations))).ToList();
 
-            Assert.IsTrue(registeredServices.Count == 1);
+        registeredServices.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MultipleRegistrations), registeredServices[0].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Scoped, registeredServices[0].Lifetime);
-        }
+        registeredServices[0].ImplementationType.ShouldBe(typeof(MultipleRegistrations));
+        registeredServices[0].Lifetime.ShouldBe(ServiceLifetime.Scoped);
+    }
 
-        [TestMethod]
-        public void Check_IMultipleRegistration_Registered_Types()
-        {
-            var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IMultipleRegistration))).ToList();
+    [Test]
+    public void Check_IMultipleRegistration_Registered_Types()
+    {
+        var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IMultipleRegistration))).ToList();
 
-            Assert.IsTrue(registeredServices.Count == 1);
+        registeredServices.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MultipleRegistrations), registeredServices[0].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Singleton, registeredServices[0].Lifetime);
-        }
+        registeredServices[0].ImplementationType.ShouldBe(typeof(MultipleRegistrations));
+        registeredServices[0].Lifetime.ShouldBe(ServiceLifetime.Singleton);
+    }
 
-        [TestMethod]
-        public void Check_IMultipleRegistrations_Registered_Types()
-        {
-            var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IMultipleRegistrations))).ToList();
+    [Test]
+    public void Check_IMultipleRegistrations_Registered_Types()
+    {
+        var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IMultipleRegistrations))).ToList();
 
-            Assert.IsTrue(registeredServices.Count == 1);
+        registeredServices.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MultipleRegistrations), registeredServices[0].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Transient, registeredServices[0].Lifetime);
-        }
+        registeredServices[0].ImplementationType.ShouldBe(typeof(MultipleRegistrations));
+        registeredServices[0].Lifetime.ShouldBe(ServiceLifetime.Transient);
+    }
 
-        [TestMethod]
-        public void Can_MultipleRegistrations_Resolve_Instance()
-        {
-            var instances = Provider.GetServices<MultipleRegistrations>().ToList();
+    [Test]
+    public void Can_MultipleRegistrations_Resolve_Instance()
+    {
+        var instances = Provider.GetServices<MultipleRegistrations>().ToList();
 
-            Assert.IsTrue(instances.Count == 1);
+        instances.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MultipleRegistrations), instances[0].GetType());
-        }
+        instances[0].GetType().ShouldBe(typeof(MultipleRegistrations));
+    }
 
-        [TestMethod]
-        public void Can_IMultipleRegistration_Resolve_Instance()
-        {
-            var instances = Provider.GetServices<IMultipleRegistration>().ToList();
+    [Test]
+    public void Can_IMultipleRegistration_Resolve_Instance()
+    {
+        var instances = Provider.GetServices<IMultipleRegistration>().ToList();
 
-            Assert.IsTrue(instances.Count == 1);
+        instances.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MultipleRegistrations), instances[0].GetType());
-        }
+        instances[0].GetType().ShouldBe(typeof(MultipleRegistrations));
+    }
 
-        [TestMethod]
-        public void Can_IMultipleRegistrations_Resolve_Instance()
-        {
-            var instances = Provider.GetServices<IMultipleRegistrations>().ToList();
+    [Test]
+    public void Can_IMultipleRegistrations_Resolve_Instance()
+    {
+        var instances = Provider.GetServices<IMultipleRegistrations>().ToList();
 
-            Assert.IsTrue(instances.Count == 1);
+        instances.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MultipleRegistrations), instances[0].GetType());
-        }
+        instances[0].GetType().ShouldBe(typeof(MultipleRegistrations));
     }
 }

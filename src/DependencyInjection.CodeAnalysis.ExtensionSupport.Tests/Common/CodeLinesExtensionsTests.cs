@@ -19,16 +19,16 @@ using Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Common;
 using Basilisque.DependencyInjection.Registration.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Shouldly;
 
 
 namespace Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Tests.Common;
 
-[TestClass]
 public class CodeLinesExtensionsTests
 {
     private CodeLines _methodBody = new();
 
-    [TestMethod]
+    [Test]
     public void AddServicesRegistrationToMethodBody_AddsNonKeyedRegistration_WithImplementationType()
     {
         var serviceType = getTypeSymbol(
@@ -40,12 +40,11 @@ public class CodeLinesExtensionsTests
 
         _methodBody.AddServicesRegistrationToMethodBody(RegistrationScope.Scoped, serviceType, implementationType);
 
-        CollectionAssert.AreEqual(
-            new[] { "services.AddScoped<global::My.Service.IMyService, global::My.Service.MyService>();" },
-            _methodBody.ToArray());
+        _methodBody.ToArray().ShouldBe(
+            ["services.AddScoped<global::My.Service.IMyService, global::My.Service.MyService>();"]);
     }
 
-    [TestMethod]
+    [Test]
     public void AddServicesRegistrationToMethodBody_AddsKeyedRegistration_WithFactoryInformation()
     {
         var serviceType = getTypeSymbol(
@@ -54,12 +53,11 @@ public class CodeLinesExtensionsTests
 
         _methodBody.AddServicesRegistrationToMethodBody(RegistrationScope.Singleton, serviceType, serviceKey: "\"my-key\"", factoryInformation: "global::My.Factory.Create");
 
-        CollectionAssert.AreEqual(
-            new[] { "services.AddKeyedSingleton<global::My.Service.MyService>(\"my-key\", global::My.Factory.Create);" },
-            _methodBody.ToArray());
+        _methodBody.ToArray().ShouldBe(
+            ["services.AddKeyedSingleton<global::My.Service.MyService>(\"my-key\", global::My.Factory.Create);"]);
     }
 
-    [TestMethod]
+    [Test]
     public void AddServicesRegistrationToMethodBody_AddsOpenGenericRegistration()
     {
         var serviceType = getTypeSymbol(
@@ -72,9 +70,8 @@ public class CodeLinesExtensionsTests
 
         _methodBody.AddServicesRegistrationToMethodBody(RegistrationScope.Transient, serviceType, implementationType);
 
-        CollectionAssert.AreEqual(
-            new[] { "services.AddTransient(typeof(global::My.Service.IMyService<>), typeof(global::My.Service.MyService<>));" },
-            _methodBody.ToArray());
+        _methodBody.ToArray().ShouldBe(
+            ["services.AddTransient(typeof(global::My.Service.IMyService<>), typeof(global::My.Service.MyService<>));"]);
     }
 
     private static INamedTypeSymbol getTypeSymbol(string sourceCode, string metadataName)
@@ -85,7 +82,7 @@ public class CodeLinesExtensionsTests
             .AddSyntaxTrees(syntaxTree);
 
         var symbol = compilation.GetTypeByMetadataName(metadataName);
-        Assert.IsNotNull(symbol);
+        Assert.NotNull(symbol);
         return symbol;
     }
 }

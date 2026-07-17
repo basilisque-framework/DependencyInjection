@@ -1,51 +1,67 @@
-﻿using Microsoft.CodeAnalysis;
+﻿/*
+   Copyright 2025-2026 Alexander Stärk
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Shouldly;
 
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests;
 
-[TestClass]
 public class FullQualifyingSyntaxRewriterTests
 {
-    [TestMethod]
+    [Test]
     public void Rewrites_Typeof_ToCSAlias()
     {
         var code = "using System; class C { object o = typeof(String); }";
         var result = rewrite(code);
-        StringAssert.Contains(result, "typeof(string)");
+        result.ShouldContain("typeof(string)");
     }
 
-    [TestMethod]
+    [Test]
     public void Rewrites_ArrayType_ToCSAlias()
     {
         var code = "using System; class C { Object o = new String[] { \"a\" }; }";
         var result = rewrite(code);
-        StringAssert.Contains(result, "object");
-        StringAssert.Contains(result, "string[]");
+        result.ShouldContain("object");
+        result.ShouldContain("string[]");
     }
 
-    [TestMethod]
+    [Test]
     public void Rewrites_Nameof_ToFullyQualifiedString()
     {
         var code = "class MyType { string s = nameof(MyType); }";
         var result = rewrite(code);
-        StringAssert.Contains(result, "\"global::MyType\"");
+        result.ShouldContain("\"global::MyType\"");
     }
 
-    [TestMethod]
+    [Test]
     public void Preserves_Other_Syntax_Unchanged()
     {
         var code = "class C { int x = 42; }";
         var result = rewrite(code);
-        StringAssert.Contains(result, "int x = 42;");
+        result.ShouldContain("int x = 42;");
     }
 
-    [TestMethod]
+    [Test]
     public void Handles_ImplicitArrayCreation_And_CustomClasses_WithTypeof()
     {
         var code = "using My.Namespace; class C { var types = new[] { typeof(A) }; }";
         var code2 = "namespace My.Namespace; class A { }";
         var result = rewrite(code, code2);
-        StringAssert.Contains(result, "global::My.Namespace.A");
+        result.ShouldContain("global::My.Namespace.A");
     }
 
     private static string rewrite(string sourceCode, string? sourceCode2 = null)

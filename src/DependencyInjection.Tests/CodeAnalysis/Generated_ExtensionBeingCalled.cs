@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using Basilisque.DependencyInjection.Tests.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 
 namespace Basilisque.DependencyInjection.Tests
 {
@@ -37,36 +38,36 @@ namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
     { }
 
 
-    [TestClass]
     public class Generated_ExtensionBeingCalled : BaseRegistrationTests
     {
-        [TestMethod]
+        [Test]
+
         public void Ensure_IsService()
         {
             var isService = IsService<IMyExtensionInterface1>();
 
-            Assert.IsTrue(isService);
+            isService.ShouldBeTrue();
         }
 
-        [TestMethod]
+        [Test]
         public void Check_Registered_Types()
         {
             var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IMyExtensionInterface1))).ToList();
 
-            Assert.IsTrue(registeredServices.Count == 1);
+            registeredServices.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MyExtension1), registeredServices[0].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Transient, registeredServices[0].Lifetime);
+            registeredServices[0].ImplementationType.ShouldBe(typeof(MyExtension1));
+            registeredServices[0].Lifetime.ShouldBe(ServiceLifetime.Transient);
         }
 
-        [TestMethod]
+        [Test]
         public void Can_Resolve_Instance()
         {
             var instances = Provider.GetServices<IMyExtensionInterface1>().ToList();
 
-            Assert.IsTrue(instances.Count == 1);
+            instances.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(MyExtension1), instances[0].GetType());
+            instances[0].GetType().ShouldBe(typeof(MyExtension1));
         }
     }
 }

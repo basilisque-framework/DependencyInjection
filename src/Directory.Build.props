@@ -51,4 +51,8 @@
       <SetTargetFramework Condition="'$(TargetFramework)'=='net462'">TargetFramework=netstandard2.0</SetTargetFramework>
     </ProjectReference>
   </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net462' AND Exists('$(MSBuildThisFileDirectory)Compatibility\ModuleInitializerAttribute.cs')">
+    <Compile Include="$(MSBuildThisFileDirectory)Compatibility\ModuleInitializerAttribute.cs" />
+  </ItemGroup>
 </Project>

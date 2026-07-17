@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,13 +23,14 @@ using System.Text;
 
 namespace Basilisque.DependencyInjection.CodeAnalysis.Tests.Generators.DependencyInjectionGenerator;
 
+[InheritsTests]
 public abstract class BaseDependencyInjectionGeneratorTest : BaseDependencyInjectionGeneratorTest<IncrementalSourceGeneratorVerifier<CodeAnalysis.DependencyInjectionGenerator>>
 { }
 
 public abstract class BaseDependencyInjectionGeneratorTest<TGenerator>
     where TGenerator : IncrementalSourceGeneratorVerifier<CodeAnalysis.DependencyInjectionGenerator>, new()
 {
-    [TestMethod]
+    [Test]
     public virtual async Task Test()
     {
         var verifier = GetVerifier();

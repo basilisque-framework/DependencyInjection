@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,39 +16,38 @@
 
 using Basilisque.DependencyInjection.Tests.TestObjects;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 
-namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
+namespace Basilisque.DependencyInjection.Tests.CodeAnalysis;
+
+public class Generated_IImplementsInterfaceDirectlyScoped : BaseRegistrationTests
 {
-    [TestClass]
-    public class Generated_IImplementsInterfaceDirectlyScoped : BaseRegistrationTests
+    [Test]
+    public void Ensure_IsService()
     {
-        [TestMethod]
-        public void Ensure_IsService()
-        {
-            var isService = IsService<IImplementsInterfaceDirectlyScoped>();
+        var isService = IsService<IImplementsInterfaceDirectlyScoped>();
 
-            Assert.IsTrue(isService);
-        }
+        isService.ShouldBeTrue();
+    }
 
-        [TestMethod]
-        public void Check_Registered_Types()
-        {
-            var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsInterfaceDirectlyScoped))).ToList();
+    [Test]
+    public void Check_Registered_Types()
+    {
+        var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsInterfaceDirectlyScoped))).ToList();
 
-            Assert.IsTrue(registeredServices.Count == 1);
+        registeredServices.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(ImplementsInterfaceDirectlyScoped), registeredServices[0].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Scoped, registeredServices[0].Lifetime);
-        }
+        registeredServices[0].ImplementationType.ShouldBe(typeof(ImplementsInterfaceDirectlyScoped));
+        registeredServices[0].Lifetime.ShouldBe(ServiceLifetime.Scoped);
+    }
 
-        [TestMethod]
-        public void Can_Resolve_Instance()
-        {
-            var instances = Provider.GetServices<IImplementsInterfaceDirectlyScoped>().ToList();
+    [Test]
+    public void Can_Resolve_Instance()
+    {
+        var instances = Provider.GetServices<IImplementsInterfaceDirectlyScoped>().ToList();
 
-            Assert.IsTrue(instances.Count == 1);
+        instances.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(ImplementsInterfaceDirectlyScoped), instances[0].GetType());
-        }
+        instances[0].GetType().ShouldBe(typeof(ImplementsInterfaceDirectlyScoped));
     }
 }

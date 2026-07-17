@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,72 +17,71 @@
 using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 using Basilisque.DependencyInjection.TestAssembly.TestObjects;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 
-namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
+namespace Basilisque.DependencyInjection.Tests.CodeAnalysis;
+
+public class Generated_IImplementsITypeName : BaseRegistrationTests
 {
-    [TestClass]
-    public class Generated_IImplementsITypeName : BaseRegistrationTests
+    [Test]
+    public void Ensure_BaseInterface_IsService()
     {
-        [TestMethod]
-        public void Ensure_BaseInterface_IsService()
-        {
-            var isService = IsService<IImplementsITypeNameBase>();
+        var isService = IsService<IImplementsITypeNameBase>();
 
-            Assert.IsTrue(isService);
-        }
+        isService.ShouldBeTrue();
+    }
 
-        [TestMethod]
-        public void Ensure_Interface_IsService()
-        {
-            var isService = IsService<IImplementsITypeName>();
+    [Test]
+    public void Ensure_Interface_IsService()
+    {
+        var isService = IsService<IImplementsITypeName>();
 
-            Assert.IsTrue(isService);
-        }
+        isService.ShouldBeTrue();
+    }
 
-        [TestMethod]
-        public void Check_BaseInterface_Registered_Types()
-        {
-            var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsITypeNameBase))).ToList();
+    [Test]
+    public void Check_BaseInterface_Registered_Types()
+    {
+        var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsITypeNameBase))).ToList();
 
-            Assert.IsTrue(registeredServices.Count == 2);
+        registeredServices.Count.ShouldBe(2);
 
-            Assert.AreEqual(typeof(ImplementsITypeName), registeredServices[0].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Singleton, registeredServices[0].Lifetime);
+        registeredServices[0].ImplementationType.ShouldBe(typeof(ImplementsITypeName));
+        registeredServices[0].Lifetime.ShouldBe(ServiceLifetime.Singleton);
 
-            Assert.AreEqual(typeof(ImplementsITypeName2), registeredServices[1].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Singleton, registeredServices[1].Lifetime);
-        }
+        registeredServices[1].ImplementationType.ShouldBe(typeof(ImplementsITypeName2));
+        registeredServices[1].Lifetime.ShouldBe(ServiceLifetime.Singleton);
+    }
 
-        [TestMethod]
-        public void Check_Interface_Registered_Types()
-        {
-            var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsITypeName))).ToList();
+    [Test]
+    public void Check_Interface_Registered_Types()
+    {
+        var registeredServices = ServiceCollection.Where(sd => sd.ServiceType.Equals(typeof(IImplementsITypeName))).ToList();
 
-            Assert.IsTrue(registeredServices.Count == 1);
+        registeredServices.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(ImplementsITypeName), registeredServices[0].ImplementationType);
-            Assert.AreEqual(ServiceLifetime.Singleton, registeredServices[0].Lifetime);
-        }
+        registeredServices[0].ImplementationType.ShouldBe(typeof(ImplementsITypeName));
+        registeredServices[0].Lifetime.ShouldBe(ServiceLifetime.Singleton);
+    }
 
-        [TestMethod]
-        public void Can_BaseInterface_Resolve_Instance()
-        {
-            var instances = Provider.GetServices<IImplementsITypeNameBase>().ToList();
+    [Test]
+    public void Can_BaseInterface_Resolve_Instance()
+    {
+        var instances = Provider.GetServices<IImplementsITypeNameBase>().ToList();
 
-            Assert.IsTrue(instances.Count == 2);
+        instances.Count.ShouldBe(2);
 
-            Assert.AreEqual(typeof(ImplementsITypeName), instances[0].GetType());
-            Assert.AreEqual(typeof(ImplementsITypeName2), instances[1].GetType());
-        }
+        instances[0].GetType().ShouldBe(typeof(ImplementsITypeName));
+        instances[1].GetType().ShouldBe(typeof(ImplementsITypeName2));
+    }
 
-        [TestMethod]
-        public void Can_Interface_Resolve_Instance()
-        {
-            var instances = Provider.GetServices<IImplementsITypeName>().ToList();
+    [Test]
+    public void Can_Interface_Resolve_Instance()
+    {
+        var instances = Provider.GetServices<IImplementsITypeName>().ToList();
 
-            Assert.IsTrue(instances.Count == 1);
+        instances.Count.ShouldBe(1);
 
-            Assert.AreEqual(typeof(ImplementsITypeName), instances[0].GetType());
-        }
+        instances[0].GetType().ShouldBe(typeof(ImplementsITypeName));
     }
 }

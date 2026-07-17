@@ -1,5 +1,5 @@
-﻿/*
-   Copyright 2023-2026 Alexander Stärk
+/*
+   Copyright 2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,17 +14,9 @@
    limitations under the License.
 */
 
-using Basilisque.DependencyInjection.Registration.Annotations;
-using Shouldly;
+namespace System.Runtime.CompilerServices;
 
-namespace Basilisque.DependencyInjection.Tests.Registration.Annotations;
-
-public class RegisterServiceTransientAttributeTests
+[global::System.AttributeUsage(global::System.AttributeTargets.Method, Inherited = false)]
+internal sealed class ModuleInitializerAttribute : global::System.Attribute
 {
-    [Test]
-    public void Scope_Is_Correct()
-    {
-        RegisterServiceTransientAttribute a = new();
-        ((int)a.Scope).ShouldBe(0);
-    }
 }

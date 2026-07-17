@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,35 +14,35 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.Tests.CodeAnalysis
+using Shouldly;
+
+namespace Basilisque.DependencyInjection.Tests.CodeAnalysis;
+
+public class DependencyInjectionGeneratorTests
 {
-    [TestClass]
-    public class DependencyInjectionGeneratorTests
+    [Test]
+    public void Ensure_Generated_DependencyRegistrator_Exists_In_RootNamespace()
     {
-        [TestMethod]
-        public void Ensure_Generated_DependencyRegistrator_Exists_In_RootNamespace()
-        {
-            var registrator = new Basilisque.DependencyInjection.Tests.DependencyRegistrator();
+        var registrator = new Basilisque.DependencyInjection.Tests.DependencyRegistrator();
 
-            Assert.IsNotNull(registrator);
-        }
+        Assert.NotNull(registrator);
+    }
 
-        [TestMethod]
-        public void Ensure_Generated_DependencyRegistrator_Exists_In_Namespace_Equals_AssemblyName()
-        {
-            var registrator = new DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator();
+    [Test]
+    public void Ensure_Generated_DependencyRegistrator_Exists_In_Namespace_Equals_AssemblyName()
+    {
+        var registrator = new DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator();
 
-            Assert.IsNotNull(registrator);
-        }
+        Assert.NotNull(registrator);
+    }
 
-        [TestMethod]
-        public void Ensure_Generated_DependencyRegistrator_In_AssemblyName_InheritsFromRootNamespace()
-        {
-            _ = new DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator();
+    [Test]
+    public void Ensure_Generated_DependencyRegistrator_In_AssemblyName_InheritsFromRootNamespace()
+    {
+        _ = new DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator();
 
-            var isAssignable = typeof(Basilisque.DependencyInjection.Tests.DependencyRegistrator).IsAssignableFrom(typeof(DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator));
+        var isAssignable = typeof(Basilisque.DependencyInjection.Tests.DependencyRegistrator).IsAssignableFrom(typeof(DependencyInjection.DivergingRootNamespace.Tests.DependencyRegistrator));
 
-            Assert.IsTrue(isAssignable);
-        }
+        isAssignable.ShouldBeTrue();
     }
 }
