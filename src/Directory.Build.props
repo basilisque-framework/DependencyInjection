@@ -31,6 +31,10 @@
     <RuntimeIdentifier Condition="'$(TargetFramework)'=='net462'">win-x86</RuntimeIdentifier>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests')) == true">
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+
   <!-- NuGet package properties and project info -->
   <PropertyGroup>
     <BAS_CB_Copyright_BeginYear>2022</BAS_CB_Copyright_BeginYear>
