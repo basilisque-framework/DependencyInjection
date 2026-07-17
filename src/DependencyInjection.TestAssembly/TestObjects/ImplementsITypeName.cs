@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
-namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
-{
-    /// <summary>
-    /// Interface for testing the registration when the implementing class has the same name without the leading I
-    /// </summary>
-    public interface IImplementsITypeName : IImplementsITypeNameBase
-    {
-    }
+namespace Basilisque.DependencyInjection.TestAssembly.TestObjects;
 
-    /// <summary>
-    /// Class for testing the registration when the implemented interface has the same name with a leading I
-    /// </summary>
-    public class ImplementsITypeName : IImplementsITypeName
-    {
-    }
+/// <summary>
+/// Interface for testing the registration when the implementing class has the same name without the leading I
+/// </summary>
+public interface IImplementsITypeName : IImplementsITypeNameBase
+{
+}
+
+/// <summary>
+/// Class for testing the registration when the implemented interface has the same name with a leading I
+/// </summary>
+public class ImplementsITypeName : IImplementsITypeName
+{
 }

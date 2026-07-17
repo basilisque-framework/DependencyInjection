@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects
+namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
+
+/// <summary>
+/// Interface 2 for testing registration as multiple interfaces
+/// </summary>
+public interface IMultipleRegistrations
 {
-    /// <summary>
-    /// Interface 2 for testing registration as multiple interfaces
-    /// </summary>
-    public interface IMultipleRegistrations
-    {
-    }
 }

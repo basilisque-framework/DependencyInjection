@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,32 +14,31 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.Registration.Annotations
+namespace Basilisque.DependencyInjection.Registration.Annotations;
+
+/// <summary>
+/// Specifies the lifetime of a service in an Microsoft.Extensions.DependencyInjection.IServiceCollection.
+/// </summary>
+#if BASILISQUE_CODE_ANALYSIS
+internal
+#else
+public
+#endif
+    enum RegistrationScope
 {
     /// <summary>
-    /// Specifies the lifetime of a service in an Microsoft.Extensions.DependencyInjection.IServiceCollection.
+    /// Specifies that a new instance of the service will be created every time it is requested.
     /// </summary>
-#if BASILISQUE_CODE_ANALYSIS
-    internal
-#else
-    public
-#endif
-        enum RegistrationScope
-    {
-        /// <summary>
-        /// Specifies that a new instance of the service will be created every time it is requested.
-        /// </summary>
-        Transient,
+    Transient,
 
-        /// <summary>
-        /// Specifies that a new instance of the service will be created for each scope.
-        /// </summary>
-        /// <remarks>In ASP.NET Core applications a scope is created around each server request.</remarks>
-        Scoped,
+    /// <summary>
+    /// Specifies that a new instance of the service will be created for each scope.
+    /// </summary>
+    /// <remarks>In ASP.NET Core applications a scope is created around each server request.</remarks>
+    Scoped,
 
-        /// <summary>
-        /// Specifies that a single instance of the service will be created.
-        /// </summary>
-        Singleton
-    }
+    /// <summary>
+    /// Specifies that a single instance of the service will be created.
+    /// </summary>
+    Singleton
 }

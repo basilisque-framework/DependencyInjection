@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 using Basilisque.DependencyInjection.Registration.Annotations;
 
-namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects
+namespace Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
+
+/// <summary>
+/// Base interface for testing the registration when the implementing class has the same name without the leading I
+/// </summary>
+[RegisterServiceSingleton(As = typeof(IImplementsITypeNameBase), ImplementsITypeName = true)]
+public interface IImplementsITypeNameBase
 {
-    /// <summary>
-    /// Base interface for testing the registration when the implementing class has the same name without the leading I
-    /// </summary>
-    [RegisterServiceSingleton(As = typeof(IImplementsITypeNameBase), ImplementsITypeName = true)]
-    public interface IImplementsITypeNameBase
-    {
-    }
 }

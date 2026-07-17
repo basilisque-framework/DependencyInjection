@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 using Basilisque.DependencyInjection.Registration.Annotations;
 using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
-namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
+namespace Basilisque.DependencyInjection.TestAssembly.TestObjects;
+
+/// <summary>
+/// Class for testing multiple registrations
+/// </summary>
+[RegisterServiceScoped(ImplementsITypeName = false)]
+[RegisterServiceSingleton(As = typeof(IMultipleRegistration), ImplementsITypeName = false)]
+[RegisterServiceTransient]
+public class MultipleRegistrations : IMultipleRegistration, IMultipleRegistrations
 {
-    /// <summary>
-    /// Class for testing multiple registrations
-    /// </summary>
-    [RegisterServiceScoped(ImplementsITypeName = false)]
-    [RegisterServiceSingleton(As = typeof(IMultipleRegistration), ImplementsITypeName = false)]
-    [RegisterServiceTransient]
-    public class MultipleRegistrations : IMultipleRegistration, IMultipleRegistrations
-    {
-    }
 }

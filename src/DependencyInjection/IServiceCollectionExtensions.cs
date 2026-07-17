@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,24 +17,23 @@
 using Basilisque.DependencyInjection.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Basilisque.DependencyInjection
+namespace Basilisque.DependencyInjection;
+
+/// <summary>
+/// Provides extension to the <see cref="IServiceCollection"/> interface
+/// </summary>
+public static class IServiceCollectionExtensions
 {
     /// <summary>
-    /// Provides extension to the <see cref="IServiceCollection"/> interface
+    /// This method extends <see cref="IServiceCollection"/> with a mechanism to register dependencies and services for the whole application.
+    /// Calling this method creates a <see cref="DependencyRegistratorBuilder{TRootDependencyRegistrator}"/> and initializes the dependency chain.
     /// </summary>
-    public static class IServiceCollectionExtensions
+    /// <typeparam name="TRootDependencyRegistrator"></typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> all services are registered on.</param>
+    /// <returns>A <see cref="DependencyRegistratorBuilder{TRootDependencyRegistrator}"/> that is used to build and execute the chain of <see cref="IDependencyRegistrator"/></returns>
+    public static DependencyRegistratorBuilder<TRootDependencyRegistrator> InitializeDependencies<TRootDependencyRegistrator>(this IServiceCollection services)
+        where TRootDependencyRegistrator : IDependencyRegistrator, new()
     {
-        /// <summary>
-        /// This method extends <see cref="IServiceCollection"/> with a mechanism to register dependencies and services for the whole application.
-        /// Calling this method creates a <see cref="DependencyRegistratorBuilder{TRootDependencyRegistrator}"/> and initializes the dependency chain.
-        /// </summary>
-        /// <typeparam name="TRootDependencyRegistrator"></typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/> all services are registered on.</param>
-        /// <returns>A <see cref="DependencyRegistratorBuilder{TRootDependencyRegistrator}"/> that is used to build and execute the chain of <see cref="IDependencyRegistrator"/></returns>
-        public static DependencyRegistratorBuilder<TRootDependencyRegistrator> InitializeDependencies<TRootDependencyRegistrator>(this IServiceCollection services)
-            where TRootDependencyRegistrator : IDependencyRegistrator, new()
-        {
-            return new DependencyRegistratorBuilder<TRootDependencyRegistrator>(services);
-        }
+        return new DependencyRegistratorBuilder<TRootDependencyRegistrator>(services);
     }
 }

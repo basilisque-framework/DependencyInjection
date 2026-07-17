@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,20 +14,19 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.Registration.Annotations
+namespace Basilisque.DependencyInjection.Registration.Annotations;
+
+/// <summary>
+/// Attribute for registering the target class/interface at the dependency container with <see cref="RegistrationScope.Transient"/>
+/// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
+[RegisterService(RegistrationScope.Transient)]
+public class RegisterServiceTransientAttribute : RegisterServiceAttribute
 {
     /// <summary>
-    /// Attribute for registering the target class/interface at the dependency container with <see cref="RegistrationScope.Transient"/>
+    /// Creates a new <see cref="RegisterServiceTransientAttribute"/>
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
-    [RegisterService(RegistrationScope.Transient)]
-    public class RegisterServiceTransientAttribute : RegisterServiceAttribute
-    {
-        /// <summary>
-        /// Creates a new <see cref="RegisterServiceTransientAttribute"/>
-        /// </summary>
-        public RegisterServiceTransientAttribute()
-            : base(RegistrationScope.Transient)
-        { }
-    }
+    public RegisterServiceTransientAttribute()
+        : base(RegistrationScope.Transient)
+    { }
 }

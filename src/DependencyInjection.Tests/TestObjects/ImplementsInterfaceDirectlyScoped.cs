@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 using Basilisque.DependencyInjection.Registration.Annotations;
 
-namespace Basilisque.DependencyInjection.Tests.TestObjects
-{
-    public interface IImplementsInterfaceDirectlyScoped
-    {
-    }
+namespace Basilisque.DependencyInjection.Tests.TestObjects;
 
-    [RegisterServiceScoped(As = typeof(IImplementsInterfaceDirectlyScoped), ImplementsITypeName = true)]
-    internal class ImplementsInterfaceDirectlyScoped : IImplementsInterfaceDirectlyScoped
-    {
-    }
+public interface IImplementsInterfaceDirectlyScoped
+{
+}
+
+[RegisterServiceScoped(As = typeof(IImplementsInterfaceDirectlyScoped), ImplementsITypeName = true)]
+internal class ImplementsInterfaceDirectlyScoped : IImplementsInterfaceDirectlyScoped
+{
 }

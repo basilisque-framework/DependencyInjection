@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,41 +14,40 @@
    limitations under the License.
 */
 
-namespace Basilisque.DependencyInjection.Registration
+namespace Basilisque.DependencyInjection.Registration;
+
+/// <summary>
+/// Provides a mechanism to register all dependencies and services of a project.
+/// </summary>
+public abstract class BaseDependencyRegistrator : IDependencyRegistrator
 {
     /// <summary>
-    /// Provides a mechanism to register all dependencies and services of a project.
+    /// Registers all dependencies of the given project
     /// </summary>
-    public abstract class BaseDependencyRegistrator : IDependencyRegistrator
+    /// <param name="collection">The <see cref="DependencyCollection"/> that the dependencies will be registered on.</param>
+    public void Initialize(DependencyCollection collection)
     {
-        /// <summary>
-        /// Registers all dependencies of the given project
-        /// </summary>
-        /// <param name="collection">The <see cref="DependencyCollection"/> that the dependencies will be registered on.</param>
-        public void Initialize(DependencyCollection collection)
-        {
-            PerformInitialization(collection);
-        }
-
-        /// <summary>
-        /// Registers all services of the given project
-        /// </summary>
-        /// <param name="services">The <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that the services will be registered on.</param>
-        public void RegisterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
-        {
-            PerformServiceRegistration(services);
-        }
-
-        /// <summary>
-        /// Registers all dependencies of the given project
-        /// </summary>
-        /// <param name="collection">The <see cref="DependencyCollection"/> that the dependencies will be registered on.</param>
-        protected abstract void PerformInitialization(DependencyCollection collection);
-
-        /// <summary>
-        /// Registers all services of the given project
-        /// </summary>
-        /// <param name="services">The <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that the services will be registered on.</param>
-        protected abstract void PerformServiceRegistration(Microsoft.Extensions.DependencyInjection.IServiceCollection services);
+        PerformInitialization(collection);
     }
+
+    /// <summary>
+    /// Registers all services of the given project
+    /// </summary>
+    /// <param name="services">The <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that the services will be registered on.</param>
+    public void RegisterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+    {
+        PerformServiceRegistration(services);
+    }
+
+    /// <summary>
+    /// Registers all dependencies of the given project
+    /// </summary>
+    /// <param name="collection">The <see cref="DependencyCollection"/> that the dependencies will be registered on.</param>
+    protected abstract void PerformInitialization(DependencyCollection collection);
+
+    /// <summary>
+    /// Registers all services of the given project
+    /// </summary>
+    /// <param name="services">The <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that the services will be registered on.</param>
+    protected abstract void PerformServiceRegistration(Microsoft.Extensions.DependencyInjection.IServiceCollection services);
 }

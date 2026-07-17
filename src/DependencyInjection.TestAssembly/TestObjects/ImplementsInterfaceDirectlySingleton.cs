@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
-namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
+namespace Basilisque.DependencyInjection.TestAssembly.TestObjects;
+
+/// <summary>
+/// The implemented interface should register this class as singleton
+/// </summary>
+public class ImplementsInterfaceDirectlySingleton : IImplementsInterfaceDirectlySingleton
 {
-    /// <summary>
-    /// The implemented interface should register this class as singleton
-    /// </summary>
-    public class ImplementsInterfaceDirectlySingleton : IImplementsInterfaceDirectlySingleton
-    {
-    }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 using Basilisque.DependencyInjection.TestAssembly.Child1.TestObjects;
 
-namespace Basilisque.DependencyInjection.TestAssembly.TestObjects
-{
-    /// <summary>
-    /// Interface for testing inheritance with 'ImplementsITypeName' disabled
-    /// </summary>
-    public interface IImplementsITypeNameDisabled2 : IImplementsITypeNameDisabledBase
-    {
-    }
+namespace Basilisque.DependencyInjection.TestAssembly.TestObjects;
 
-    /// <summary>
-    /// Implementation for testing inheritance with 'ImplementsITypeName' disabled
-    /// </summary>
-    public class ImplementsITypeNameDisabled2 : IImplementsITypeNameDisabled2
-    {
-    }
+/// <summary>
+/// Interface for testing inheritance with 'ImplementsITypeName' disabled
+/// </summary>
+public interface IImplementsITypeNameDisabled2 : IImplementsITypeNameDisabledBase
+{
+}
+
+/// <summary>
+/// Implementation for testing inheritance with 'ImplementsITypeName' disabled
+/// </summary>
+public class ImplementsITypeNameDisabled2 : IImplementsITypeNameDisabled2
+{
 }
