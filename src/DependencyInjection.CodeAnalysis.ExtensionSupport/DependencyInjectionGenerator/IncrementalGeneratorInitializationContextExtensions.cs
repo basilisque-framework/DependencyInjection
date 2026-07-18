@@ -27,31 +27,39 @@ public static class IncrementalGeneratorInitializationContextExtensions
     extension(IncrementalGeneratorInitializationContext context)
     {
         /// <summary>
-        /// Registers an output action for dependency injection extension compilation information using the specified
-        /// value provider, implementation parameters, and callback.
+        /// Registers an output action for dependency injection extension compilation information using the specified input value provider and callback.
         /// </summary>
-        /// <typeparam name="TParam">The type of the implementation parameters to be passed to the callback.</typeparam>
-        /// <param name="valueProvider">An incremental value provider that supplies the root namespace and assembly name for the compilation context.</param>
+        /// <typeparam name="TSource">The type of the <see cref="Microsoft.CodeAnalysis.IncrementalValueProvider{T}"/> that provides the input values.</typeparam>
+        /// <param name="valueProvider">An incremental value provider that supplies the root namespace, the assembly name and other input values for the compilation context.</param>
         /// <param name="extensionName">The name of the dependency injection extension for which the compilation information output is being registered. This is used to identify the specific extension in the output generation process.</param>
-        /// <param name="implementationParameters">The parameters to be provided to the implementation callback when generating the output.</param>
-        /// <param name="implementationCallback">A callback action that receives the implementation parameters and is invoked during output generation.</param>
-        public void RegisterDependencyInjectionExtensionCompilationInfoOutput<TParam>(IncrementalValueProvider<(string? RootNamespace, string? AssemblyName)> valueProvider, string extensionName, TParam implementationParameters, SourceGenerationImplementationCallback<TParam> implementationCallback)
+        /// <param name="initializeExtensionCallback">A callback that receives the implementation parameters and performs the initialization logic for the extension.</param>
+        /// <param name="registerExtensionCallback">A callback that receives the implementation parameters and performs the registration logic for the extension.</param>
+        public void RegisterDependencyInjectionExtensionCompilationInfoOutput<TSource>(IncrementalValueProvider<(TSource Left, (string? RootNamespace, string? AssemblyName) Right)> valueProvider, string extensionName, SourceGenerationImplementationCallback<TSource>? initializeExtensionCallback = null, SourceGenerationImplementationCallback<TSource>? registerExtensionCallback = null)
         {
-            context.RegisterImplementationCompilationInfoOutput(valueProvider, (c, s, o) => DependencyInjectionExtensionGeneratorOutput.OutputImplementations(c, s, o, extensionName, implementationParameters, implementationCallback));
+            if (initializeExtensionCallback is null && registerExtensionCallback is null)
+                throw new ArgumentNullException($"Please provide at least one of the parameters '{initializeExtensionCallback}' and '{registerExtensionCallback}'.");
+
+            context.RegisterImplementationCompilationInfoOutput(valueProvider, (c, s, o) => DependencyInjectionExtensionGeneratorOutput.OutputImplementations(c, s, o, extensionName, initializeExtensionCallback, registerExtensionCallback));
         }
 
         /// <summary>
-        /// Registers a dependency injection extension using the specified implementation parameters and callback.
+        /// Registers a dependency injection extension using the specified input value provider and callback.
         /// </summary>
-        /// <typeparam name="TParam">The type of the implementation parameters used to configure the dependency injection extension.</typeparam>
+        /// <typeparam name="TSource">The type of the <see cref="Microsoft.CodeAnalysis.IncrementalValueProvider{T}"/> that provides the input values.</typeparam>
+        /// <param name="source">The <see cref="Microsoft.CodeAnalysis.IncrementalValueProvider{T}"/> that provides the input values.</param>
         /// <param name="extensionName">The name of the dependency injection extension for which the compilation information output is being registered. This is used to identify the specific extension in the output generation process.</param>
-        /// <param name="implementationParameters">The parameters used to configure the dependency injection extension. These provide the necessary information for the extension's setup.</param>
-        /// <param name="implementationCallback">A callback that receives the implementation parameters and performs additional configuration for the dependency injection extension.</param>
-        public void CreateDependencyInjectionExtension<TParam>(string extensionName, TParam implementationParameters, SourceGenerationImplementationCallback<TParam> implementationCallback)
+        /// <param name="initializeExtensionCallback">A callback that receives the implementation parameters and performs the initialization logic for the extension.</param>
+        /// <param name="registerExtensionCallback">A callback that receives the implementation parameters and performs the registration logic for the extension.</param>
+        public void CreateDependencyInjectionExtension<TSource>(IncrementalValueProvider<TSource> source, string extensionName, SourceGenerationImplementationCallback<TSource>? initializeExtensionCallback = null, SourceGenerationImplementationCallback<TSource>? registerExtensionCallback = null)
         {
+            if (initializeExtensionCallback is null && registerExtensionCallback is null)
+                throw new ArgumentNullException($"Please provide at least one of the parameters '{initializeExtensionCallback}' and '{registerExtensionCallback}'.");
+
             var valueProvider = context.GetDependencyInjectionExtensionValueProvider();
 
-            context.RegisterDependencyInjectionExtensionCompilationInfoOutput(valueProvider, extensionName, implementationParameters, implementationCallback);
+            var combinedProvider = source.Combine(valueProvider);
+
+            context.RegisterDependencyInjectionExtensionCompilationInfoOutput(combinedProvider, extensionName, initializeExtensionCallback, registerExtensionCallback);
         }
     }
 }

@@ -28,30 +28,33 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Dependenc
 public static class DependencyInjectionExtensionGeneratorOutput
 {
     /// <summary>
-    /// Generates and outputs dependency injection extension implementations using the specified parameters and callback.
+    /// Generates and outputs dependency injection extension implementations using the specified input value provider and callback.
     /// </summary>
     /// <remarks>This method checks preconditions and cancellation before proceeding. If preconditions are not
     /// met or cancellation is requested, the method returns without generating output.</remarks>
-    /// <typeparam name="TParam">The type of the implementation parameters passed to the callback.</typeparam>
+    /// <typeparam name="TSource">The type of the input values.</typeparam>
     /// <param name="sourceProductionContext">The context for source generation, used to report diagnostics and add generated source files.</param>
-    /// <param name="provider">A tuple containing the root namespace and assembly name used to identify the main compilation target.</param>
+    /// <param name="provider">A tuple containing the input values and a tuple with the root namespace and assembly name used to identify the main compilation target.</param>
     /// <param name="registrationOptions">The options that control how code generation is performed.</param>
     /// <param name="extensionName">The name of the extension to be generated.</param>
-    /// <param name="implementationParameters">The parameters to be passed to the implementation callback for generating the extension.</param>
-    /// <param name="implementationCallback">A callback that receives the implementation parameters and performs the actual implementation logic.</param>
-    public static void OutputImplementations<TParam>(SourceProductionContext sourceProductionContext, (string? RootNamespace, string? AssemblyName) provider, Basilisque.CodeAnalysis.Syntax.RegistrationOptions registrationOptions, string extensionName, TParam implementationParameters, SourceGenerationImplementationCallback<TParam> implementationCallback)
+    /// <param name="initializeExtensionCallback">A callback that receives the implementation parameters and performs the initialization logic for the extension.</param>
+    /// <param name="registerExtensionCallback">A callback that receives the implementation parameters and performs the registration logic for the extension.</param>
+    public static void OutputImplementations<TSource>(SourceProductionContext sourceProductionContext, (TSource Left, (string? RootNamespace, string? AssemblyName) Right) provider, Basilisque.CodeAnalysis.Syntax.RegistrationOptions registrationOptions, string extensionName, SourceGenerationImplementationCallback<TSource>? initializeExtensionCallback = null, SourceGenerationImplementationCallback<TSource>? registerExtensionCallback = null)
     {
         sourceProductionContext.CancellationToken.ThrowIfCancellationRequested();
 
-        if (!DependencyInjectionGeneratorOutputUtilities.CheckPreconditions(sourceProductionContext, provider, registrationOptions))
+        if (initializeExtensionCallback is null && registerExtensionCallback is null)
+            throw new ArgumentNullException($"Please provide at least one of the parameters '{initializeExtensionCallback}' and '{registerExtensionCallback}'.");
+
+        if (!DependencyInjectionGeneratorOutputUtilities.CheckPreconditions(sourceProductionContext, provider.Right, registrationOptions))
             return;
 
-        (string mainCompilationName, string mainNamespace, _, _, _) = DependencyInjectionGeneratorOutputUtilities.GetMainCompilationTarget(provider);
+        (string mainCompilationName, string mainNamespace, _, _, _) = DependencyInjectionGeneratorOutputUtilities.GetMainCompilationTarget(provider.Right);
 
-        outputDependencyRegistratorExtensionImplementation(sourceProductionContext, registrationOptions, mainNamespace, mainCompilationName, extensionName, implementationParameters, implementationCallback);
+        outputDependencyRegistratorExtensionImplementation(sourceProductionContext, registrationOptions, mainNamespace, mainCompilationName, extensionName, provider.Left, initializeExtensionCallback, registerExtensionCallback);
     }
 
-    private static void outputDependencyRegistratorExtensionImplementation<TParam>(SourceProductionContext context, RegistrationOptions registrationOptions, string mainNamespace, string mainCompilationName, string extensionName, TParam implementationParameters, SourceGenerationImplementationCallback<TParam> implementationCallback)
+    private static void outputDependencyRegistratorExtensionImplementation<TParam>(SourceProductionContext context, RegistrationOptions registrationOptions, string mainNamespace, string mainCompilationName, string extensionName, TParam implementationParameters, SourceGenerationImplementationCallback<TParam>? initializeExtensionCallback, SourceGenerationImplementationCallback<TParam>? registerExtensionCallback)
     {
         context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -64,19 +67,48 @@ public static class DependencyInjectionExtensionGeneratorOutput
         {
             cl.IsPartial = true;
 
-            var initializeMethod = new MethodInfo(true, $"initializeExtension_{extensionName}")
+            if (initializeExtensionCallback is not null)
             {
-                Parameters = {
-                    new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
-                }
-            };
+                var initializeMethod = getInitializeExtensionMethod(extensionName);
+                initializeExtensionCallback(context, initializeMethod.Body, implementationParameters);
+                cl.Methods.Add(initializeMethod);
+            }
 
-            initializeMethod.Body.Add($@"/* register services for extension '{extensionName}' */");
-
-            implementationCallback(context, initializeMethod.Body, implementationParameters);
-
-            cl.Methods.Add(initializeMethod);
+            if (registerExtensionCallback is not null)
+            {
+                var registerMethod = getRegisterExtensionMethod(extensionName);
+                registerExtensionCallback(context, registerMethod.Body, implementationParameters);
+                cl.Methods.Add(registerMethod);
+            }
         })
             .AddToSourceProductionContext();
+    }
+
+    private static MethodInfo getInitializeExtensionMethod(string extensionName)
+    {
+        var initializeMethod = new MethodInfo(true, $"initializeExtension_{extensionName}")
+        {
+            Parameters = {
+                    new ParameterInfo(ParameterKind.Ordinary, "DependencyCollection", "collection")
+                }
+        };
+
+        initializeMethod.Body.Add($@"/* initialize extension '{extensionName}' */");
+
+        return initializeMethod;
+    }
+
+    private static MethodInfo getRegisterExtensionMethod(string extensionName)
+    {
+        var initializeMethod = new MethodInfo(true, $"registerExtension_{extensionName}")
+        {
+            Parameters = {
+                    new ParameterInfo(ParameterKind.Ordinary, "IServiceCollection", "services")
+                }
+        };
+
+        initializeMethod.Body.Add($@"/* register services for extension '{extensionName}' */");
+
+        return initializeMethod;
     }
 }
