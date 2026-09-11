@@ -45,6 +45,7 @@
     <Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="Registration\Annotations\RegistrationScope.cs" />
 
     <None Include="build/**" Pack="true" PackagePath="build" />
+    <None Include="build/**" Pack="true" PackagePath="buildTransitive" />
 
     <!-- Pack README -->
     <None Include="README.md" Pack="true" PackagePath="docs" />
