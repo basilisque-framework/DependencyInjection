@@ -36,6 +36,17 @@ Installing the package will also install the package Basilisque.DependencyInject
 
 Now you're ready to [register your first service](https://github.com/basilisque-framework/DependencyInjection/wiki/Getting-Started).
 
+## Documentation Index
+- [Wiki Home](https://github.com/basilisque-framework/DependencyInjection/wiki)
+- [Getting Started](https://github.com/basilisque-framework/DependencyInjection/wiki/Getting-Started)
+- [Service Registration](https://github.com/basilisque-framework/DependencyInjection/wiki/Service-Registration)
+- [Factories and Keyed Services](https://github.com/basilisque-framework/DependencyInjection/wiki/Factories-and-Keyed-Services)
+- [Dependency Chain and Generated Types](https://github.com/basilisque-framework/DependencyInjection/wiki/Dependency-Chain-and-Generated-Types)
+- [Manual Registrator Customization (Partial Class)](https://github.com/basilisque-framework/DependencyInjection/wiki/Manual-Registrator-Customization)
+- [Analyzer Extension Support (for Source Generators)](https://github.com/basilisque-framework/DependencyInjection/wiki/Analyzer-Extension-Support)
+- [Diagnostics and Troubleshooting](https://github.com/basilisque-framework/DependencyInjection/wiki/Diagnostics-and-Troubleshooting)
+- [FAQ](https://github.com/basilisque-framework/DependencyInjection/wiki/FAQ)
+
 
 ## Features
 - Generates code that registers all marked services of a project.  
