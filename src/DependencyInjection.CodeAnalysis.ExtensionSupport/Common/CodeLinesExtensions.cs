@@ -1,5 +1,5 @@
-﻿/*
-   Copyright 2026 Alexander Stärk
+/*
+   Copyright 2026 Alexander St�rk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -108,20 +108,22 @@ public static class CodeLinesExtensions
                     implSymbol = implementationSymbol;
                 }
 
-                var bodyLine = getServiceRegistrationBody(registrationScopeName, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, serviceSymbol, implSymbol);
+                var bodyLine = getServiceRegistrationBody(registrationScopeName, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, serviceSymbol, implSymbol, factoryRegistrationWithoutImplementation);
                 methodBody.Add(bodyLine);
             }
         }
         else
         {
-            var bodyLine = getServiceRegistrationBody(registrationScopeName, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, registeredService: null, implementationSymbol);
+            var bodyLine = getServiceRegistrationBody(registrationScopeName, isKeyedRegistration, keyedPrefix, keyedValue, factoryInformation, registeredService: null, implementationSymbol, factoryRegistrationWithoutImplementation);
             methodBody.Add(bodyLine);
         }
     }
 
-    private static string getServiceRegistrationBody(string registrationScope, bool isKeyedRegistration, string keyedPrefix, string keyedValue, string? factoryInformation, INamedTypeSymbol? registeredService, INamedTypeSymbol implementationSymbol)
+    private static string getServiceRegistrationBody(string registrationScope, bool isKeyedRegistration, string keyedPrefix, string keyedValue, string? factoryInformation, INamedTypeSymbol? registeredService, INamedTypeSymbol implementationSymbol, bool factoryRegistrationWithoutImplementation)
     {
         var symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Included);
+
+        bool implementationIsOpenGeneric = implementationSymbol.IsUnboundGenericType || (implementationSymbol.IsGenericType && implementationSymbol.TypeArguments.All(typeArgument => typeArgument.Kind == SymbolKind.TypeParameter));
 
         string? registeredServiceInfo = null;
         bool registeredServiceIsOpenGeneric;
@@ -135,7 +137,7 @@ public static class CodeLinesExtensions
             else
                 registeredServiceDisplayString = registeredService.ToDisplayString(symbolDisplayFormat);
 
-            if (registeredServiceIsOpenGeneric || implementationSymbol.IsGenericType)
+            if (registeredServiceIsOpenGeneric || implementationIsOpenGeneric)
                 registeredServiceInfo = $"typeof({registeredServiceDisplayString}), ";
             else
                 registeredServiceInfo = $"{registeredServiceDisplayString}, ";
@@ -144,13 +146,15 @@ public static class CodeLinesExtensions
             registeredServiceIsOpenGeneric = false;
 
         string implementationInfo;
-        if (implementationSymbol.IsGenericType)
+        if (implementationIsOpenGeneric)
             implementationInfo = implementationSymbol.ConstructUnboundGenericType().ToDisplayString(symbolDisplayFormat);
         else
             implementationInfo = implementationSymbol.ToDisplayString(symbolDisplayFormat);
 
+        bool useNonGenericRegistration = registeredServiceIsOpenGeneric || implementationIsOpenGeneric || (factoryRegistrationWithoutImplementation && implementationSymbol.IsGenericType);
+
         string result;
-        if (registeredServiceIsOpenGeneric || implementationSymbol.IsGenericType)
+        if (useNonGenericRegistration)
         {
             if (isKeyedRegistration || factoryInformation is not null)
                 keyedValue = $", {keyedValue}";

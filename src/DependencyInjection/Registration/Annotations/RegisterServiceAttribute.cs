@@ -40,7 +40,7 @@ public class RegisterServiceAttribute : Attribute, IRegisterServiceAttribute
     /// <summary>
     /// The type of the factory class that will be used to create instances of the service.
     /// </summary>
-    /// <remarks>For keyed services this has have a method <see cref="Func{IServiceProvider, Object, TServiceInstance}"/>. For non-keyed services this has to have a method <see cref="Func{IServiceProvider, TServiceInstance}"/></remarks>
+    /// <remarks>For keyed services this type has to provide a <see langword="static"/> method <see cref="Func{IServiceProvider, Object, TServiceInstance}"/>. For non-keyed services it has to provide a <see langword="static"/> method <see cref="Func{IServiceProvider, TServiceInstance}"/></remarks>
     public Type? Factory { get; set; } = null;
 
     /// <summary>
