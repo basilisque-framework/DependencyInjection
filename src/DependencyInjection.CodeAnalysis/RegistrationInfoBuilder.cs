@@ -247,37 +247,30 @@ internal static class RegistrationInfoBuilder
 
     private static void resolveFactoryInformation(GeneratorSyntaxContext context, ServiceRegistrationInfo item)
     {
-        if (item.FactoryType is null)
+        var factoryType = item.FactoryType ?? (item.FactoryMethodName is not null ? item.ImplementationSymbol : null);
+        if (factoryType is null)
         {
-            if (item.FactoryMethodName is not null)
-            {
-                // The factory method name is defined, but no factory type is defined.
-                // This doesn't make sense, so we report a diagnostic.
-
-                var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
-                var factoryTypeDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryTypeNotDefined, location, item.FactoryMethodName);
-                item.Diagnostics.Add(factoryTypeDiagnostic);
-            }
-
             // No factory type or factory method name defined.
             // This is fine, so we just register the service without a factory.
             return;
         }
 
-        var factoryTypeName = item.FactoryType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        var factoryTypeName = factoryType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
         bool isKeyedRegistration = item.ServiceKey is not null;
 
-        var factoryMethod = getValidFactoryMethod(item.FactoryType, isKeyedRegistration, item.FactoryMethodName);
+        var factoryMethod = getValidFactoryMethod(factoryType, isKeyedRegistration, item.FactoryMethodName);
         if (factoryMethod is null)
         {
             // No valid factory method found, so we report a diagnostic.
             var location = item.ImplementationSyntaxNode?.GetLocation() ?? Location.None;
-            Diagnostic factoryMethodDiagnostic;
-            if (item.FactoryMethodName is null)
-                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNotFound, location, factoryTypeName);
-            else
-                factoryMethodDiagnostic = Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNameIsInvalid, location, item.FactoryMethodName, factoryTypeName);
+            var validationDetails = getFactoryMethodValidationDetails(factoryType, isKeyedRegistration, item.FactoryMethodName);
+            var factoryMethodName = item.FactoryMethodName ?? factoryType.GetMembers().OfType<IMethodSymbol>().FirstOrDefault()?.Name ?? factoryTypeName;
+            Diagnostic factoryMethodDiagnostic = validationDetails is null
+                ? item.FactoryMethodName is null
+                    ? Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNotFound, location, factoryTypeName)
+                    : Diagnostic.Create(DiagnosticDescriptors.FactoryMethodNameIsInvalid, location, item.FactoryMethodName, factoryTypeName)
+                : Diagnostic.Create(DiagnosticDescriptors.FactoryMethodIsInvalid, location, factoryMethodName, factoryTypeName, validationDetails);
             item.Diagnostics.Add(factoryMethodDiagnostic);
             return;
         }
@@ -290,60 +283,61 @@ internal static class RegistrationInfoBuilder
     private static IMethodSymbol? getValidFactoryMethod(INamedTypeSymbol factoryType, bool isKeyed, string? expectedMethodName)
     {
         var getMembers = expectedMethodName is null ? factoryType.GetMembers() : factoryType.GetMembers(expectedMethodName);
+        var methodCandidates = getMembers.OfType<IMethodSymbol>().Where(member => isValidFactoryMethod(member, isKeyed)).ToList();
 
-        var methodCandidates = getMembers.OfType<IMethodSymbol>().Where(member =>
-        {
-            // has to be static
-            if (!member.IsStatic)
-                return false;
+        return methodCandidates.Count == 1 ? methodCandidates[0] : null;
+    }
 
-            // has to be public or internal
-            if (member.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal))
-                return false;
-
-            // has to return a value (not void)
-            if (member.ReturnsVoid)
-                return false;
-
-            // regular methods only (no constructors, operators, property accessors, ...)
-            if (member.MethodKind != MethodKind.Ordinary)
-                return false;
-
-            // check parameters
-            var parameters = member.Parameters;
-
-            if (isKeyed)
-            {
-                if (parameters.Length == 2 &&
-                     parameters[0].Type.ToDisplayString() == "System.IServiceProvider" &&
-                     parameters[1].Type.ToDisplayString() is "object" or "object?")
-                {
-                    // Keyed Factory
-                    return true;
-                }
-            }
-            else
-            {
-                if (parameters.Length == 1 &&
-                parameters[0].Type.ToDisplayString() == "System.IServiceProvider")
-                {
-                    // Non-Keyed Factory
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        try
-        {
-            var factoryMethod = methodCandidates.SingleOrDefault();
-
-            return factoryMethod;
-        }
-        catch (Exception)
-        {
+    private static string? getFactoryMethodValidationDetails(INamedTypeSymbol factoryType, bool isKeyed, string? factoryMethodName)
+    {
+        var methods = (factoryMethodName is null ? factoryType.GetMembers() : factoryType.GetMembers(factoryMethodName))
+            .OfType<IMethodSymbol>()
+            .Where(method => method.MethodKind == MethodKind.Ordinary)
+            .ToList();
+        if (methods.Count == 0)
             return null;
+
+        if (methods.Count(method => isValidFactoryMethod(method, isKeyed)) > 1)
+            return factoryMethodName is null ? null : "multiple matching overloads were found.";
+
+        if (factoryMethodName is null && methods.Count > 1)
+            return null;
+
+        var validationErrors = methods.Select(method => getFactoryMethodValidationError(method, isKeyed)).Where(error => error is not null).Distinct();
+        return string.Join(" ", validationErrors!);
+    }
+
+    private static bool isValidFactoryMethod(IMethodSymbol method, bool isKeyed)
+    {
+        return getFactoryMethodValidationError(method, isKeyed) is null;
+    }
+
+    private static string? getFactoryMethodValidationError(IMethodSymbol method, bool isKeyed)
+    {
+        if (!method.IsStatic)
+            return "it must be static.";
+
+        if (method.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal))
+            return "it must be public or internal.";
+
+        if (method.ReturnsVoid)
+            return "it must return a value.";
+
+        if (method.MethodKind != MethodKind.Ordinary)
+            return "it must be a regular method.";
+
+        var parameters = method.Parameters;
+        if (isKeyed)
+        {
+            return parameters.Length == 2 &&
+                   parameters[0].Type.ToDisplayString() == "System.IServiceProvider" &&
+                   parameters[1].Type.ToDisplayString() is "object" or "object?"
+                ? null
+                : "it must accept parameters of type IServiceProvider and object.";
         }
+
+        return parameters.Length == 1 && parameters[0].Type.ToDisplayString() == "System.IServiceProvider"
+            ? null
+            : "it must accept a single parameter of type IServiceProvider.";
     }
 }
