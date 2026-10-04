@@ -20,27 +20,29 @@
 
   <!-- define NuGet package versions -->
   <ItemGroup>
-    <PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.0" />
-    <PackageVersion Include="Basilisque.CodeAnalysis.TestSupport" Version="1.0.0" />
+    <PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.1-Preview00001" />
+    <PackageVersion Include="Basilisque.CodeAnalysis.TestSupport" Version="1.0.1-Preview00001" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net6.0'" Version="6.0.1" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net7.0'" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net8.0'" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net9.0'" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Condition="'$(TargetFramework)'=='net10.0'" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net6.0'" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net7.0'" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net8.0'" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net9.0'" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Condition="'$(TargetFramework)'=='net10.0'" Version="10.0.12" />
     <!--<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />-->
     <PackageVersion Include="TUnit" Version="1.60.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="GitVersion.MsBuild" Version="6.7.0" />
+    <PackageVersion Include="GitVersion.MsBuild" Version="6.8.2" />
   </ItemGroup>
 
   <!-- import common NuGet packages -->
   <ItemGroup>
-    <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="2.0.0-Preview00008">
+    <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="2.0.0-Preview00010">
       <PrivateAssets>all</PrivateAssets>
     </GlobalPackageReference>
     <PackageReference Include="GitVersion.MsBuild">
