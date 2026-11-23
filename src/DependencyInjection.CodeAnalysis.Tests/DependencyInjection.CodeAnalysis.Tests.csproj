@@ -30,5 +30,6 @@
     <PackageReference Include="Basilisque.CodeAnalysis" />
     <PackageReference Include="Basilisque.CodeAnalysis.TestSupport" />
     <PackageReference Include="System.Formats.Asn1" Condition="'$(TargetFramework)'=='net8.0' OR '$(TargetFramework)'=='net9.0'" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Condition="'$(TargetFramework)'!='net462'" />
   </ItemGroup>
 </Project>

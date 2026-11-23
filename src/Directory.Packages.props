@@ -40,8 +40,10 @@
     <PackageVersion Include="TUnit" Version="1.60.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="GitVersion.MsBuild" Version="7.0.1" />
-    <!-- Roslyn's Analyzer.Testing 1.1.4 requires this version for its net8.0 asset. -->
-    <PackageVersion Include="System.Formats.Asn1" Version="9.0.6" Condition="'$(TargetFramework)'=='net8.0' OR '$(TargetFramework)'=='net9.0'" />
+    <!-- Resolve the Roslyn test dependency downgrade and meet the patched Pkcs dependency on net8.0. -->
+    <PackageVersion Include="System.Formats.Asn1" Version="9.0.21" Condition="'$(TargetFramework)'=='net8.0' OR '$(TargetFramework)'=='net9.0'" />
+    <!-- Override the vulnerable version from NuGet.Packaging on modern test targets. -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="9.0.21" />
   </ItemGroup>
 
   <!-- import common NuGet packages -->
