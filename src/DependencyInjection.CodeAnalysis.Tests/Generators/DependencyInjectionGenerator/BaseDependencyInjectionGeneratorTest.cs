@@ -92,6 +92,18 @@ public abstract class BaseDependencyInjectionGeneratorTest<TGenerator>
                         "9.0.0"),
                     Path.Combine("ref", "net9.0"))
             .WithPackages([new Microsoft.CodeAnalysis.Testing.PackageIdentity("Microsoft.AspNetCore.App.Ref", "9.0.0")]);
+#elif NET10_0
+        var refAssemblies = new ReferenceAssemblies(
+                    "net10.0",
+                    new PackageIdentity("Microsoft.NETCore.App.Ref", "10.0.12"),
+                    Path.Combine("ref", "net10.0"))
+            .WithPackages([new PackageIdentity("Microsoft.AspNetCore.App.Ref", "10.0.12")]);
+#elif NET11_0
+        var refAssemblies = new ReferenceAssemblies(
+                    "net11.0",
+                    new PackageIdentity("Microsoft.NETCore.App.Ref", "11.0.0"),
+                    Path.Combine("ref", "net11.0"))
+            .WithPackages([new PackageIdentity("Microsoft.AspNetCore.App.Ref", "11.0.0")]);
 #else
         throw new PlatformNotSupportedException("Please define reference assemblies for your platform!");
 #endif

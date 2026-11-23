@@ -21,7 +21,7 @@
 
   <!-- set target frameworks except for .CodeAnalysis - .CodeAnalysis always has to be netstandard2.0 because it is loaded in Visual Studio -->
   <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.CodeAnalysis')) != true AND $(MSBuildProjectName.EndsWith('.CodeAnalysis.ExtensionSupport')) != true">
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
 
     <!-- additionaly support netstandard2.0; tested against net462 -->
     <TargetFrameworks Condition="$(MSBuildProjectName.EndsWith('.Tests')) != true">$(TargetFrameworks);netstandard2.0</TargetFrameworks>

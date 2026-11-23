@@ -37,6 +37,11 @@ jobs:
     with:
       basBuildType: ${{ inputs.basBuildTypeChoice }}
       publishTargetFramework: 'netstandard2.0'
+      dotNetVersion: |
+        8.0.x
+        9.0.x
+        10.0.x
+        11.0.x
       sonarProjectKey: 'basilisque-framework_DependencyInjection'
       sonarOrganization: 'basilisque-framework'
       runDotnetPack: true
