@@ -80,4 +80,3 @@ public class Nested_Attributes_AsCommonInterface_1Class : BaseDependencyInjectio
         services.AddSingleton<global::Some.Namespace.IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();";
     }
 }
-

@@ -1,5 +1,5 @@
-/*
-   Copyright 2026 Alexander St�rk
+﻿/*
+   Copyright 2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -143,7 +143,9 @@ public static class CodeLinesExtensions
                 registeredServiceInfo = $"{registeredServiceDisplayString}, ";
         }
         else
+        {
             registeredServiceIsOpenGeneric = false;
+        }
 
         string implementationInfo;
         if (implementationIsOpenGeneric)

@@ -40,7 +40,7 @@ public class Register_2Classes_Inherited_From_Interface_With_BaseClass_As_ITypeN
 
         /// <summary>
         /// Test class that will be registered as transient by attribute
-        /// </summary>        
+        /// </summary>
         public abstract class MyBaseClass : ISomeInterface
         {
         }");
@@ -69,4 +69,3 @@ public class Register_2Classes_Inherited_From_Interface_With_BaseClass_As_ITypeN
         services.AddTransient<global::IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();";
     }
 }
-

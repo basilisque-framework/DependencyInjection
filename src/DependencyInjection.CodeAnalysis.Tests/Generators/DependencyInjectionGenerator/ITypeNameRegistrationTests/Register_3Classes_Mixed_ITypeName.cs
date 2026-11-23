@@ -95,4 +95,3 @@ public class Register_3Classes_Mixed_ITypeName : BaseDependencyInjectionGenerato
         services.AddScoped<global::Some.Namespace.IMyPublicRegisteredClass3, global::MyPublicRegisteredClass3>();";
     }
 }
-

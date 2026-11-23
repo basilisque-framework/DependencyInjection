@@ -63,4 +63,3 @@ public class Register_2Classes_Inherited_From_Interface_As_Interface : BaseDepen
         services.AddTransient<global::Some.Namespace.ISomeInterface, global::MyPublicRegisteredClass2>();";
     }
 }
-

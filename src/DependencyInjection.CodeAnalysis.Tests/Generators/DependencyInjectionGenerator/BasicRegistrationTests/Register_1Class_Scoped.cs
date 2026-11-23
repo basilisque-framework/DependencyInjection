@@ -40,4 +40,3 @@ public class Register_1Class_Scoped : BaseDependencyInjectionGeneratorTest
         services.AddScoped<global::MyPublicRegisteredClass>();";
     }
 }
-

@@ -52,4 +52,3 @@ public class Register_1Class_As_ITypeName_OpenGeneric : BaseDependencyInjectionG
         services.AddTransient(typeof(global::Some.Namespace.IMyPublicRegisteredClass<>), typeof(global::MyPublicRegisteredClass<>));";
     }
 }
-

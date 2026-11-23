@@ -63,7 +63,7 @@ public static class DependencyInjectionExtensionGeneratorOutput
         ci.AddGeneratedCodeAttributes = false;
         ci.Usings.Add("Basilisque.DependencyInjection.Registration");
         ci.Usings.Add("Microsoft.Extensions.DependencyInjection");
-        ci.AddNewClassInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
+        ci.AddNewClassInfo(DependencyInjectionGeneratorData.DependencyRegistratorClassName, AccessModifier.Public, cl =>
         {
             cl.IsPartial = true;
 

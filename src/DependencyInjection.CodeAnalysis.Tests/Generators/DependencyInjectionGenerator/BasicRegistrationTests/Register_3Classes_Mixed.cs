@@ -61,4 +61,3 @@ public class Register_3Classes_Mixed : BaseDependencyInjectionGeneratorTest
         services.AddSingleton<global::My.Test.NameSpace.MyPublicRegisteredClass3>();";
     }
 }
-

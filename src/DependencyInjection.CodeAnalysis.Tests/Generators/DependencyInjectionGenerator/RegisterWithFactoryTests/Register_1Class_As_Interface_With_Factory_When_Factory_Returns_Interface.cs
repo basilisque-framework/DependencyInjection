@@ -67,4 +67,3 @@ public class Register_1Class_As_Interface_With_Factory_When_Factory_Returns_Inte
         services.AddSingleton<global::IMyPublicRegisteredClass>(global::MyFactory.Create);";
     }
 }
-

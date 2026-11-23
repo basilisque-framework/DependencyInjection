@@ -18,7 +18,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Common;
 
 internal static class DependencyInjectionGeneratorData
 {
-    internal const string C_DEPENDENCY_REGISTRATOR_CLASSNAME = "DependencyRegistrator";
-    internal const string C_DEPENDENCY_REGISTRATOR_ROOTNAMESPACE_COMPILATIONNAME = C_DEPENDENCY_REGISTRATOR_CLASSNAME + "_RootNamespace";
-    internal const string C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME = C_DEPENDENCY_REGISTRATOR_CLASSNAME + "_AssemblyNameNamespace";
+    internal const string DependencyRegistratorClassName = "DependencyRegistrator";
+    internal const string DependencyRegistratorRootNamespaceCompilationName = DependencyRegistratorClassName + "_RootNamespace";
+    internal const string DependencyRegistratorAssemblyNameNamespaceCompilationName = DependencyRegistratorClassName + "_AssemblyNameNamespace";
 }

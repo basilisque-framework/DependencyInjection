@@ -40,4 +40,3 @@ public class Register_1Class_Transient : BaseDependencyInjectionGeneratorTest
         services.AddTransient<global::MyPublicRegisteredClass>();";
     }
 }
-

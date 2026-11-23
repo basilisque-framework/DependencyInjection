@@ -58,4 +58,3 @@ public class Register_1Class_With_Factory : BaseDependencyInjectionGeneratorTest
         services.AddSingleton<global::MyPublicRegisteredClass>(global::MyFactory.Create);";
     }
 }
-

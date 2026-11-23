@@ -1,4 +1,4 @@
-﻿<!--
+<!--
    Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,14 @@
 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 
   <!-- Pack README -->
   <ItemGroup>
-	  <None Include="..\..\README.md" Pack="true" PackagePath="docs" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="docs" />
   </ItemGroup>
-  
+
   <!-- Create a reference between this project and the source generator in the NuGet package. But do not execute the source generator in this project. -->
   <ItemGroup>
     <!-- Reference the code analysis project to create a dependency between the NuGet packages -->

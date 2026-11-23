@@ -1,4 +1,4 @@
-﻿<!--
+<!--
    Copyright 2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@
 
   <ItemGroup>
     <Compile Include="..\DependencyInjection\Registration\Annotations\RegistrationScope.cs" Link="Registration\Annotations\RegistrationScope.cs" />
-    
+
     <None Include="build/**" Pack="true" PackagePath="build" />
 
     <None Include="$(PkgBasilisque_CodeAnalysis)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false" />

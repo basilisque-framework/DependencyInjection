@@ -14,7 +14,7 @@
    limitations under the License.
 -->
 <Project>
-	<ItemGroup>
-		<CompilerVisibleProperty Include="BAS_DI_Extensions" />
-	</ItemGroup>
+  <ItemGroup>
+    <CompilerVisibleProperty Include="BAS_DI_Extensions" />
+  </ItemGroup>
 </Project>

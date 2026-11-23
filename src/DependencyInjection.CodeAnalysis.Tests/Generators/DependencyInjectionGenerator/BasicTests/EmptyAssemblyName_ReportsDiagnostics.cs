@@ -45,4 +45,3 @@ public class EmptyAssemblyName_ReportsDiagnostics : BaseDependencyInjectionGener
     {
     }
 }
-

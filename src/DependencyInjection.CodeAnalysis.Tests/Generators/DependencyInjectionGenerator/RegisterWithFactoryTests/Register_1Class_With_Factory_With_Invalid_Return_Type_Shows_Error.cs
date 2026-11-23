@@ -65,4 +65,3 @@ public class Register_1Class_With_Factory_With_Invalid_Return_Type_Shows_Error :
         yield return new Microsoft.CodeAnalysis.Testing.DiagnosticResult("CS0407", Microsoft.CodeAnalysis.DiagnosticSeverity.Error).WithSpan(PrependGeneratedFilePath("DependencyRegistrator_RootNamespace.impl.g.cs"), 16, 64, 16, 88);
     }
 }
-

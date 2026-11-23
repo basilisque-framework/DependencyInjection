@@ -52,4 +52,3 @@ public class Register_1Class_IgnoreInterfaceWithOtherName : BaseDependencyInject
         services.AddTransient<global::MyPublicRegisteredClass>();";
     }
 }
-

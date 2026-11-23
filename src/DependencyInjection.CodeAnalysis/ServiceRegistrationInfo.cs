@@ -27,7 +27,7 @@ internal class ServiceRegistrationInfo
     {
         get
         {
-            _registeredServices ??= new List<INamedTypeSymbol>();
+            _registeredServices ??= [];
 
             return _registeredServices;
         }
@@ -38,7 +38,7 @@ internal class ServiceRegistrationInfo
     public bool FactoryRegistrationWithoutImplementation = false;
     public string? ServiceKey { get; set; } = null;
     public string? FactoryInformation { get; set; } = null;
-    public List<Diagnostic> Diagnostics { get; set; } = new();
+    public List<Diagnostic> Diagnostics { get; set; } = [];
 
     public ServiceRegistrationInfo()
     { }

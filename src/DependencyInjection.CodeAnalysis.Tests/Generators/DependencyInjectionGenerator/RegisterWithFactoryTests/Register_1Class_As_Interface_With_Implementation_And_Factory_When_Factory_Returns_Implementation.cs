@@ -67,4 +67,3 @@ public class Register_1Class_As_Interface_With_Implementation_And_Factory_When_F
         services.AddSingleton<global::IMyPublicRegisteredClass, global::MyPublicRegisteredClass>(global::MyFactory.Create);";
     }
 }
-

@@ -52,4 +52,3 @@ public class Register_1Class_As_Interface : BaseDependencyInjectionGeneratorTest
         services.AddTransient<global::Some.Namespace.ISomeInterface, global::MyPublicRegisteredClass>();";
     }
 }
-

@@ -33,10 +33,7 @@ public class DependencyRegistratorBuilder<TRootDependencyRegistrator>
     /// <exception cref="ArgumentNullException">Thrown when a parameter is null</exception>
     public DependencyRegistratorBuilder(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        _services = services;
+        _services = services ?? throw new ArgumentNullException(nameof(services));
         _dependencyCollection = DependencyCollection.Create<TRootDependencyRegistrator>();
     }
 

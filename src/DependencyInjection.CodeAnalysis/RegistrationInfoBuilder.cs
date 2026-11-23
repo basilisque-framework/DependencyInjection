@@ -113,7 +113,7 @@ internal static class RegistrationInfoBuilder
         if (!implementedITypeNameInterfaces.Any())
             return;
 
-        servicesToRegister ??= new List<INamedTypeSymbol>();
+        servicesToRegister ??= [];
 
         foreach (var item in implementedITypeNameInterfaces)
         {
@@ -159,12 +159,10 @@ internal static class RegistrationInfoBuilder
             }
             else if (namedArgument.Value.Kind == TypedConstantKind.Type && (namedArgument.Key == "As" || namedArgument.Key == "RegisterAs"))
             {
-                var innerServiceToRegister = namedArgument.Value.Value as INamedTypeSymbol;
-
-                if (innerServiceToRegister is null)
+                if (namedArgument.Value.Value is not INamedTypeSymbol innerServiceToRegister)
                     continue;
 
-                servicesToRegister = new List<INamedTypeSymbol>() { innerServiceToRegister };
+                servicesToRegister = [innerServiceToRegister];
             }
             else if (namedArgument.Value.Kind == TypedConstantKind.Primitive && (namedArgument.Key == "ImplementsITypeName"))
             {

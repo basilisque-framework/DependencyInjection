@@ -52,4 +52,3 @@ public class Register_1Class_As_Generic_of_string_Interface : BaseDependencyInje
         services.AddTransient(typeof(global::Some.Namespace.ISomeInterface<string>), typeof(global::MyPublicRegisteredClass<>));";
     }
 }
-

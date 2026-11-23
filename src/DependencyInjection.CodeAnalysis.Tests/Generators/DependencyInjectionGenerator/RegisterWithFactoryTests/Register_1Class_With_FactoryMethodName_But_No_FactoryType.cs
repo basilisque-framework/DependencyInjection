@@ -47,4 +47,3 @@ public class Register_1Class_With_FactoryMethodName_But_No_FactoryType : BaseDep
         services.AddSingleton<global::MyPublicRegisteredClass>(global::MyPublicRegisteredClass.Create);";
     }
 }
-

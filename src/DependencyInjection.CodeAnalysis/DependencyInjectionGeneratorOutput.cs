@@ -24,9 +24,9 @@ namespace Basilisque.DependencyInjection.CodeAnalysis;
 
 internal static class DependencyInjectionGeneratorOutput
 {
-    private const string C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION = @"Registers all dependencies and services of this assembly.";
-    private const string C_DEPENDENCYREGISTRATORBUILDER_TYPE = "DependencyRegistratorBuilder";
-    private const string C_IDEPENDENCYREGISTRATOR_TYPE = "IDependencyRegistrator";
+    private const string DependencyRegistratorXmlCommentDescription = @"Registers all dependencies and services of this assembly.";
+    private const string DependencyRegistratorBuilderType = "DependencyRegistratorBuilder";
+    private const string IDependencyRegistratorType = "IDependencyRegistrator";
 
     internal static void OutputStubs(SourceProductionContext context, ((string? RootNamespace, string? AssemblyName) General, IEnumerable<string>? Extensions) provider, RegistrationOptions registrationOptions)
     {
@@ -55,13 +55,13 @@ internal static class DependencyInjectionGeneratorOutput
         if (hasRootNamespace)
         {
             //output a helper class in the assemblyname as namespace to make it easier to find in completely compiled assemblies
-            registrationOptions.CreateCompilationInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME, targetNamespace: assemblyNameNamespace)
-                .AddNewClassInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
+            registrationOptions.CreateCompilationInfo(DependencyInjectionGeneratorData.DependencyRegistratorAssemblyNameNamespaceCompilationName, targetNamespace: assemblyNameNamespace)
+                .AddNewClassInfo(DependencyInjectionGeneratorData.DependencyRegistratorClassName, AccessModifier.Public, cl =>
                 {
                     cl.IsSealed = true;
-                    cl.BaseClass = string.Concat(rootNamespace, ".", DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME);
+                    cl.BaseClass = string.Concat(rootNamespace, ".", DependencyInjectionGeneratorData.DependencyRegistratorClassName);
 
-                    cl.XmlDocSummary = $@"{C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION}
+                    cl.XmlDocSummary = $@"{DependencyRegistratorXmlCommentDescription}
 This class mainly exists for performance and simplicity reasons during code compilation.
 Although there is technically no reason to not manually interact with this class, you should probably prefer to use the identical class in your root namespace (<see cref=""{cl.BaseClass}""/>).";
 
@@ -71,13 +71,13 @@ Although there is technically no reason to not manually interact with this class
 
         //output the main registrator class
         var compInfo = registrationOptions.CreateCompilationInfo(mainCompilationName, mainNamespace)
-            .AddNewClassInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
+            .AddNewClassInfo(DependencyInjectionGeneratorData.DependencyRegistratorClassName, AccessModifier.Public, cl =>
             {
                 var hasExtensions = dependencyInjectionExtensions?.Any() == true;
 
                 cl.IsPartial = true;
                 cl.BaseClass = "BaseDependencyRegistrator";
-                cl.XmlDocSummary = C_DEPENDENCY_REGISTRATOR_XMLCOMMENT_DESCRIPTION;
+                cl.XmlDocSummary = DependencyRegistratorXmlCommentDescription;
 
                 var performInitializationMethod = new MethodInfo(AccessModifier.Protected, "void", "PerformInitialization")
                 {
@@ -198,9 +198,9 @@ doAfterRegistration(services);
         const string C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME = "IServiceCollectionExtensions";
         const string C_ISERVICECOLLECTION_TYPE = "IServiceCollection";
 
-        var dependencyRegistratorFullQualifiedName = $"{mainNamespace}.{DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME}";
-        var dependencyRegistratorBuilderNameWithGeneric = $"{C_DEPENDENCYREGISTRATORBUILDER_TYPE}<{dependencyRegistratorFullQualifiedName}>";
-        var dependencyRegistratorBuilderNameWithGenericForXmlDoc = $"{C_DEPENDENCYREGISTRATORBUILDER_TYPE}{{TDependencyRegistrator}}";
+        var dependencyRegistratorFullQualifiedName = $"{mainNamespace}.{DependencyInjectionGeneratorData.DependencyRegistratorClassName}";
+        var dependencyRegistratorBuilderNameWithGeneric = $"{DependencyRegistratorBuilderType}<{dependencyRegistratorFullQualifiedName}>";
+        var dependencyRegistratorBuilderNameWithGenericForXmlDoc = $"{DependencyRegistratorBuilderType}{{TDependencyRegistrator}}";
 
         var ci = registrationOptions.CreateCompilationInfo(C_ISERVICECOLLECTIONEXTENSIONS_CLASSNAME, mainNamespace);
         ci.Usings.Add("Microsoft.Extensions.DependencyInjection");
@@ -218,7 +218,7 @@ Calling this method creates a <see cref=""{dependencyRegistratorBuilderNameWithG
 
                 XmlDocAdditionalLines = {
                         $"<param name=\"services\">The <see cref=\"{C_ISERVICECOLLECTION_TYPE}\"/> all services are registered on.</param>",
-                        $"<returns>A <see cref=\"{dependencyRegistratorBuilderNameWithGenericForXmlDoc}\"/> that is used to build and execute the chain of <see cref=\"{C_IDEPENDENCYREGISTRATOR_TYPE}\"/></returns>"
+                        $"<returns>A <see cref=\"{dependencyRegistratorBuilderNameWithGenericForXmlDoc}\"/> that is used to build and execute the chain of <see cref=\"{IDependencyRegistratorType}\"/></returns>"
                 },
 
                 IsExtensionMethod = true,
@@ -260,7 +260,7 @@ For more control over the details of this process use <see cref=""InitializeDepe
         ci.AddGeneratedCodeAttributes = false;
         ci.Usings.Add("Basilisque.DependencyInjection.Registration");
         ci.Usings.Add("Microsoft.Extensions.DependencyInjection");
-        ci.AddNewClassInfo(DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME, AccessModifier.Public, cl =>
+        ci.AddNewClassInfo(DependencyInjectionGeneratorData.DependencyRegistratorClassName, AccessModifier.Public, cl =>
         {
             cl.IsPartial = true;
 
@@ -358,7 +358,7 @@ var options = context.AnalyzerConfigOptions.GetOptions(syntaxTree);
 if (options.TryGetValue("end_of_line", out var newline))
 {
 // do something with newline
-} 
+}
              */
             /*
              var workspace = ... // get a reference to a workspace

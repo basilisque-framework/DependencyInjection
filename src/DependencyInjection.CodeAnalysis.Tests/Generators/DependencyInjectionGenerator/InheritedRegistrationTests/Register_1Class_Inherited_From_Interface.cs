@@ -52,4 +52,3 @@ public class Register_1Class_Inherited_From_Interface : BaseDependencyInjectionG
         services.AddTransient<global::MyPublicRegisteredClass>();";
     }
 }
-

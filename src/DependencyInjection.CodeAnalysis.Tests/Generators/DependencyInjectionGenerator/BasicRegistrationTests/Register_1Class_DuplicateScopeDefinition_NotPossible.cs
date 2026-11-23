@@ -45,4 +45,3 @@ public class Register_1Class_DuplicateScopeDefinition_NotPossible : BaseDependen
         services.AddTransient<global::MyPublicRegisteredClass>();";
     }
 }
-

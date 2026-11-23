@@ -64,4 +64,3 @@ public class Register_1Class_ITypeName_And_Additional_Interface : BaseDependency
         services.AddTransient<global::Some.Namespace.IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();";
     }
 }
-

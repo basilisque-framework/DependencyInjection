@@ -68,4 +68,3 @@ public class Register_1Class_With_Factory_And_Ambiguous_Methods_Shows_Error : Ba
         yield return new Microsoft.CodeAnalysis.Testing.DiagnosticResult("BAS_DI_003", Microsoft.CodeAnalysis.DiagnosticSeverity.Error).WithSpan(5, 9, 8, 10);
     }
 }
-

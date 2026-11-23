@@ -67,4 +67,3 @@ public class Register_1Class_With_Interface_And_Factory : BaseDependencyInjectio
         services.AddScoped<global::IMyPublicRegisteredClass, global::MyPublicRegisteredClass>(global::MyFactory.CreateInstance);";
     }
 }
-

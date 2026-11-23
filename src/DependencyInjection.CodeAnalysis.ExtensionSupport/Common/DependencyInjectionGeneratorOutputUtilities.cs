@@ -46,13 +46,13 @@ internal class DependencyInjectionGeneratorOutputUtilities
         if (hasRootNamespace)
         {
             //prepare to output the main registrator class in the rootnamespace
-            mainCompilationName = DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_ROOTNAMESPACE_COMPILATIONNAME;
+            mainCompilationName = DependencyInjectionGeneratorData.DependencyRegistratorRootNamespaceCompilationName;
             mainNamespace = rootNamespace!;
         }
         else
         {
             //prepare to output the main registrator class in the assemblyname as namespace
-            mainCompilationName = DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_ASSEMBLYNAMENAMESPACE_COMPILATIONNAME;
+            mainCompilationName = DependencyInjectionGeneratorData.DependencyRegistratorAssemblyNameNamespaceCompilationName;
             mainNamespace = assemblyNameNamespace;
         }
 

@@ -26,7 +26,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis.ExtensionSupport.Tests.Com
 
 public class CodeLinesExtensionsTests
 {
-    private CodeLines _methodBody = new();
+    private readonly CodeLines _methodBody = [];
 
     [Test]
     public void AddServicesRegistrationToMethodBody_AddsNonKeyedRegistration_WithImplementationType()

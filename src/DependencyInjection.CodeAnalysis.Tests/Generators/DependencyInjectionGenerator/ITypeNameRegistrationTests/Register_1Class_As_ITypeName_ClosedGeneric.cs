@@ -52,4 +52,3 @@ public class Register_1Class_As_ITypeName_ClosedGeneric : BaseDependencyInjectio
         services.AddTransient(typeof(global::Some.Namespace.IMyPublicRegisteredClass<string>), typeof(global::MyPublicRegisteredClass<>));";
     }
 }
-

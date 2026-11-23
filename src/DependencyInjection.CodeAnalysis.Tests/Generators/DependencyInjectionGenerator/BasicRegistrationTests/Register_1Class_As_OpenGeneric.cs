@@ -39,4 +39,3 @@ public class Register_1Class_As_OpenGeneric : BaseDependencyInjectionGeneratorTe
         services.AddTransient(typeof(global::MyPublicRegisteredClass<>));";
     }
 }
-

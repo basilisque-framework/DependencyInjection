@@ -63,4 +63,3 @@ public class Register_1Class_DisabledITypeName_But_Other_Interface : BaseDepende
         services.AddTransient<global::Some.Namespace.IOtherInterface, global::MyPublicRegisteredClass>();";
     }
 }
-

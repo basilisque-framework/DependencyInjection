@@ -51,4 +51,3 @@ public class Register_1Class_Transient_ITypeName : BaseDependencyInjectionGenera
         services.AddTransient<global::Some.Namespace.IMyPublicRegisteredClass, global::MyPublicRegisteredClass>();";
     }
 }
-

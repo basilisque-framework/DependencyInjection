@@ -40,4 +40,3 @@ public class Register_1Class_Singleton : BaseDependencyInjectionGeneratorTest
         services.AddSingleton<global::MyPublicRegisteredClass>();";
     }
 }
-

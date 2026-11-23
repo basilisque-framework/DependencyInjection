@@ -73,4 +73,3 @@ public class Register_2Classes_Transient_ITypeName : BaseDependencyInjectionGene
         services.AddTransient<global::Some.Namespace.IMyPublicRegisteredClass2, global::MyPublicRegisteredClass2>();";
     }
 }
-

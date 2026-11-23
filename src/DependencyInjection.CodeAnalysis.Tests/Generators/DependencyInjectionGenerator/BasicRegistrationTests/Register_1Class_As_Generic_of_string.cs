@@ -39,4 +39,3 @@ public class Register_1Class_As_Generic_of_string : BaseDependencyInjectionGener
         services.AddTransient(typeof(global::MyPublicRegisteredClass<string>), typeof(global::MyPublicRegisteredClass<>));";
     }
 }
-

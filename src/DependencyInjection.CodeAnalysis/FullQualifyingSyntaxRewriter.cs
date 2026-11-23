@@ -6,7 +6,7 @@ namespace Basilisque.DependencyInjection.CodeAnalysis;
 /// <summary>
 /// A syntax rewriter that replaces type references in C# syntax trees with their fully qualified names.
 /// </summary>
-/// <remarks>This rewriter traverses a C# syntax tree and ensures that all type references, including those in 
+/// <remarks>This rewriter traverses a C# syntax tree and ensures that all type references, including those in
 /// `typeof` expressions, array types, and initializer expressions, are replaced with their fully qualified names using
 /// the `global::` prefix.</remarks>
 public class FullQualifyingSyntaxRewriter : CSharpSyntaxRewriter

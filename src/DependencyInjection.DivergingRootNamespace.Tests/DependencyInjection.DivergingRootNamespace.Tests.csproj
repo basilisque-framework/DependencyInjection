@@ -14,9 +14,9 @@
    limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<RootNamespace>Basilisque.DependencyInjection.Tests</RootNamespace>
-		<IsPublishable>false</IsPublishable>
-		<IsPackable>false</IsPackable>
-	</PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Basilisque.DependencyInjection.Tests</RootNamespace>
+    <IsPublishable>false</IsPublishable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
 </Project>

@@ -24,8 +24,8 @@ namespace Basilisque.DependencyInjection.CodeAnalysis;
 
 internal static class DependencyInjectionGeneratorSelectors
 {
-    private static readonly List<string> _assemblyNamePrefixesToIgnore = new()
-    {
+    private static readonly List<string> _assemblyNamePrefixesToIgnore =
+    [
         "System",
         "Microsoft",
         "mscorlib",
@@ -33,9 +33,9 @@ internal static class DependencyInjectionGeneratorSelectors
         "NuGet",
         "testhost",
         "WindowsBase"
-    };
+    ];
 
-    private static readonly char[] _dependencyInjectionExtensionsSeparators = new char[] { ';', ',' };
+    private static readonly char[] _dependencyInjectionExtensionsSeparators = [';', ','];
 
     internal static IEnumerable<string>? DependencyInjectionExtensionsSelector(AnalyzerConfigOptionsProvider provider, CancellationToken cancellationToken)
     {
@@ -49,7 +49,9 @@ internal static class DependencyInjectionGeneratorSelectors
             return extensions;
         }
         else
+        {
             return null;
+        }
     }
 
     internal static IEnumerable<INamedTypeSymbol> ReferencedAssemblySymbolsSelector(Compilation compilation, CancellationToken cancellationToken)
@@ -58,7 +60,7 @@ internal static class DependencyInjectionGeneratorSelectors
 
         var relevantReferencedAssemblies = compilation.SourceModule.ReferencedAssemblySymbols.Where(a => !a.IsImplicitlyDeclared && !_assemblyNamePrefixesToIgnore.Any(p => a.Name.StartsWith(p)));
 
-        var referencedDependencyRegistrators = relevantReferencedAssemblies.Select((assembly) => assembly.GetTypeByMetadataName($"{assembly.Name.ToValidNamespace()}.{DependencyInjectionGeneratorData.C_DEPENDENCY_REGISTRATOR_CLASSNAME}"));
+        var referencedDependencyRegistrators = relevantReferencedAssemblies.Select((assembly) => assembly.GetTypeByMetadataName($"{assembly.Name.ToValidNamespace()}.{DependencyInjectionGeneratorData.DependencyRegistratorClassName}"));
 
         var result = referencedDependencyRegistrators.Where(namedTypeSymbol => namedTypeSymbol != null);
 
@@ -104,9 +106,7 @@ internal static class DependencyInjectionGeneratorSelectors
 
     private static List<ServiceRegistrationInfo>? getSemanticTargetForGeneration(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
-        var nodeSymbol = context.SemanticModel.GetDeclaredSymbol(context.Node, cancellationToken) as INamedTypeSymbol;
-
-        if (nodeSymbol == null)
+        if (context.SemanticModel.GetDeclaredSymbol(context.Node, cancellationToken) is not INamedTypeSymbol nodeSymbol)
             return null;
 
         if (nodeSymbol.IsAbstract)

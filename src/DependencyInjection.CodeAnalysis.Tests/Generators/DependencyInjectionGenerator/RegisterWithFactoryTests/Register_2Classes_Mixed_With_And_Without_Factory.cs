@@ -69,4 +69,3 @@ public class Register_2Classes_Mixed_With_And_Without_Factory : BaseDependencyIn
         services.AddSingleton<global::MyPublicRegisteredClass2>();";
     }
 }
-

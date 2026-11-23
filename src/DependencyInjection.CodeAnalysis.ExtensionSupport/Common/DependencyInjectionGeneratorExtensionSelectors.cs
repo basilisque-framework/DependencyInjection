@@ -38,7 +38,9 @@ internal class DependencyInjectionGeneratorExtensionSelectors
             return rootNamespace;
         }
         else
+        {
             return null;
+        }
     }
 
     internal static string? AssemblyNameSelector(Compilation compilation, CancellationToken cancellationToken)

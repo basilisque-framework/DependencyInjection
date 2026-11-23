@@ -14,8 +14,8 @@
    limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<IsPackable>false</IsPackable>
-		<IsPublishable>false</IsPublishable>
-	</PropertyGroup>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
 </Project>

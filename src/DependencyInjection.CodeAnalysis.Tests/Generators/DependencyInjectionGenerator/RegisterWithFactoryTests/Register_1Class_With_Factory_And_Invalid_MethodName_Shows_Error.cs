@@ -58,4 +58,3 @@ public class Register_1Class_With_Factory_And_Invalid_MethodName_Shows_Error : B
         yield return new Microsoft.CodeAnalysis.Testing.DiagnosticResult("BAS_DI_004", Microsoft.CodeAnalysis.DiagnosticSeverity.Error).WithSpan(5, 9, 8, 10);
     }
 }
-

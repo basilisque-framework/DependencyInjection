@@ -66,4 +66,3 @@ public class Register_3Classes_Mixed_ScopeAsProperty : BaseDependencyInjectionGe
         services.AddTransient<global::My.Test.NameSpace.MyPublicRegisteredClass3>();";
     }
 }
-
